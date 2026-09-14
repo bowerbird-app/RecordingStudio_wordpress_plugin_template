@@ -1,70 +1,76 @@
-# RecordingStudioWordpressPluginTemplate
+# RecordingStudio WordPress widgets
 
-Internal template for building Rails engine addons on top of Recording Studio 4.x.
+This repo is the RecordingStudio WordPress widgets addon. The Rubygems name stays `recording_studio_wordpress_plugin_template`.
 
-## What's Included
+The Rails dummy host and the WordPress plugin are separate packages. The dummy app boots on its own. WordPress is a later, separate origin.
 
-- **Recording Studio** 4.x gem pinned and configured
-- **Devise** authentication with a pre-seeded admin user
-- **Workspace**, **Folder**, and **Page** recordables seeded into the dummy host app
-- **FlatPack** UI component library for all views
-- **Dummy app** (`test/dummy/`) with a FlatPack sign-in screen, a home page on Recording Studio's default layout, mounted Recording Studio routes, and FlatPack's built-in rounded theme
+Homepage: [github.com/bowerbird-app/RecordingStudio_wordpress_plugin_template](https://github.com/bowerbird-app/RecordingStudio_wordpress_plugin_template)
 
-Authenticated dummy pages use Recording Studio's shared default layout (`RecordingStudio::UsesDefaultLayout`) plus FlatPack CSS and JS. Devise keeps its own sign-in layout. Dummy `/docs/*` pages stay in the dummy app as a host-app sandbox; they are not the product README.
+## What ships
 
-## Quick Start
+- Recording Studio 4.x gem pinned and configured
+- Devise authentication with a pre-seeded admin user
+- Workspace, Folder, and Page recordables seeded into the dummy host app
+- FlatPack UI component library for dummy views
+- Dummy app (`test/dummy/`) with a FlatPack sign-in screen, a home page on Recording Studio's default layout, mounted Recording Studio routes, and FlatPack's built-in rounded theme
 
-### Cursor Cloud Agent (Recommended)
+Authenticated dummy pages use Recording Studio's shared default layout (`RecordingStudio::UsesDefaultLayout`) plus FlatPack CSS and JS. Devise keeps its own sign-in layout. Dummy `/docs/*` pages stay in the dummy app as a host-app sandbox. They are not the product README.
 
-A Cloud Agent boots this repo into a ready-to-use dev environment with no manual steps. The setup lives in `.cursor/`:
+## Quick start
+
+### Cursor Cloud Agent
+
+A Cloud Agent boots this repo into a ready-to-use dummy environment. The setup lives in `.cursor/`:
 
 - `install.sh` provisions Ruby (pinned by `.ruby-version`), PostgreSQL 16, all gems, the seeded dummy database, and compiled CSS at build time, then fetches Recording Studio skills.
 - `start.sh` starts PostgreSQL on every boot.
 - `environment.json` runs the `rails-server` and `tailwind-watch` terminals and exposes port 3000.
 
-Open port 3000 and sign in at `/users/sign_in`. No environment variables are required — the dummy app's `database.yml` defaults match the provisioned PostgreSQL cluster.
+Open port 3000 and sign in at `/users/sign_in`. No environment variables are required. The dummy app's `database.yml` defaults match the provisioned PostgreSQL cluster.
 
 ### GitHub Codespaces
 
-1. Click **Code** → **Codespaces** → **Create codespace**
-2. Wait for setup to complete
+1. Click **Code**, then **Codespaces**, then **Create codespace**.
+2. Wait for setup to complete.
 3. Run:
+
    ```bash
    cd test/dummy
    bin/rails db:setup
    bin/dev
    ```
-4. Open port 3000 — you'll land on the dummy app home page and can sign in at `/users/sign_in`
 
-The dummy app is intended as a host-app validation surface for authentication, FlatPack rendering, Tailwind source scanning, and Recording Studio route wiring.
+4. Open port 3000. You land on the dummy home page and can sign in at `/users/sign_in`.
 
-### Login Credentials
+The dummy app is a host-app validation surface for authentication, FlatPack rendering, Tailwind source scanning, and Recording Studio route wiring. It does not ship widget models, widget APIs, or WordPress render routes.
+
+### Login credentials
 
 | Field    | Value             |
 |----------|-------------------|
 | Email    | admin@admin.com   |
 | Password | Password          |
 
-The login form is prefilled with these credentials for fast access.
+The login form is prefilled with these credentials.
 
-### Useful Routes
+### Useful routes
 
-- `/` — dummy app home page
-- `/users/sign_in` — Devise sign-in page
-- `/recording_studio` — redirect to `/` while the mounted Recording Studio engine remains data/API-focused
-- `/docs/install`, `/docs/config`, `/docs/recordable_types`, `/docs/recordings_tree`, `/docs/gem_views`, `/docs/methods` — dummy-only starter pages
+- `/` is the dummy app home page
+- `/users/sign_in` is the Devise sign-in page
+- `/recording_studio` redirects to `/` while the mounted Recording Studio engine remains data and API focused
+- `/docs/install`, `/docs/config`, `/docs/recordable_types`, `/docs/recordings_tree`, `/docs/gem_views`, `/docs/methods` are dummy-only starter pages
 
-The home page in `test/dummy/app/views/home/index.html.erb` is a starting point for a minimal demo of the gem's primary behavior. Keep deeper explanations on the dummy docs pages, not in this README.
+The home page in `test/dummy/app/views/home/index.html.erb` is a short demo of the dummy host. Keep deeper explanations on the dummy docs pages, not in this README.
 
 ## Architecture
 
-### Root Recording Pattern
+### Root recording pattern
 
-This template follows Recording Studio's root recording pattern:
+The dummy host follows Recording Studio's root recording pattern:
 
-- **Workspace** is the top-level recordable
-- **Folder** and **Page** demonstrate nested recordables under the workspace root
-- Each configured recordable declares `recording_studio_recordable(...)`; strict declaration validation stays enabled
+- Workspace is the top-level recordable
+- Folder and Page demonstrate nested recordables under the workspace root
+- Each configured recordable declares `recording_studio_recordable(...)`. Strict declaration validation stays enabled
 - A root `RecordingStudio::Recording` wraps the Workspace
 - `Current.actor` is set from `current_user` (Devise) in `ApplicationController`
 
@@ -72,14 +78,17 @@ This template follows Recording Studio's root recording pattern:
 
 To add new recordable types:
 
-1. Create your model (e.g., `Page`, `Comment`)
+1. Create your model (for example `Page` or `Comment`).
 2. Register it in `config/initializers/recording_studio.rb`:
+
    ```ruby
    RecordingStudio.configure do |config|
      config.recordable_types = ["Workspace", "YourNewType"]
    end
    ```
+
 3. Declare whether the model can be a root and which parents may contain it:
+
    ```ruby
    class YourNewType < ApplicationRecord
      recording_studio_recordable label: "Your new type",
@@ -87,7 +96,9 @@ To add new recordable types:
                                  allowed_parent_types: ["Workspace", "Folder"]
    end
    ```
+
 4. Validate declarations and create recordings under the root:
+
    ```ruby
    RecordingStudio.validate_recordable_declarations!
    root_recording = RecordingStudio.root_recording_for(workspace)
@@ -96,9 +107,9 @@ To add new recordable types:
    end
    ```
 
-### Recordable Declarations
+### Recordable declarations
 
-Every configured ActiveRecord recordable type must declare its hierarchy rules. Declarations are required; they are not version-specific.
+Every configured ActiveRecord recordable type must declare its hierarchy rules. Declarations are required.
 
 - `Workspace` declares `root: true`
 - `Folder` and `Page` declare `root: false, allowed_parent_types: ["Workspace", "Folder"]`
@@ -122,34 +133,34 @@ The dummy Workspace enables Accessible because that addon is bundled:
 RecordingStudio.enable_capability(:accessible, on: Workspace)
 ```
 
-The template also ships one example mixin that uses core 4.2.0's `include_for` factory:
+The dummy also ships one example mixin that uses core 4.2.0's `include_for` factory:
 
 ```ruby
 include RecordingStudio::Capabilities::Example.to(label: "dummy workspace")
 ```
 
-`.to` wraps `RecordingStudio::Capabilities.include_for`. It does not add a fourth verb and it does not call `enable_capability` / `set_capability_options` itself. Folder and Page stay without the example mixin.
+`.to` wraps `RecordingStudio::Capabilities.include_for`. It does not add a fourth verb and it does not call `enable_capability` or `set_capability_options` itself. Folder and Page stay without the example mixin.
 
 Use core `RecordingStudio::Hooks` and `RecordingStudio::Services::BaseService`. Do not copy those classes into a new addon.
 
-### FlatPack UI Components
+### FlatPack UI components
 
-All views use FlatPack ViewComponents. Available components include:
+All dummy views use FlatPack ViewComponents. Available components include:
 
-- `FlatPack::Button::Component` — Buttons (`:primary`, `:secondary`, `:ghost`)
-- `FlatPack::Card::Component` — Cards (`:default`, `:elevated`, `:outlined`)
-- `FlatPack::Alert::Component` — Alerts (`:success`, `:error`, `:warning`, `:info`)
-- `FlatPack::Badge::Component` — Status badges
-- `FlatPack::Table::Component` — Data tables
-- `FlatPack::TextInput::Component`, `EmailInput`, `PasswordInput` — Form inputs
-- `FlatPack::PageNav::Component` — Default-layout page navigation
-- `FlatPack::PageTitle::Component` — Page titles
+- `FlatPack::Button::Component` for buttons (`:primary`, `:secondary`, `:ghost`)
+- `FlatPack::Card::Component` for cards (`:default`, `:elevated`, `:outlined`)
+- `FlatPack::Alert::Component` for alerts (`:success`, `:error`, `:warning`, `:info`)
+- `FlatPack::Badge::Component` for status badges
+- `FlatPack::Table::Component` for data tables
+- `FlatPack::TextInput::Component`, `EmailInput`, and `PasswordInput` for form inputs
+- `FlatPack::PageNav::Component` for default-layout page navigation
+- `FlatPack::PageTitle::Component` for page titles
 
 Use the live FlatPack demo app at [flatpack.bowerbird.io](https://flatpack.bowerbird.io/) as the approved UI reference for current shared patterns. Its component table is the fastest way to discover available FlatPack components before introducing new custom UI.
 
 See the [FlatPack README](https://github.com/bowerbird-app/flatpack) for full documentation.
 
-## Tech Stack
+## Tech stack
 
 | Component       | Version |
 |-----------------|---------|
@@ -163,8 +174,8 @@ See the [FlatPack README](https://github.com/bowerbird-app/flatpack) for full do
 | FlatPack        | dummy GitHub tag `v0.1.177` |
 | Devise          | latest  |
 
-The dummy Gemfile keeps `github:` sources so Bundler can fetch those gems. The gemspec still pins `recording_studio` to `~> 4.2` so copied addons declare the core dependency even when GitHub is the fetch source.
+The dummy Gemfile keeps `github:` sources so Bundler can fetch those gems. The gemspec still pins `recording_studio` to `~> 4.2` so the addon declares the core dependency even when GitHub is the fetch source.
 
 ## Documentation
 
-The original gem template documentation is preserved in `docs/recording_studio_wordpress_plugin_template/` as architectural reference material. Use it as background on the engine conventions; this README and the dummy app are the source of truth for the Recording Studio addon workflow.
+`docs/gem_template/` stays as architectural reference for the engine conventions. Do not treat those files as the product README. This README and the dummy app are the source of truth for RecordingStudio WordPress widgets.

@@ -4,7 +4,7 @@ require "test_helper"
 
 class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
   def test_version_matches_release
-    assert_equal "0.2.2", ::RecordingStudioWordpressPluginTemplate::VERSION
+    assert_equal "0.3.0", ::RecordingStudioWordpressPluginTemplate::VERSION
   end
 
   def test_engine_exists
@@ -28,7 +28,7 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     path = File.expand_path("../.cursor/environment.json", __dir__)
     json = JSON.parse(File.read(path))
 
-    assert_equal "recording-studio-gem-template", json["name"]
+    assert_equal "recording-studio-wordpress-plugin-template", json["name"]
     assert_equal ".cursor/install.sh", json["install"]
     assert_equal ".cursor/start.sh", json["start"]
     refute json.key?("snapshot"), "snapshot pins a Personal build and skips install"
@@ -136,7 +136,7 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     readme_path = File.expand_path("dummy/README.md", __dir__)
     readme_source = File.read(readme_path)
 
-    assert_includes readme_source, "This Rails app exists to validate the Recording Studio addon template"
+    assert_includes readme_source, "This Rails app is the host for RecordingStudio WordPress widgets"
     assert_includes readme_source, "/recording_studio"
     assert_includes readme_source, "redirects to `/`"
     refute_includes readme_source, "flat_pack_sidebar"
@@ -145,10 +145,13 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
   def test_product_readme_is_the_template_guide
     readme = File.read(File.expand_path("../README.md", __dir__))
 
-    assert_includes readme, "RecordingStudio"
+    assert_includes readme, "RecordingStudio WordPress widgets"
+    assert_includes readme, "https://github.com/bowerbird-app/RecordingStudio_wordpress_plugin_template"
     assert_includes readme, "v4.2.0"
     assert_includes readme, "v0.1.177"
     assert_includes readme, "v0.9.1"
+    refute_includes readme, "Internal template"
+    refute_includes readme, "internal template"
     refute_includes readme, "v0.1.133"
     refute_includes readme, "v3 declarations"
     refute_includes readme, "RecordingStudio v3"
@@ -156,15 +159,25 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     refute_includes readme, "recording_studio/v3.0.0"
   end
 
+  def test_gemspec_uses_wordpress_product_homepage
+    gemspec = File.read(File.expand_path("../recording_studio_wordpress_plugin_template.gemspec", __dir__))
+
+    assert_includes gemspec, 'spec.homepage    = "https://github.com/bowerbird-app/RecordingStudio_wordpress_plugin_template"'
+    assert_includes gemspec, "RecordingStudio WordPress widgets"
+    refute_includes gemspec, "internal template"
+    refute_includes gemspec, "https://github.com/bowerbird-app/recording_studio_wordpress_plugin_template"
+  end
+
   def test_dummy_home_page_uses_demo_title_only
     view_path = File.expand_path("dummy/app/views/home/index.html.erb", __dir__)
     view_source = File.read(view_path)
 
-    assert_includes view_source, 'title: "Template Demo"'
-    assert_includes view_source, 'subtitle: "This dummy app is the browser-facing demo surface for the template."'
+    assert_includes view_source, 'title: "WordPress widgets host"'
+    assert_includes view_source, 'subtitle: "This Rails dummy stays up on its own. WordPress is a separate origin."'
     assert_includes view_source, "FlatPack::Card::Component"
     assert_includes view_source, "dummy_page_nav"
-    refute_includes view_source, 'title: "Demo"'
+    refute_includes view_source, 'title: "Template Demo"'
+    refute_includes view_source, "internal template"
     refute_includes view_source, "FlatPack::Breadcrumb::Component"
   end
 

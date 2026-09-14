@@ -309,6 +309,8 @@ class RenameVerificationTest < Minitest::Test
                  "Gemspec still points at bowerbird-app/gem_template"
     refute_includes content, "https://github.com/bowerbird-app/RecordingStudio_gem_template",
                     "Gemspec still points at the template homepage"
+    assert_includes content, "https://github.com/bowerbird-app/RecordingStudio_wordpress_plugin_template",
+                    "Gemspec homepage must use the RecordingStudio WordPress widgets GitHub casing"
   end
 
   # ============================================================

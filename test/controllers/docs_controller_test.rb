@@ -34,7 +34,7 @@ class DocsControllerTest < ActionDispatch::IntegrationTest
     get docs_config_path
     assert_response :success
     assert_select "h1", text: "Config"
-    expected_placeholder = "Replace this placeholder with the configuration settings your generated gem exposes."
+    expected_placeholder = "Env-only connectivity placeholders. This host has no widget models."
 
     assert_includes response.body, expected_placeholder
     assert_includes response.body, "# Add the config settings for the gem here."
