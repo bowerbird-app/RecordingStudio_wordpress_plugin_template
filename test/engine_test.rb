@@ -194,7 +194,9 @@ class EngineTest < Minitest::Test
     end
 
     with_temporary_nested_constant(:ActionController, :Base, action_controller_base) do
-      RecordingStudioWordpressPluginTemplate::Engine.stub(:apply_controller_extensions, ->(controller) { applied << controller }) do
+      RecordingStudioWordpressPluginTemplate::Engine.stub(:apply_controller_extensions, lambda { |controller|
+        applied << controller
+      }) do
         to_prepare_blocks.first.call
       end
     end
@@ -252,7 +254,10 @@ class EngineTest < Minitest::Test
     RecordingStudioWordpressPluginTemplate::Engine.send(:apply_extensions, target, [nil, [extension, extension]])
 
     assert_equal :generated, target.new.generated_method
-    assert_equal true, target.instance_variable_get(:@recording_studio_wordpress_plugin_template_applied_extensions).compare_by_identity?
+    applied = target.instance_variable_get(
+      :@recording_studio_wordpress_plugin_template_applied_extensions
+    )
+    assert_equal true, applied.compare_by_identity?
   end
 
   def test_apply_extensions_returns_without_target

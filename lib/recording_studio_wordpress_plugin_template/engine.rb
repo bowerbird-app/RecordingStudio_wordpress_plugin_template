@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative "configuration_loader"
+
 module RecordingStudioWordpressPluginTemplate
   class Engine < ::Rails::Engine
     isolate_namespace RecordingStudioWordpressPluginTemplate
@@ -29,7 +31,8 @@ module RecordingStudioWordpressPluginTemplate
       def apply_extensions(target, extensions)
         return unless target
 
-        applied = target.instance_variable_get(:@recording_studio_wordpress_plugin_template_applied_extensions) || identity_hash
+        applied_key = :@recording_studio_wordpress_plugin_template_applied_extensions
+        applied = target.instance_variable_get(applied_key) || identity_hash
 
         extensions.flatten.compact.each do |extension|
           next if applied[extension]
@@ -38,7 +41,7 @@ module RecordingStudioWordpressPluginTemplate
           applied[extension] = true
         end
 
-        target.instance_variable_set(:@recording_studio_wordpress_plugin_template_applied_extensions, applied)
+        target.instance_variable_set(applied_key, applied)
       end
 
       def extension_keys_for(target)
@@ -51,53 +54,25 @@ module RecordingStudioWordpressPluginTemplate
       end
     end
 
-    # Run before_initialize hooks
-    initializer "recording_studio_wordpress_plugin_template.before_initialize", before: "recording_studio_wordpress_plugin_template.load_config" do |_app|
+    initializer "recording_studio_wordpress_plugin_template.before_initialize",
+                before: "recording_studio_wordpress_plugin_template.load_config" do |_app|
       RecordingStudioWordpressPluginTemplate.configuration.hooks.run(:before_initialize, self)
     end
 
     initializer "recording_studio_wordpress_plugin_template.load_config" do |app|
-      # Load config/recording_studio_wordpress_plugin_template.yml via Rails config_for if present
-      if app.respond_to?(:config_for)
-        begin
-          yaml = begin
-            app.config_for(:recording_studio_wordpress_plugin_template)
-          rescue StandardError
-            nil
-          end
-          RecordingStudioWordpressPluginTemplate.configuration.merge!(yaml) if yaml.respond_to?(:each)
-        rescue StandardError => _e
-          # ignore load errors; host app can provide initializer overrides
-        end
-      end
-
-      # Merge Rails.application.config.x.recording_studio_wordpress_plugin_template if present
-      if app.config.respond_to?(:x) && app.config.x.respond_to?(:recording_studio_wordpress_plugin_template)
-        xcfg = app.config.x.recording_studio_wordpress_plugin_template
-        if xcfg.respond_to?(:to_h)
-          RecordingStudioWordpressPluginTemplate.configuration.merge!(xcfg.to_h)
-        else
-          begin
-            # try converting OrderedOptions
-            hash = {}
-            xcfg.each_pair { |k, v| hash[k] = v } if xcfg.respond_to?(:each_pair)
-            RecordingStudioWordpressPluginTemplate.configuration.merge!(hash) if hash&.any?
-          rescue StandardError => _e
-            # ignore
-          end
-        end
-      end
-
-      # Run on_configuration hooks after config is loaded
-      RecordingStudioWordpressPluginTemplate.configuration.hooks.run(:on_configuration, RecordingStudioWordpressPluginTemplate.configuration)
+      ConfigurationLoader.load_yaml(app)
+      ConfigurationLoader.merge_x(app)
+      RecordingStudioWordpressPluginTemplate.configuration.hooks.run(
+        :on_configuration,
+        RecordingStudioWordpressPluginTemplate.configuration
+      )
     end
 
-    # Run after_initialize hooks
-    initializer "recording_studio_wordpress_plugin_template.after_initialize", after: "recording_studio_wordpress_plugin_template.load_config" do |_app|
+    initializer "recording_studio_wordpress_plugin_template.after_initialize",
+                after: "recording_studio_wordpress_plugin_template.load_config" do |_app|
       RecordingStudioWordpressPluginTemplate.configuration.hooks.run(:after_initialize, self)
     end
 
-    # Apply model extensions when models are loaded
     initializer "recording_studio_wordpress_plugin_template.apply_model_extensions" do
       config.to_prepare do
         next unless defined?(ActiveRecord::Base)
@@ -110,7 +85,6 @@ module RecordingStudioWordpressPluginTemplate
       end
     end
 
-    # Apply controller extensions
     initializer "recording_studio_wordpress_plugin_template.apply_controller_extensions" do
       config.to_prepare do
         next unless defined?(ActionController::Base)

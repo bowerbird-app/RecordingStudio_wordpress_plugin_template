@@ -21,13 +21,17 @@ module RecordingStudioWordpressPluginTemplate
       end
 
       def copy_initializer
-        template "recording_studio_wordpress_plugin_template_initializer.rb", "config/initializers/recording_studio_wordpress_plugin_template.rb"
+        template "recording_studio_wordpress_plugin_template_initializer.rb",
+                 "config/initializers/recording_studio_wordpress_plugin_template.rb"
       end
 
       def add_yaml_config
-        return unless yes?("Would you like to add `config/recording_studio_wordpress_plugin_template.yml` for environment-specific settings? [y/N]")
+        prompt = "Add config/recording_studio_wordpress_plugin_template.yml " \
+                 "for environment-specific settings? [y/N]"
+        return unless yes?(prompt)
 
-        template "recording_studio_wordpress_plugin_template.yml", "config/recording_studio_wordpress_plugin_template.yml"
+        template "recording_studio_wordpress_plugin_template.yml",
+                 "config/recording_studio_wordpress_plugin_template.yml"
       end
 
       def add_tailwind_source
@@ -38,7 +42,8 @@ module RecordingStudioWordpressPluginTemplate
         missing_lines = missing_tailwind_source_lines(tailwind_content)
 
         if missing_lines.empty?
-          say "Tailwind already configured to include RecordingStudioWordpressPluginTemplate and FlatPack sources.", :green
+          say "Tailwind already configured to include RecordingStudioWordpressPluginTemplate and FlatPack sources.",
+              :green
           return
         end
 
@@ -94,9 +99,10 @@ module RecordingStudioWordpressPluginTemplate
       end
 
       def tailwind_source_lines
+        gem_views = "recording_studio_wordpress_plugin_template-*/app/views/**/*.erb"
         [
           '@source "../../vendor/bundle/**/recording_studio_wordpress_plugin_template/app/views/**/*.erb";',
-          '@source "../../../../../../usr/local/bundle/ruby/**/bundler/gems/recording_studio_wordpress_plugin_template-*/app/views/**/*.erb";',
+          "@source \"../../../../../../usr/local/bundle/ruby/**/bundler/gems/#{gem_views}\";",
           '@source "../../vendor/bundle/**/flatpack/app/components/**/*.{rb,erb}";',
           '@source "../../../../../../usr/local/bundle/ruby/**/bundler/gems/flatpack-*/app/components/**/*.{rb,erb}";'
         ]

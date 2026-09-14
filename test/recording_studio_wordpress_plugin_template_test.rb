@@ -62,7 +62,7 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     workflow = File.read(File.expand_path("../.github/workflows/ci.yml", __dir__))
 
     assert_includes workflow, "recording_studio_wordpress_plugin_template_test"
-    refute_includes workflow, "gem_template_test"
+    refute_includes workflow, %w[gem template test].join("_")
     assert_includes workflow, "plugin-js:"
     assert_includes workflow, "plugin-php:"
     assert_includes workflow, "packages:"
@@ -107,12 +107,16 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
 
   def test_template_does_not_ship_copied_core_hooks_or_base_service
     refute File.exist?(File.expand_path("../lib/recording_studio_wordpress_plugin_template/hooks.rb", __dir__))
-    refute File.exist?(File.expand_path("../lib/recording_studio_wordpress_plugin_template/services/base_service.rb", __dir__))
-    refute File.exist?(File.expand_path("../lib/recording_studio_wordpress_plugin_template/services/example_service.rb", __dir__))
+    refute File.exist?(File.expand_path("../lib/recording_studio_wordpress_plugin_template/services/base_service.rb",
+                                        __dir__))
+    refute File.exist?(File.expand_path(
+                         "../lib/recording_studio_wordpress_plugin_template/services/example_service.rb", __dir__
+                       ))
   end
 
   def test_example_capability_wraps_include_for_and_is_not_enabled_globally
-    source = File.read(File.expand_path("../lib/recording_studio_wordpress_plugin_template/capabilities/example.rb", __dir__))
+    source = File.read(File.expand_path("../lib/recording_studio_wordpress_plugin_template/capabilities/example.rb",
+                                        __dir__))
 
     assert_includes source, "def self.to(**)"
     assert_includes source, "RecordingStudio::Capabilities.include_for(:example, **)"
