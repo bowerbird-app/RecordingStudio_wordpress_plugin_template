@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Optional Settings page placeholder. No OAuth, widget discovery, or iframe rendering.
 - `bin/check-package-boundaries` builds the gem and the installable WordPress ZIP, then fails if dummy host code appears in either artifact.
 - CI runs plugin JavaScript lint and build, PHP lint and WordPress coding standards, package-boundary checks, and uploads the WordPress ZIP.
+- Root README documents the dummy host, `wp-env`, supported versions, packaging checks, and what this phase does not include. `docs/wordpress-packaging.md` records the artifact allowlists.
 
 ### Changed
 - Product identity is RecordingStudio WordPress widgets. The Rubygems name stays `recording_studio_wordpress_plugin_template`.

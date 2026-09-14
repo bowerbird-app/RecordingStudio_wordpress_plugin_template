@@ -184,6 +184,9 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
 
     assert_includes readme, "RecordingStudio WordPress widgets"
     assert_includes readme, "https://github.com/bowerbird-app/RecordingStudio_wordpress_plugin_template"
+    assert_includes readme, "bin/check-package-boundaries"
+    assert_includes readme, "npm run env start"
+    assert_includes readme, "4.98.0"
     assert_includes readme, "v4.2.0"
     assert_includes readme, "v0.1.177"
     assert_includes readme, "v0.9.1"
@@ -194,6 +197,15 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     refute_includes readme, "RecordingStudio v3"
     refute_includes readme, "ExampleService"
     refute_includes readme, "recording_studio/v3.0.0"
+  end
+
+  def test_wordpress_packaging_doc_states_the_artifact_allowlists
+    doc = File.read(File.expand_path("../docs/wordpress-packaging.md", __dir__))
+
+    assert_includes doc, "bin/check-package-boundaries"
+    assert_includes doc, "test/dummy"
+    assert_includes doc, "recording-studio-widget.php"
+    refute_includes doc, "Internal template"
   end
 
   def test_gemspec_uses_wordpress_product_homepage
