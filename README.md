@@ -1,4 +1,4 @@
-# GemTemplate
+# RecordingStudioWordpressPluginTemplate
 
 Internal template for building Rails engine addons on top of Recording Studio 4.x.
 
@@ -167,4 +167,4 @@ The dummy Gemfile keeps `github:` sources so Bundler can fetch those gems. The g
 
 ## Documentation
 
-The original gem template documentation is preserved in `docs/gem_template/` as architectural reference material. Use it as background on the engine conventions; this README and the dummy app are the source of truth for the Recording Studio addon workflow.
+The original gem template documentation is preserved in `docs/recording_studio_wordpress_plugin_template/` as architectural reference material. Use it as background on the engine conventions; this README and the dummy app are the source of truth for the Recording Studio addon workflow.

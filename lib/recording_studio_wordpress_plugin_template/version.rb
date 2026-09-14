@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 
-module GemTemplate
+module RecordingStudioWordpressPluginTemplate
   VERSION = "0.2.2"
 end

@@ -1,0 +1,4 @@
+ts	phase	decision	why	evidence	result
+2026-09-14T04:15:00Z	frame	Confirmed RecordingStudio_cursor_plugin skills and .mdc rules on VM under ~/.cursor/plugins/cache/bowerbird	Mandatory first gate before any work	/home/ubuntu/.cursor/plugins/cache/bowerbird/52728454/.../skills/recording-studio-new-gem/SKILL.md	pack present
+2026-09-14T04:20:00Z	frame	figure-it-out playbook; architect skipped because Marikit locked layout names and scaffold command	No open design fork	user_query locked decisions	framed
+2026-09-14T04:25:00Z	u1	Renamed gem_template to recording_studio_wordpress_plugin_template via bin/rename_gem; created empty views dir for verification	Locked gem id; strip template namespace without changing product slug	bin/rename_gem output; app/views/recording_studio_wordpress_plugin_template/.keep	rename complete; leftover product copy remains for u2
