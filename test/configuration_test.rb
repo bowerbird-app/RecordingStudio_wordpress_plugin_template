@@ -68,6 +68,7 @@ class ConfigurationTest < Minitest::Test
   def test_configure_without_block_is_safe
     RecordingStudioWordpressPluginTemplate.configure
 
-    assert_kind_of RecordingStudioWordpressPluginTemplate::Configuration, RecordingStudioWordpressPluginTemplate.configuration
+    assert_kind_of RecordingStudioWordpressPluginTemplate::Configuration,
+                   RecordingStudioWordpressPluginTemplate.configuration
   end
 end
