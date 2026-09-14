@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-09-14
+
+### Added
+- WordPress plugin scaffold at `wordpress/recording-studio-widgets` from `@wordpress/create-block` 4.98.0 (`--variant dynamic`, `--wp-env`).
+- Placeholder RecordingStudio Widget dynamic block with the same safe text in the editor and on the published page.
+- Optional Settings page placeholder. No OAuth, widget discovery, or iframe rendering.
+- `bin/check-package-boundaries` builds the gem and the installable WordPress ZIP, then fails if dummy host code appears in either artifact.
+- CI runs plugin JavaScript lint and build, PHP lint and WordPress coding standards, package-boundary checks, and uploads the WordPress ZIP.
+- Root README documents the dummy host, `wp-env`, supported versions, packaging checks, and what this phase does not include. `docs/wordpress-packaging.md` records the artifact allowlists.
+
+### Changed
+- Product identity is RecordingStudio WordPress widgets. The Rubygems name stays `recording_studio_wordpress_plugin_template`.
+- Homepage and source URLs use `https://github.com/bowerbird-app/RecordingStudio_wordpress_plugin_template`.
+- Dummy home page and dummy README describe the Rails host for WordPress widgets, not an internal addon template.
+- Dummy initializer and dummy tests use `RecordingStudioWordpressPluginTemplate` after the rename.
+- CI Postgres database name is `recording_studio_wordpress_plugin_template_test`.
+
+### Upgrade notes
+- Point homepage and source links at `bowerbird-app/RecordingStudio_wordpress_plugin_template`.
+- In a host that copied the dummy initializer, call `RecordingStudioWordpressPluginTemplate.configure`.
+- No widget models, OAuth, or WordPress render routes ship in this release.
+
 ## [0.2.2] - 2026-09-11
 
 ### Changed
@@ -46,7 +68,7 @@ New addons copied from this template are born on Recording Studio 4.x.
 ### Added
 - Gemspec dependency `recording_studio`, `~> 4.1`
 - Dummy host wiring for Accessible (`enable_capability(:accessible, on: Workspace)`) and an opt-in `RecordingStudio::Capabilities::Example.to` mixin. `.to` wraps core 4.2.0 `include_for` (not a fourth verb, and not a raw `enable_capability` / `set_capability_options` path). Installing the gem does not enable the mixin globally; only dummy Workspace opts in.
-- `bin/rename_gem` leftover-identity rewrite/verification for README, homepage, and changelog URLs that still say `GemTemplate` or point at `bowerbird-app/gem_template`
+- `bin/rename_gem` leftover-identity rewrite/verification for README, homepage, and changelog URLs that still say `RecordingStudioWordpressPluginTemplate` or point at `bowerbird-app/recording_studio_wordpress_plugin_template`
 
 ### Changed
 - Dummy GitHub tags: Recording Studio `v4.2.0`, Accessible `v0.6.0`, Root Switchable `v0.5.0`, FlatPack `v0.1.133`
@@ -55,7 +77,7 @@ New addons copied from this template are born on Recording Studio 4.x.
 - Require `RecordingStudio::Hooks` and `RecordingStudio::Services::BaseService` from core instead of shipping copies
 
 ### Removed
-- Copied `lib/gem_template/hooks.rb` and `lib/gem_template/services/base_service.rb`
+- Copied `lib/recording_studio_wordpress_plugin_template/hooks.rb` and `lib/recording_studio_wordpress_plugin_template/services/base_service.rb`
 - Product-shipped `ExampleService`
 - Custom `flat_pack_sidebar` authenticated shell
 
@@ -90,10 +112,11 @@ New addons copied from this template are born on Recording Studio 4.x.
 - Comprehensive README and documentation
 - Basic test suite with Minitest
 
-[Unreleased]: https://github.com/bowerbird-app/RecordingStudio_gem_template/compare/v0.2.2...HEAD
-[0.2.2]: https://github.com/bowerbird-app/RecordingStudio_gem_template/releases/tag/v0.2.2
-[0.2.1]: https://github.com/bowerbird-app/RecordingStudio_gem_template/releases/tag/v0.2.1
-[0.2.0]: https://github.com/bowerbird-app/RecordingStudio_gem_template/releases/tag/v0.2.0
-[0.1.2]: https://github.com/bowerbird-app/RecordingStudio_gem_template/releases/tag/v0.1.2
-[0.1.1]: https://github.com/bowerbird-app/RecordingStudio_gem_template/releases/tag/v0.1.1
-[0.1.0]: https://github.com/bowerbird-app/RecordingStudio_gem_template/releases/tag/v0.1.0
+[Unreleased]: https://github.com/bowerbird-app/RecordingStudio_wordpress_plugin_template/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/bowerbird-app/RecordingStudio_wordpress_plugin_template/releases/tag/v0.3.0
+[0.2.2]: https://github.com/bowerbird-app/RecordingStudio_wordpress_plugin_template/releases/tag/v0.2.2
+[0.2.1]: https://github.com/bowerbird-app/RecordingStudio_wordpress_plugin_template/releases/tag/v0.2.1
+[0.2.0]: https://github.com/bowerbird-app/RecordingStudio_wordpress_plugin_template/releases/tag/v0.2.0
+[0.1.2]: https://github.com/bowerbird-app/RecordingStudio_wordpress_plugin_template/releases/tag/v0.1.2
+[0.1.1]: https://github.com/bowerbird-app/RecordingStudio_wordpress_plugin_template/releases/tag/v0.1.1
+[0.1.0]: https://github.com/bowerbird-app/RecordingStudio_wordpress_plugin_template/releases/tag/v0.1.0

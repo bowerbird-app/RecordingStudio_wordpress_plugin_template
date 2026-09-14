@@ -497,7 +497,15 @@ class GemRenamer
 
   def rewrite_leftover_homepages!(updated)
     LEFTOVER_HOMEPAGES.each do |old_homepage|
-      updated.gsub!(old_homepage, "https://github.com/bowerbird-app/#{@new_name}")
+      updated.gsub!(old_homepage, github_homepage(@new_name))
+    end
+  end
+
+  def github_homepage(name)
+    if name.start_with?("recording_studio_")
+      "https://github.com/bowerbird-app/RecordingStudio_#{name.delete_prefix("recording_studio_")}"
+    else
+      "https://github.com/bowerbird-app/#{name}"
     end
   end
 

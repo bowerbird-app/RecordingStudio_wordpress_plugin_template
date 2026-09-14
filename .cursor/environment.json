@@ -1,5 +1,5 @@
 {
-  "name": "recording-studio-gem-template",
+  "name": "recording-studio-wordpress-plugin-template",
   "install": ".cursor/install.sh",
   "start": ".cursor/start.sh",
   "terminals": [
@@ -15,6 +15,7 @@
     }
   ],
   "ports": [
-    { "name": "Rails Server", "port": 3000 }
+    { "name": "Rails Server", "port": 3000 },
+    { "name": "WordPress wp-env", "port": 8888 }
   ]
 }
