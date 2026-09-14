@@ -58,6 +58,20 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     assert_equal 8889, env["testsPort"]
   end
 
+  def test_ci_runs_plugin_lint_and_package_boundary_jobs
+    workflow = File.read(File.expand_path("../.github/workflows/ci.yml", __dir__))
+
+    assert_includes workflow, "recording_studio_wordpress_plugin_template_test"
+    refute_includes workflow, "gem_template_test"
+    assert_includes workflow, "plugin-js:"
+    assert_includes workflow, "plugin-php:"
+    assert_includes workflow, "packages:"
+    assert_includes workflow, "bin/check-package-boundaries"
+    assert_includes workflow, "composer install"
+    assert_includes workflow, "npm run lint:js"
+    assert_includes workflow, "recording-studio-widgets.zip"
+  end
+
   def test_cursor_install_still_fetches_skills
     install_script = File.read(File.expand_path("../.cursor/install.sh", __dir__))
 

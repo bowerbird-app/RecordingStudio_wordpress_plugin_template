@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Placeholder RecordingStudio Widget dynamic block with the same safe text in the editor and on the published page.
 - Optional Settings page placeholder. No OAuth, widget discovery, or iframe rendering.
 - `bin/check-package-boundaries` builds the gem and the installable WordPress ZIP, then fails if dummy host code appears in either artifact.
+- CI runs plugin JavaScript lint and build, PHP lint and WordPress coding standards, package-boundary checks, and uploads the WordPress ZIP.
 
 ### Changed
 - Product identity is RecordingStudio WordPress widgets. The Rubygems name stays `recording_studio_wordpress_plugin_template`.

@@ -92,3 +92,108 @@ jobs:
         run: bundle exec rake test:all
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/recording_studio_wordpress_plugin_template_test
+
+  plugin-js:
+    name: Plugin JS
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: wordpress/recording-studio-widgets
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: wordpress/recording-studio-widgets/package-lock.json
+
+      - name: Install plugin JavaScript dependencies
+        run: npm ci
+
+      - name: Lint JavaScript
+        run: npm run lint:js
+
+      - name: Lint CSS
+        run: npm run lint:css
+
+      - name: Build plugin assets
+        run: npm run build
+
+      - name: Run placeholder text check
+        run: npm run test:placeholder
+
+  plugin-php:
+    name: Plugin PHP
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: wordpress/recording-studio-widgets
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          coverage: none
+          tools: composer
+
+      - name: Install PHP coding standards
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Lint PHP syntax
+        run: |
+          find . -name '*.php' \
+            -not -path './vendor/*' \
+            -not -path './node_modules/*' \
+            -print0 | xargs -0 -n1 php -l
+
+      - name: Run WordPress coding standards
+        run: vendor/bin/phpcs
+
+      - name: Run placeholder text check
+        run: php tests/php/placeholder-text.php
+
+  packages:
+    name: Package boundaries
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: .ruby-version
+          bundler-cache: false
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: wordpress/recording-studio-widgets/package-lock.json
+
+      - name: Build plugin assets
+        run: npm ci && npm run build
+        working-directory: wordpress/recording-studio-widgets
+
+      - name: Build and inspect gem and WordPress ZIP
+        run: bin/check-package-boundaries
+
+      - name: Upload WordPress plugin ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: recording-studio-widgets
+          path: pkg/recording-studio-widgets.zip
+          if-no-files-found: error
