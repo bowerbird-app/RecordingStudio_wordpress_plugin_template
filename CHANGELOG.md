@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.3.0] - 2026-09-14
 
+### Added
+- WordPress plugin scaffold at `wordpress/recording-studio-widgets` from `@wordpress/create-block` 4.98.0 (`--variant dynamic`, `--wp-env`).
+- Placeholder RecordingStudio Widget dynamic block with the same safe text in the editor and on the published page.
+- Optional Settings page placeholder. No OAuth, widget discovery, or iframe rendering.
+
 ### Changed
 - Product identity is RecordingStudio WordPress widgets. The Rubygems name stays `recording_studio_wordpress_plugin_template`.
 - Homepage and source URLs use `https://github.com/bowerbird-app/RecordingStudio_wordpress_plugin_template`.

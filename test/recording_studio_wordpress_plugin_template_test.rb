@@ -33,6 +33,25 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     assert_equal ".cursor/start.sh", json["start"]
     refute json.key?("snapshot"), "snapshot pins a Personal build and skips install"
     refute json.key?("agentCanUpdateSnapshot")
+    ports = json.fetch("ports").map { |entry| entry.fetch("port") }
+    assert_includes ports, 3000
+    assert_includes ports, 8888
+  end
+
+  def test_wordpress_plugin_registers_placeholder_dynamic_block
+    plugin_root = File.expand_path("../wordpress/recording-studio-widgets", __dir__)
+    plugin = File.read(File.join(plugin_root, "recording-studio-widget.php"))
+    block = JSON.parse(File.read(File.join(plugin_root, "src/recording-studio-widget/block.json")))
+    env = JSON.parse(File.read(File.join(plugin_root, ".wp-env.json")))
+
+    assert_includes plugin, "Plugin Name:       RecordingStudio Widget"
+    assert_includes plugin, "recording_studio_widget_register_settings_page"
+    assert_equal "recording-studio/recording-studio-widget", block["name"]
+    assert_equal "RecordingStudio Widget", block["title"]
+    assert_equal "file:./render.php", block["render"]
+    refute block.key?("viewScript")
+    assert_equal 8888, env["port"]
+    assert_equal 8889, env["testsPort"]
   end
 
   def test_cursor_install_still_fetches_skills
