@@ -6,7 +6,9 @@ require_relative "../bin/package_boundaries"
 class PackageBoundariesTest < Minitest::Test
   def test_gem_allowlist_keeps_engine_files_and_rejects_dummy_and_wordpress
     assert PackageBoundaries.gem_path_allowed?("lib/recording_studio_wordpress_plugin_template.rb")
-    assert PackageBoundaries.gem_path_allowed?("app/controllers/recording_studio_wordpress_plugin_template/home_controller.rb")
+    assert PackageBoundaries.gem_path_allowed?(
+      "app/controllers/recording_studio_wordpress_plugin_template/home_controller.rb"
+    )
     assert PackageBoundaries.gem_path_allowed?("README.md")
     refute PackageBoundaries.gem_path_allowed?("test/dummy/config/application.rb")
     refute PackageBoundaries.gem_path_allowed?("wordpress/recording-studio-widgets/recording-studio-widget.php")
@@ -41,9 +43,9 @@ class PackageBoundariesTest < Minitest::Test
     )
 
     refute_empty gem_violations
-    assert gem_violations.any? { |line| line.include?("dummy host") }
+    assert(gem_violations.any? { |line| line.include?("dummy host") })
     refute_empty zip_violations
-    assert zip_violations.any? { |line| line.include?("dummy host") }
+    assert(zip_violations.any? { |line| line.include?("dummy host") })
   end
 
   def test_clean_package_lists_have_no_violations
@@ -73,9 +75,9 @@ class PackageBoundariesTest < Minitest::Test
     spec.files.each do |path|
       assert PackageBoundaries.gem_path_allowed?(path), "gemspec unexpectedly packages #{path}"
     end
-    refute spec.files.any? { |path| path.start_with?("wordpress/") }
-    refute spec.files.any? { |path| path.include?("test/dummy") }
-    refute spec.files.any? { |path| path.start_with?("test/") }
+    refute(spec.files.any? { |path| path.start_with?("wordpress/") })
+    refute(spec.files.any? { |path| path.include?("test/dummy") })
+    refute(spec.files.any? { |path| path.start_with?("test/") })
   end
 
   def test_wordpress_zip_entries_stay_inside_the_plugin_allowlist
@@ -85,7 +87,7 @@ class PackageBoundariesTest < Minitest::Test
     entries.each_key do |zip_path|
       assert PackageBoundaries.zip_path_allowed?(zip_path), "zip allowlist unexpectedly includes #{zip_path}"
     end
-    refute entries.keys.any? { |path| path.include?("test/dummy") }
-    refute entries.keys.any? { |path| path.end_with?(".rb") }
+    refute(entries.keys.any? { |path| path.include?("test/dummy") })
+    refute(entries.keys.any? { |path| path.end_with?(".rb") })
   end
 end
