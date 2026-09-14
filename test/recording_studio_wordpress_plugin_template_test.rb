@@ -20,8 +20,12 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
   def test_gemspec_excludes_cursor_config
     spec = Gem::Specification.load(File.expand_path("../recording_studio_wordpress_plugin_template.gemspec", __dir__))
     cursor_files = spec.files.select { |path| path == ".cursor" || path.split("/").include?(".cursor") }
+    leaked_host = spec.files.select do |path|
+      path.start_with?("wordpress/", "test/") || path.include?("test/dummy")
+    end
 
     assert_empty cursor_files, "gemspec must not package .cursor/ (got #{cursor_files.inspect})"
+    assert_empty leaked_host, "gemspec must not package dummy or WordPress trees (got #{leaked_host.inspect})"
   end
 
   def test_cursor_environment_is_repo_managed_without_snapshot

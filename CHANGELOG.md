@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - WordPress plugin scaffold at `wordpress/recording-studio-widgets` from `@wordpress/create-block` 4.98.0 (`--variant dynamic`, `--wp-env`).
 - Placeholder RecordingStudio Widget dynamic block with the same safe text in the editor and on the published page.
 - Optional Settings page placeholder. No OAuth, widget discovery, or iframe rendering.
+- `bin/check-package-boundaries` builds the gem and the installable WordPress ZIP, then fails if dummy host code appears in either artifact.
 
 ### Changed
 - Product identity is RecordingStudio WordPress widgets. The Rubygems name stays `recording_studio_wordpress_plugin_template`.

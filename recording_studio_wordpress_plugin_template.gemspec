@@ -20,7 +20,14 @@ Gem::Specification.new do |spec|
 
   spec.files = Dir.chdir(File.expand_path(__dir__)) do
     Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.md"].reject do |path|
-      path == ".cursor" || path.start_with?(".cursor/")
+      parts = path.split("/")
+      File.directory?(path) ||
+        parts.include?(".cursor") ||
+        parts.include?("wordpress") ||
+        parts.include?("coverage") ||
+        parts.include?("node_modules") ||
+        parts.include?("test") ||
+        parts.include?("dummy")
     end
   end
 

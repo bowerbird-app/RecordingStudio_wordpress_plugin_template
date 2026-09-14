@@ -1,0 +1,59 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative "package_boundaries"
+
+module PackageBoundaries
+  # Builds the gem and WordPress ZIP, then fails if dummy host code leaked into either artifact.
+  class CLI
+    def self.run(argv)
+      new(argv).run
+    end
+
+    def initialize(argv)
+      @build_gem = !argv.include?("--zip-only")
+      @build_zip = !argv.include?("--gem-only")
+    end
+
+    def run
+      reports = []
+      reports << check_gem if @build_gem
+      reports << check_zip if @build_zip
+
+      reports.each do |report|
+        puts report[:title]
+        puts "  files: #{report[:paths].size}"
+        if report[:violations].empty?
+          puts "  ok"
+        else
+          report[:violations].each { |violation| puts "  FAIL #{violation}" }
+        end
+      end
+
+      violations = reports.flat_map { |report| report[:violations] }
+      if violations.empty?
+        puts "package boundaries ok"
+        exit 0
+      end
+
+      warn "package boundaries failed (#{violations.size})"
+      exit 1
+    end
+
+    private
+
+    def check_gem
+      path = PackageBoundaries.build_gem!
+      result = PackageBoundaries.inspect_gem(path)
+      result.merge(title: "gem #{path}")
+    end
+
+    def check_zip
+      path = PackageBoundaries.build_wordpress_zip!
+      result = PackageBoundaries.inspect_zip(path)
+      result.merge(title: "zip #{path}")
+    end
+  end
+end
+
+PackageBoundaries::CLI.run(ARGV) if $PROGRAM_NAME == __FILE__
