@@ -20,8 +20,12 @@ class PackageBoundariesTest < Minitest::Test
     assert PackageBoundaries.zip_path_allowed?("recording-studio-widget.php")
     assert PackageBoundaries.zip_path_allowed?("recording-studio-widgets/readme.txt")
     assert PackageBoundaries.zip_path_allowed?("includes/placeholder.php")
+    assert PackageBoundaries.zip_path_allowed?("includes/RecordingStudio/StudioClient.php")
     assert PackageBoundaries.zip_path_allowed?("build/recording-studio-widget/render.php")
+    assert PackageBoundaries.zip_path_allowed?("build/sdk/recording-studio-plugin-sdk.js")
+    assert PackageBoundaries.zip_path_allowed?("build/sdk/recording-studio-plugin-sdk.css")
     refute PackageBoundaries.zip_path_allowed?("src/recording-studio-widget/edit.js")
+    refute PackageBoundaries.zip_path_allowed?("assets/sdk/recording-studio-plugin-sdk.js")
     refute PackageBoundaries.zip_path_allowed?("tests/php/placeholder-text.php")
     refute PackageBoundaries.zip_path_allowed?("package.json")
     refute PackageBoundaries.zip_path_allowed?(".wp-env.json")
@@ -58,8 +62,10 @@ class PackageBoundariesTest < Minitest::Test
     zip_paths = %w[
       recording-studio-widgets/recording-studio-widget.php
       recording-studio-widgets/readme.txt
-      recording-studio-widgets/includes/placeholder.php
+      recording-studio-widgets/includes/RecordingStudio/StudioClient.php
       recording-studio-widgets/build/recording-studio-widget/render.php
+      recording-studio-widgets/build/sdk/recording-studio-plugin-sdk.js
+      recording-studio-widgets/build/sdk/recording-studio-plugin-sdk.css
     ]
 
     assert_empty PackageBoundaries.violations_for(:gem, paths: gem_paths, contents: {})
@@ -89,5 +95,22 @@ class PackageBoundariesTest < Minitest::Test
     end
     refute(entries.keys.any? { |path| path.include?("test/dummy") })
     refute(entries.keys.any? { |path| path.end_with?(".rb") })
+  end
+
+  def test_wordpress_zip_entries_include_baked_sdk
+    PackageBoundaries.assert_sdk_present!
+    entries = PackageBoundaries.wordpress_zip_entries
+
+    PackageBoundaries::REQUIRED_SDK_FILES.each do |relative|
+      assert entries.key?("recording-studio-widgets/#{relative}"),
+             "ZIP entries missing required SDK file #{relative}"
+    end
+  end
+
+  def test_zip_entries_reject_missing_sdk
+    error = assert_raises(RuntimeError) do
+      PackageBoundaries.assert_zip_entries_include_sdk!({})
+    end
+    assert_match(/omit SDK files/, error.message)
   end
 end

@@ -44,13 +44,23 @@ Then open the app and sign in with:
 
 ## OAuth client for the WordPress plugin
 
-The WordPress plugin talks to the named API `wp_plugin_demo` with OAuth client credentials. To try it locally, provision an isolated client and page from the dummy host:
+The WordPress plugin talks to the named API `wp_plugin_demo` with OAuth client credentials.
+
+Preferred for the install runbook (Getting Started page id + fresh client on Studio Workspace):
+
+```bash
+bin/rails runner 'WpPluginDemo::Seed.print_runbook_connection!'
+```
+
+Isolated tree (new workspace and page each run):
 
 ```bash
 bin/rails runner 'c = WpPluginDemo::Provision.isolated_client!; puts [c.oauth_client_id, c.oauth_client_secret, c.page_recording_id].join("\n")'
 ```
 
 Use the printed values in WordPress under **Settings → WordPress Plugin Demo** and as the block page recording id.
+
+Full cold-start steps: [../../docs/wordpress-plugin-demo-runbook.md](../../docs/wordpress-plugin-demo-runbook.md).
 
 ## Why this app exists
 

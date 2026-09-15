@@ -189,7 +189,7 @@ jobs:
         working-directory: wordpress/recording-studio-widgets
 
       - name: Build and inspect gem and WordPress ZIP
-        run: bin/check-package-boundaries
+        run: bin/check-package-boundaries --skip-compile
 
       - name: Upload WordPress plugin ZIP
         uses: actions/upload-artifact@v4

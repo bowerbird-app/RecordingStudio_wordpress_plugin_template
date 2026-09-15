@@ -24,11 +24,12 @@ The Rails dummy host is a separate app on another origin. This plugin does not s
 == Connecting to the dummy host ==
 
 1. Start the Rails dummy host on port 3000 (see the repository README).
-1. Provision a named API OAuth client for `wp_plugin_demo`. From `test/dummy`, run:
+1. From `test/dummy`, print Settings fields and the Getting Started page recording id:
 
-`bin/rails runner 'c = WpPluginDemo::Provision.isolated_client!; puts [c.oauth_client_id, c.oauth_client_secret, c.page_recording_id].join("\n")'`
+`bin/rails runner 'WpPluginDemo::Seed.print_runbook_connection!'`
 
-1. Copy the client id, client secret, and page recording id into WordPress settings and the block.
+1. Copy host base URL, client id, client secret into **Settings → WordPress Plugin Demo**, and the page recording id into the block.
+1. Full cold-start steps live in the repo at `docs/wordpress-plugin-demo-runbook.md`.
 
 Token URL defaults to `{host}/recording_studio_api/apis/wp_plugin_demo/oauth/token`. Override only when your host uses a different token endpoint.
 
