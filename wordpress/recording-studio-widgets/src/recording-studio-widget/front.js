@@ -1,5 +1,5 @@
 /**
- * @param {HTMLElement} root Block root from DOM.
+ * @param {Element} root Block root from DOM.
  */
 function mountRecordingStudioWidget( root ) {
 	const raw = root.getAttribute( 'data-rs-payload' );
@@ -10,7 +10,7 @@ function mountRecordingStudioWidget( root ) {
 	let payload;
 	try {
 		payload = JSON.parse( raw );
-	} catch ( error ) {
+	} catch {
 		return;
 	}
 
@@ -23,13 +23,11 @@ function mountRecordingStudioWidget( root ) {
 }
 
 function initRecordingStudioWidgets() {
-	document
-		.querySelectorAll( '[data-rs-widget]' )
-		.forEach( ( root ) => {
-			if ( root instanceof HTMLElement ) {
-				mountRecordingStudioWidget( root );
-			}
-		} );
+	document.querySelectorAll( '[data-rs-widget]' ).forEach( ( root ) => {
+		if ( root && typeof root.getAttribute === 'function' ) {
+			mountRecordingStudioWidget( root );
+		}
+	} );
 }
 
 if ( document.readyState === 'loading' ) {

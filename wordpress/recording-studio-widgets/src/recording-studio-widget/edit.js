@@ -6,7 +6,7 @@ import { useState, useEffect } from '@wordpress/element';
 
 /**
  * @param {string} pageRecordingId UUID.
- * @returns {Promise<object>} BrowserPayload v1 JSON.
+ * @return {Promise<object>} BrowserPayload v1 JSON.
  */
 async function fetchEditorPreview( pageRecordingId ) {
 	return apiFetch( {
@@ -108,7 +108,6 @@ export default function Edit( { attributes, setAttributes } ) {
 				{ preview?.html && (
 					<div
 						className="rs-wordpress-plugin-demo-editor-preview"
-						// eslint-disable-next-line react/no-danger
 						dangerouslySetInnerHTML={ { __html: preview.html } }
 					/>
 				) }
