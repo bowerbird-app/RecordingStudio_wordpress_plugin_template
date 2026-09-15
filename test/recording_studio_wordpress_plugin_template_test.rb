@@ -4,7 +4,7 @@ require "test_helper"
 
 class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
   def test_version_matches_release
-    assert_equal "0.3.0", ::RecordingStudioWordpressPluginTemplate::VERSION
+    assert_equal "0.3.1", ::RecordingStudioWordpressPluginTemplate::VERSION
   end
 
   def test_engine_exists
@@ -85,6 +85,12 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_accessible", tag: "v0.9.1"'
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_root_switchable", tag: "v0.5.0"'
     assert_includes gemfile, 'github: "bowerbird-app/flatpack", tag: "v0.1.177"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_api", tag: "v0.5.5"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_Embeddable", tag: "v0.2.1"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_admin", tag: "v2.0.2"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_publishable", tag: "v0.2.0"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_attachable", tag: "v0.5.1"'
+    refute_includes gemfile, "recording_studio_oauth"
     refute_includes gemfile, "recording_studio/v3.0.0"
     refute_includes gemfile, 'tag: "v0.1.133"'
     refute_includes gemfile, 'tag: "v0.6.0"'
@@ -167,10 +173,36 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     initializer_source = File.read(initializer_path)
 
     assert_includes initializer_source, "config.require_recordable_declarations = true"
-    assert_includes initializer_source, "config.recordable_types = [ \"Workspace\", \"Folder\", \"Page\" ]"
+    assert_includes initializer_source, '"Workspace"'
+    assert_includes initializer_source, '"Folder"'
+    assert_includes initializer_source, '"Page"'
+    assert_includes initializer_source, '"RecordingStudioEmbeddable::Embed"'
+    assert_includes initializer_source, '"RecordingStudioPublishable::Publishable"'
+    assert_includes initializer_source, '"RecordingStudioAttachable::Attachment"'
+    assert_includes initializer_source, '"RecordingStudio::Access"'
+    assert_includes initializer_source, '"RecordingStudioApi::ApiClient"'
+    assert_includes initializer_source, '"RecordingStudioApi::ApiCredential"'
+    assert_includes initializer_source, '"RecordingStudioApi::ApiAccessToken"'
+    assert_includes initializer_source, '"RecordingStudioApi::AdminApi"'
     refute_includes initializer_source, "config.include_children"
     refute_includes initializer_source, "config.features."
     refute_includes initializer_source, "v3"
+  end
+
+  def test_dummy_api_initializer_clears_admin_root_types
+    initializer_source = File.read(File.expand_path("dummy/config/initializers/recording_studio_api.rb", __dir__))
+
+    assert_includes initializer_source, "config.admin_root_recordable_type_names = []"
+    refute_includes initializer_source, "AdminRoot"
+  end
+
+  def test_dummy_ignores_embeddable_lib_on_host_zeitwerk
+    initializer_source = File.read(
+      File.expand_path("dummy/config/initializers/recording_studio_embeddable_zeitwerk.rb", __dir__)
+    )
+
+    assert_includes initializer_source, "Rails.autoloaders.main.ignore(embeddable_lib)"
+    assert_includes initializer_source, "RecordingStudioEmbeddable::Engine"
   end
 
   def test_dummy_readme_explains_dummy_app_purpose

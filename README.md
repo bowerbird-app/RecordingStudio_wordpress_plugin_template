@@ -73,6 +73,11 @@ These versions come from the gemspec, the dummy Gemfile, `@wordpress/create-bloc
 | TailwindCSS | 4 |
 | RecordingStudio | 4.x (`~> 4.2` in the gemspec; dummy GitHub tag `v4.2.0`) |
 | Accessible | dummy GitHub tag `v0.9.1` |
+| API | dummy GitHub tag `v0.5.5` |
+| Embeddable | dummy GitHub tag `v0.2.1` |
+| Admin | dummy GitHub tag `v2.0.2` (boot-only for this host) |
+| Publishable | dummy GitHub tag `v0.2.0` (Embeddable hard dep; not mixed into Page) |
+| Attachable | dummy GitHub tag `v0.5.1` (Publishable boot dep) |
 | Root Switchable | dummy GitHub tag `v0.5.0` |
 | FlatPack | dummy GitHub tag `v0.1.177` |
 | Devise | latest |
@@ -110,10 +115,9 @@ This phase does not include:
 - OAuth
 - API widget discovery
 - Real Recording Studio widgets
-- iframe rendering
+- iframe rendering in WordPress
 - Widget customization
-- `RS_Embeddable`
-- WordPress-specific code in `RS_Oauth` or `RS_API`
+- WordPress-side Embeddable / OAuth / API clients (Phase 4)
 - Widget models, widget APIs, or WordPress render routes in the dummy host
 
 ## Dummy Recording Studio host

@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-09-15
+
+### Added
+- Dummy host named API `wp_plugin_demo` with soft GET `:embed` (BrowserPayload schema v1).
+- `WpPluginDemo::{Contract,Provision,Seed}` helpers and integration coverage for token, embed, 401, and named-vs-public isolation.
+- Generated Recording Studio API, Embeddable, Publishable, and Attachable migrations for the dummy host.
+
+### Changed
+- Dummy Gemfile pins API `v0.5.5`, Embeddable `v0.2.1`, Admin `v2.0.2`, Publishable `v0.2.0`, and Attachable `v0.5.1`.
+- Dummy recordable types list includes Embed, Publishable/Attachable, and API gem types required to boot under CI eager load.
+- Dummy ignores Recording Studio Embeddable `lib/` on the host Zeitwerk loader so CI eager load does not expect `Version` from `version.rb`.
+- Dummy clears `admin_root_recordable_type_names` so AdminApi can load without mounting AdminRoot.
+
+### Upgrade notes
+- Point dummy or host Gemfiles at the new API / Embeddable / Admin / Publishable / Attachable tags and run their migration generators.
+- Re-register default resource actions and Embeddable's soft `:embed` after `config.api :wp_plugin_demo` so the named API is not empty.
+- Do not mount Admin or enable Publishable on Page for this host shape.
+- On hosts that pin Embeddable and use CI/`config.eager_load`, ignore Embeddable `lib/` on the main autoloader (or wait for an Embeddable fix).
+- If you do not mount Admin, set `admin_root_recordable_type_names = []` and still list `RecordingStudioApi::AdminApi` when the API engine models load.
+
 ## [0.3.0] - 2026-09-14
 
 ### Added
@@ -112,7 +132,8 @@ New addons copied from this template are born on Recording Studio 4.x.
 - Comprehensive README and documentation
 - Basic test suite with Minitest
 
-[Unreleased]: https://github.com/bowerbird-app/RecordingStudio_wordpress_plugin_template/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/bowerbird-app/RecordingStudio_wordpress_plugin_template/compare/v0.3.1...HEAD
+[0.3.1]: https://github.com/bowerbird-app/RecordingStudio_wordpress_plugin_template/releases/tag/v0.3.1
 [0.3.0]: https://github.com/bowerbird-app/RecordingStudio_wordpress_plugin_template/releases/tag/v0.3.0
 [0.2.2]: https://github.com/bowerbird-app/RecordingStudio_wordpress_plugin_template/releases/tag/v0.2.2
 [0.2.1]: https://github.com/bowerbird-app/RecordingStudio_wordpress_plugin_template/releases/tag/v0.2.1

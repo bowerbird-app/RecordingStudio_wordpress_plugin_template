@@ -45,8 +45,11 @@ ensure
   Current.actor = previous_actor
 end
 
+WpPluginDemo::Seed.ensure_studio_embed!
+
 puts "Seeded: admin@admin.com / Password"
 puts "Seeded: Workspace '#{workspace.name}' with root recording ##{root_recording.id}"
 puts "Seeded: Workspace '#{accessible_workspace.name}' with root recording ##{accessible_root_recording.id}"
 puts "Seeded: Workspace '#{private_workspace.name}' with root recording ##{private_root_recording.id}"
 puts "Seeded: Folder '#{folder.name}' and page '#{page.title}'"
+puts "Seeded: WordPress Plugin Demo embed on Getting Started"
