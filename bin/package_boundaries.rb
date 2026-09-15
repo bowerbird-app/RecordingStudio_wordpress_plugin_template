@@ -33,7 +33,6 @@ module PackageBoundaries
     composer.lock
   ].freeze
 
-  # Baked SDK files the installable ZIP must ship (copied into build/sdk/ by npm run build).
   REQUIRED_SDK_FILES = %w[
     build/sdk/recording-studio-plugin-sdk.js
     build/sdk/recording-studio-plugin-sdk.css
@@ -131,7 +130,6 @@ module PackageBoundaries
     destination
   end
 
-  # Runs npm ci && npm run build so the ZIP is reproducible from a clean tree.
   def compile_plugin_assets!
     raise "plugin dir missing: #{PLUGIN_DIR}" unless File.directory?(PLUGIN_DIR)
     raise "package-lock.json missing in #{PLUGIN_DIR}" unless File.file?(File.join(PLUGIN_DIR, "package-lock.json"))

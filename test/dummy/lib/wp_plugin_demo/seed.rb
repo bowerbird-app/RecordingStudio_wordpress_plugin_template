@@ -18,7 +18,7 @@ module WpPluginDemo
 
     module_function
 
-    # Idempotent. No new User/Workspace. Safe under the existing seed-count test.
+    # Idempotent for embed enablement. Does not create User/Workspace rows.
     def ensure_studio_embed!
       admin = User.find_by!(email: ADMIN_EMAIL)
       workspace = Workspace.find_by!(name: STUDIO_WORKSPACE_NAME)
@@ -32,14 +32,12 @@ module WpPluginDemo
       page_recording
     end
 
-    # Stable Getting Started page recording id after db:seed / ensure_studio_embed!.
     def getting_started_page_recording_id
       page = Page.find_by!(title: GETTING_STARTED_TITLE)
       RecordingStudio::Recording.find_by!(recordable: page, trashed_at: nil).id
     end
 
-    # Issues a fresh wp_plugin_demo OAuth client on Studio Workspace for the runbook.
-    # Not idempotent on credentials: each call creates a new client.
+    # Creates a new OAuth client each call. Reuse the printed secret for Settings.
     def connection_for_runbook!(host_base_url: "http://localhost:3000")
       page_recording = ensure_studio_embed!
       admin = User.find_by!(email: ADMIN_EMAIL)
