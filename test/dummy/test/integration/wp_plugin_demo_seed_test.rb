@@ -3,6 +3,10 @@
 require "test_helper"
 
 class WpPluginDemoSeedTest < ActiveSupport::TestCase
+  setup do
+    load Rails.root.join("db/seeds.rb").to_s
+  end
+
   test "getting_started_page_recording_id points at seeded Getting Started page" do
     WpPluginDemo::Seed.ensure_studio_embed!
     page_recording_id = WpPluginDemo::Seed.getting_started_page_recording_id
