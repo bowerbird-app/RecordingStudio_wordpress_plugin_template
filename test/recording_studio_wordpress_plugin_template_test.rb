@@ -4,7 +4,7 @@ require "test_helper"
 
 class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
   def test_version_matches_release
-    assert_equal "0.3.1", ::RecordingStudioWordpressPluginTemplate::VERSION
+    assert_equal "0.4.0", ::RecordingStudioWordpressPluginTemplate::VERSION
   end
 
   def test_engine_exists
@@ -42,18 +42,19 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     assert_includes ports, 8888
   end
 
-  def test_wordpress_plugin_registers_placeholder_dynamic_block
+  def test_wordpress_plugin_registers_wp_plugin_demo_dynamic_block
     plugin_root = File.expand_path("../wordpress/recording-studio-widgets", __dir__)
     plugin = File.read(File.join(plugin_root, "recording-studio-widget.php"))
     block = JSON.parse(File.read(File.join(plugin_root, "src/recording-studio-widget/block.json")))
     env = JSON.parse(File.read(File.join(plugin_root, ".wp-env.json")))
 
-    assert_includes plugin, "Plugin Name:       RecordingStudio Widget"
+    assert_includes plugin, "Plugin Name:       WordPress Plugin Demo"
     assert_includes plugin, "recording_studio_widget_register_settings_page"
     assert_equal "recording-studio/recording-studio-widget", block["name"]
-    assert_equal "RecordingStudio Widget", block["title"]
+    assert_equal "WordPress Plugin Demo", block["title"]
     assert_equal "file:./render.php", block["render"]
-    refute block.key?("viewScript")
+    assert_equal "file:./front.js", block["viewScript"]
+    assert block.dig("attributes", "pageRecordingId")
     assert_equal 8888, env["port"]
     assert_equal 8889, env["testsPort"]
   end

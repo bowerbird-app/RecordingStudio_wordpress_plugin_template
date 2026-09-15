@@ -42,6 +42,16 @@ Then open the app and sign in with:
   - `GET /recording_studio_api/apis/wp_plugin_demo/v1/pages/:id/actions/embed`
   - short alias `GET .../pages/:id/embed`
 
+## OAuth client for the WordPress plugin
+
+The WordPress plugin talks to the named API `wp_plugin_demo` with OAuth client credentials. To try it locally, provision an isolated client and page from the dummy host:
+
+```bash
+bin/rails runner 'c = WpPluginDemo::Provision.isolated_client!; puts [c.oauth_client_id, c.oauth_client_secret, c.page_recording_id].join("\n")'
+```
+
+Use the printed values in WordPress under **Settings → WordPress Plugin Demo** and as the block page recording id.
+
 ## Why this app exists
 
 Use this app to verify the Rails host for RecordingStudio WordPress widgets. If a layout, route, asset source, or Recording Studio initializer change breaks here, fix the host before you touch WordPress.

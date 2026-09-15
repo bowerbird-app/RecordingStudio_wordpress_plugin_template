@@ -64,3 +64,5 @@ npm run build
 ```
 
 `bin/package-wordpress-zip` copies compiled files from `build/`. It does not run webpack.
+
+The installable ZIP includes compiled block assets under `build/recording-studio-widget/` and the baked Recording Studio plugin SDK under `build/sdk/` (copied from committed `assets/sdk/` during `npm run build`).
