@@ -1,6 +1,6 @@
 {
 	"name": "bowerbird/recording-studio-widget",
-	"description": "Placeholder RecordingStudio Widget dynamic block.",
+	"description": "WordPress Plugin Demo dynamic block with host embed SSR.",
 	"type": "wordpress-plugin",
 	"license": "GPL-2.0-or-later",
 	"require": {

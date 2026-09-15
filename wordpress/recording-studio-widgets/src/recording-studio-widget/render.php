@@ -1,14 +1,50 @@
 <?php
 /**
- * Server-rendered placeholder for the RecordingStudio Widget block.
+ * Dynamic block SSR — StudioClient + BlockShell.
+ *
+ * @var array<string, mixed> $attributes
  *
  * @package RecordingStudio
  */
 
+declare(strict_types=1);
+
+use RecordingStudio\Assets;
+use RecordingStudio\BlockAttributes;
+use RecordingStudio\BlockShell;
+use RecordingStudio\EmbedRequest;
+use RecordingStudio\EmbedResult;
+use RecordingStudio\PageRecordingId;
+use RecordingStudio\Placeholder;
+use RecordingStudio\StudioClient;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-?>
-<p <?php echo wp_kses_data( get_block_wrapper_attributes() ); ?>>
-	<?php echo esc_html( recording_studio_widget_placeholder_text() ); ?>
-</p>
+
+$attrs = BlockAttributes::from_block_props( $attributes );
+if ( ! $attrs->has_page_recording_id() ) {
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Placeholder returns escaped markup.
+	echo Placeholder::front_message();
+	return;
+}
+
+$parsed = PageRecordingId::parse( $attrs->page_recording_id );
+if ( $parsed instanceof EmbedResult ) {
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Placeholder returns escaped markup.
+	echo Placeholder::embed_error_markup( $parsed->error_code() );
+	return;
+}
+
+$client = StudioClient::from_wp_options();
+$result = $client->embed_payload_for_page( $parsed, EmbedRequest::for_server_render( $parsed ) );
+
+if ( $result->is_error() ) {
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Placeholder returns escaped markup.
+	echo Placeholder::embed_error_markup( $result->error_code(), EmbedRequest::for_server_render( $parsed ) );
+	return;
+}
+
+Assets::enqueue_sdk();
+// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- BlockShell escapes attributes and payload JSON.
+echo BlockShell::render( $attrs, $result->payload() );
