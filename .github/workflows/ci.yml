@@ -124,8 +124,8 @@ jobs:
       - name: Build plugin assets
         run: npm run build
 
-      - name: Run placeholder text check
-        run: npm run test:placeholder
+      - name: Run plugin PHP unit tests
+        run: npm run test:php
 
   plugin-php:
     name: Plugin PHP
@@ -159,8 +159,8 @@ jobs:
       - name: Run WordPress coding standards
         run: vendor/bin/phpcs
 
-      - name: Run placeholder text check
-        run: php tests/php/placeholder-text.php
+      - name: Run plugin PHP unit tests
+        run: php tests/php/run.php
 
   packages:
     name: Package boundaries

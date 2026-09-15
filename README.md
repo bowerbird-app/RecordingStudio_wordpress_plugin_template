@@ -10,7 +10,15 @@ Two packages live here. The Rails dummy host proves the engine. The WordPress pl
 
 The dummy app in `test/dummy/` is a Rails 8.1 host. It mounts Recording Studio, signs in with Devise, and renders FlatPack. It boots with no WordPress process. Connectivity placeholders are env-only. The dummy app has no widget models, widget APIs, or WordPress render routes.
 
-The plugin in `wordpress/recording-studio-widgets/` is a dynamic block named RecordingStudio Widget. WordPress registers it, shows the same placeholder text in the editor and on a published page, and loads only that plugin's compiled assets. `wp-env` serves WordPress on port 8888. The dummy host serves Rails on port 3000.
+The plugin in `wordpress/recording-studio-widgets/` is a dynamic block named **WordPress Plugin Demo**. It stores OAuth client credentials server-side, fetches BrowserPayload v1 JSON from the dummy host named API `wp_plugin_demo`, server-renders the payload, and mounts the baked plugin SDK on the front. `wp-env` serves WordPress on port 8888. The dummy host serves Rails on port 3000.
+
+### Phase 4 (WordPress Plugin Demo client)
+
+- **Settings → WordPress Plugin Demo**: host base URL, OAuth client id/secret, optional token URL override, and **Test connection**.
+- **Block**: `pageRecordingId` attribute (UUID). Editor preview uses `GET /wp-json/recording-studio/v1/preview/{uuid}` (`edit_posts`).
+- **Front**: SSR `data-rs-payload` plus `viewScript` (`front.js`) calling `window.RecordingStudioPluginSdk.mount` — no secrets in the page.
+- **SDK**: committed under `assets/sdk/`, copied to `build/sdk/` on `npm run build`.
+- Provision OAuth credentials on the dummy host with `WpPluginDemo::Provision.isolated_client!` (see `test/dummy/README.md`).
 
 `docs/gem_template/` stays as architectural reference for the engine conventions. `docs/wordpress-packaging.md` describes the gem and ZIP allowlists. This README is the product guide.
 
@@ -110,15 +118,7 @@ CI runs the same script and uploads the ZIP.
 
 ## Out of scope
 
-This phase does not include:
-
-- OAuth
-- API widget discovery
-- Real Recording Studio widgets
-- iframe rendering in WordPress
-- Widget customization
-- WordPress-side Embeddable / OAuth / API clients (Phase 4)
-- Widget models, widget APIs, or WordPress render routes in the dummy host
+Later phases may add widget discovery, richer editor pickers, and embed response caching. The dummy host still has no WordPress render routes or widget models beyond the named API surface.
 
 ## Dummy Recording Studio host
 

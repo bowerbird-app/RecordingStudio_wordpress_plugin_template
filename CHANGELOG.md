@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-09-15
+
+### Added
+- WordPress Plugin Demo client: `RecordingStudio\StudioClient` facade (token cache, host HTTP, BrowserPayload v1 parse), settings form, editor REST preview, SSR block shell, and baked SDK under `build/sdk/`.
+- PHP unit tests for `BrowserPayload`, `PluginSettings`, and `StudioClient` (injectable HTTP).
+
+### Changed
+- Plugin product name and block title to **WordPress Plugin Demo** (plugin version 0.2.0).
+- Block `viewScript` (`front.js`) mounts `RecordingStudioPluginSdk` from `data-rs-payload`.
+- CI runs `tests/php/run.php` instead of the placeholder text check.
+
+### Upgrade notes
+- Rebuild the plugin (`npm run build`) so `build/sdk/` is present before packaging the ZIP.
+- Configure **Settings → WordPress Plugin Demo** with dummy host OAuth credentials from `WpPluginDemo::Provision`.
+
 ## [0.3.1] - 2026-09-15
 
 ### Added
@@ -132,7 +147,8 @@ New addons copied from this template are born on Recording Studio 4.x.
 - Comprehensive README and documentation
 - Basic test suite with Minitest
 
-[Unreleased]: https://github.com/bowerbird-app/RecordingStudio_wordpress_plugin_template/compare/v0.3.1...HEAD
+[Unreleased]: https://github.com/bowerbird-app/RecordingStudio_wordpress_plugin_template/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/bowerbird-app/RecordingStudio_wordpress_plugin_template/releases/tag/v0.4.0
 [0.3.1]: https://github.com/bowerbird-app/RecordingStudio_wordpress_plugin_template/releases/tag/v0.3.1
 [0.3.0]: https://github.com/bowerbird-app/RecordingStudio_wordpress_plugin_template/releases/tag/v0.3.0
 [0.2.2]: https://github.com/bowerbird-app/RecordingStudio_wordpress_plugin_template/releases/tag/v0.2.2
