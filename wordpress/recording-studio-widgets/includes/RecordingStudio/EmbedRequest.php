@@ -1,9 +1,4 @@
 <?php
-/**
- * Embed intent with editor vs front context for error surfacing.
- *
- * @package RecordingStudio
- */
 
 declare(strict_types=1);
 

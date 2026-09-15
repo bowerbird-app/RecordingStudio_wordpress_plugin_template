@@ -1,9 +1,4 @@
 <?php
-/**
- * Admin settings UI for WordPress Plugin Demo host credentials.
- *
- * @package RecordingStudio
- */
 
 declare(strict_types=1);
 

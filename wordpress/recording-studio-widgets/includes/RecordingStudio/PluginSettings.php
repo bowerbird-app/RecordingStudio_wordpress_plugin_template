@@ -1,9 +1,4 @@
 <?php
-/**
- * Server-side plugin configuration (Options API).
- *
- * @package RecordingStudio
- */
 
 declare(strict_types=1);
 

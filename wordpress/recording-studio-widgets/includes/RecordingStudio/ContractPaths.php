@@ -1,9 +1,4 @@
 <?php
-/**
- * Named API path segments for wp_plugin_demo (mirror dummy WpPluginDemo::Contract).
- *
- * @package RecordingStudio
- */
 
 declare(strict_types=1);
 

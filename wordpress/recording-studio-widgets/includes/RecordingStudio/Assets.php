@@ -1,9 +1,4 @@
 <?php
-/**
- * Enqueue baked SDK from build/sdk/ (no localize secrets).
- *
- * @package RecordingStudio
- */
 
 declare(strict_types=1);
 

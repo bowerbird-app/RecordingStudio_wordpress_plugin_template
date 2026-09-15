@@ -1,9 +1,4 @@
 <?php
-/**
- * Server-side OAuth access token cache (never sent to browser).
- *
- * @package RecordingStudio
- */
 
 declare(strict_types=1);
 

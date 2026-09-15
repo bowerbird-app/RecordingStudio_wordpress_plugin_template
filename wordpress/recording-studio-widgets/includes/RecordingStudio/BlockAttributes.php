@@ -1,9 +1,4 @@
 <?php
-/**
- * Block attributes from block.json (pageRecordingId).
- *
- * @package RecordingStudio
- */
 
 declare(strict_types=1);
 

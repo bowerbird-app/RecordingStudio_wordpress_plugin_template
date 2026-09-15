@@ -1,9 +1,4 @@
 <?php
-/**
- * Placeholder and error copy for block + settings.
- *
- * @package RecordingStudio
- */
 
 declare(strict_types=1);
 

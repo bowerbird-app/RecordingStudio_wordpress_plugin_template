@@ -1,10 +1,4 @@
 /**
- * viewScript: mount SDK from SSR data-rs-payload (no fetch, no secrets).
- *
- * @package recording-studio-widget
- */
-
-/**
  * @param {HTMLElement} root Block root from DOM.
  */
 function mountRecordingStudioWidget( root ) {

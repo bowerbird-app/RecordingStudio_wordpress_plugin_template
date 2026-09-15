@@ -1,9 +1,4 @@
 <?php
-/**
- * Result of embed_payload_for_page — success payload or typed error.
- *
- * @package RecordingStudio
- */
 
 declare(strict_types=1);
 

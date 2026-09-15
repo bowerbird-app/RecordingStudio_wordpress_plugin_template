@@ -1,9 +1,4 @@
 <?php
-/**
- * SSR container + data-rs-payload for front.js mount.
- *
- * @package RecordingStudio
- */
 
 declare(strict_types=1);
 

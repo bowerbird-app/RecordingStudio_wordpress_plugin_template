@@ -1,9 +1,4 @@
 <?php
-/**
- * Named API wp_plugin_demo URL builders (internal to StudioClient).
- *
- * @package RecordingStudio
- */
 
 declare(strict_types=1);
 

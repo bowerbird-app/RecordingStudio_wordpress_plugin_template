@@ -1,9 +1,4 @@
 <?php
-/**
- * Admin settings POST → array for PluginSettings::validate_and_merge.
- *
- * @package RecordingStudio
- */
 
 declare(strict_types=1);
 

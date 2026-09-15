@@ -1,9 +1,4 @@
 <?php
-/**
- * BrowserPayload schema v1 (pass-through to browser / SDK).
- *
- * @package RecordingStudio
- */
 
 declare(strict_types=1);
 

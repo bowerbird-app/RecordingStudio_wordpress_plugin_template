@@ -1,9 +1,4 @@
 <?php
-/**
- * Page Recording UUID for named API embed paths.
- *
- * @package RecordingStudio
- */
 
 declare(strict_types=1);
 

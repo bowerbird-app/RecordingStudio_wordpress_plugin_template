@@ -1,9 +1,3 @@
-/**
- * Block editor: page recording id control + REST preview.
- *
- * @package recording-studio-widget
- */
-
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, TextControl, Spinner, Notice } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';

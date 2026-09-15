@@ -1,9 +1,4 @@
 <?php
-/**
- * StudioClient host I/O tests with injectable HTTP.
- *
- * @package RecordingStudio
- */
 
 declare(strict_types=1);
 

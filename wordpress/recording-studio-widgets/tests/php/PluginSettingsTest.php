@@ -1,9 +1,4 @@
 <?php
-/**
- * PluginSettings validation tests.
- *
- * @package RecordingStudio
- */
 
 declare(strict_types=1);
 

@@ -1,9 +1,4 @@
 <?php
-/**
- * Single facade for host token + embed access (deep module).
- *
- * @package RecordingStudio
- */
 
 declare(strict_types=1);
 

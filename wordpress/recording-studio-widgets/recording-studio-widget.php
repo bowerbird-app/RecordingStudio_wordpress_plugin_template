@@ -18,11 +18,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-/**
- * PSR-4 autoload for RecordingStudio classes.
- *
- * @param string $class Fully qualified class name.
- */
 function recording_studio_widget_autoload( string $class_name ): void {
 	$prefix = 'RecordingStudio\\';
 	if ( strncmp( $class_name, $prefix, strlen( $prefix ) ) !== 0 ) {
@@ -41,9 +36,6 @@ spl_autoload_register( 'recording_studio_widget_autoload' );
 require_once __DIR__ . '/includes/settings-page.php';
 require_once __DIR__ . '/includes/rest-editor-preview.php';
 
-/**
- * Registers the WordPress Plugin Demo block from the compiled metadata collection.
- */
 function recording_studio_recording_studio_widget_block_init(): void {
 	$manifest = __DIR__ . '/build/blocks-manifest.php';
 	$build    = __DIR__ . '/build';
@@ -57,9 +49,6 @@ function recording_studio_recording_studio_widget_block_init(): void {
 }
 add_action( 'init', 'recording_studio_recording_studio_widget_block_init' );
 
-/**
- * Registers the settings page under Settings.
- */
 function recording_studio_widget_register_settings_page(): void {
 	add_options_page(
 		__( 'WordPress Plugin Demo', 'recording-studio-widget' ),

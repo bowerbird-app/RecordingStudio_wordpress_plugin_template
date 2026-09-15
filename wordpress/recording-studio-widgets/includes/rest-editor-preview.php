@@ -1,9 +1,4 @@
 <?php
-/**
- * Editor-only REST: preview embed payload (authenticated).
- *
- * @package RecordingStudio
- */
 
 declare(strict_types=1);
 

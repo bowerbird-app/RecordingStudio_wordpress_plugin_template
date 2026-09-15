@@ -1,11 +1,4 @@
 <?php
-/**
- * Dynamic block SSR — StudioClient + BlockShell.
- *
- * @var array<string, mixed> $attributes
- *
- * @package RecordingStudio
- */
 
 declare(strict_types=1);
 
@@ -24,14 +17,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 $attrs = BlockAttributes::from_block_props( $attributes );
 if ( ! $attrs->has_page_recording_id() ) {
-	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Placeholder returns escaped markup.
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	echo Placeholder::front_message();
 	return;
 }
 
 $parsed = PageRecordingId::parse( $attrs->page_recording_id );
 if ( $parsed instanceof EmbedResult ) {
-	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Placeholder returns escaped markup.
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	echo Placeholder::embed_error_markup( $parsed->error_code() );
 	return;
 }
@@ -40,11 +33,11 @@ $client = StudioClient::from_wp_options();
 $result = $client->embed_payload_for_page( $parsed, EmbedRequest::for_server_render( $parsed ) );
 
 if ( $result->is_error() ) {
-	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Placeholder returns escaped markup.
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	echo Placeholder::embed_error_markup( $result->error_code(), EmbedRequest::for_server_render( $parsed ) );
 	return;
 }
 
 Assets::enqueue_sdk();
-// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- BlockShell escapes attributes and payload JSON.
+// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 echo BlockShell::render( $attrs, $result->payload() );
