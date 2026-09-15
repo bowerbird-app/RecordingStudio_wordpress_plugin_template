@@ -16,8 +16,8 @@ class WpPluginDemoSeedTest < ActiveSupport::TestCase
     assert_equal expected, page_recording_id
   end
 
-  test "connection_for_runbook! returns Getting Started page and named-API credentials" do
-    connection = WpPluginDemo::Seed.connection_for_runbook!(host_base_url: "http://localhost:3000")
+  test "issue_runbook_connection! returns Getting Started page and named-API credentials" do
+    connection = WpPluginDemo::Seed.issue_runbook_connection!(host_base_url: "http://localhost:3000")
 
     assert_equal "http://localhost:3000", connection.host_base_url
     assert_equal WpPluginDemo::Seed.getting_started_page_recording_id, connection.page_recording_id

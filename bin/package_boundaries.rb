@@ -6,7 +6,6 @@ require "pathname"
 require "rubygems/package"
 require "tmpdir"
 
-# Shared allowlists and dummy-host fingerprints for gem and WordPress ZIP packages.
 module PackageBoundaries
   REPO_ROOT = File.expand_path("..", __dir__)
   PLUGIN_DIR = File.join(REPO_ROOT, "wordpress", "recording-studio-widgets")

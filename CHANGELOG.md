@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - `bin/build-plugin-zip` (alias of `bin/package-wordpress-zip`) runs `npm ci && npm run build`, asserts baked SDK under `build/sdk/`, and writes `pkg/recording-studio-widgets.zip`.
 - Cold-start runbook at `docs/wordpress-plugin-demo-runbook.md` (dummy host → OAuth → ZIP → Settings → block).
-- `WpPluginDemo::Seed.connection_for_runbook!` / `print_connection_for_runbook!` and `getting_started_page_recording_id` for Settings fields and a concrete seeded page id.
+- `WpPluginDemo::Seed.issue_runbook_connection!` / `print_runbook_connection!` and `getting_started_page_recording_id` for Settings fields and a concrete seeded page id.
 
 ### Changed
 - Package-boundary ZIP build compiles plugin assets by default; `--skip-compile` skips when assets are already built (CI).

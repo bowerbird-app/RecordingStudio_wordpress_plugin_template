@@ -49,7 +49,7 @@ The WordPress plugin talks to the named API `wp_plugin_demo` with OAuth client c
 Preferred for the install runbook (Getting Started page id + fresh client on Studio Workspace):
 
 ```bash
-bin/rails runner 'WpPluginDemo::Seed.print_connection_for_runbook!'
+bin/rails runner 'WpPluginDemo::Seed.print_runbook_connection!'
 ```
 
 Isolated tree (new workspace and page each run):

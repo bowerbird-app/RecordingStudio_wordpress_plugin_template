@@ -26,7 +26,7 @@ The Rails dummy host is a separate app on another origin. This plugin does not s
 1. Start the Rails dummy host on port 3000 (see the repository README).
 1. From `test/dummy`, print Settings fields and the Getting Started page recording id:
 
-`bin/rails runner 'WpPluginDemo::Seed.print_connection_for_runbook!'`
+`bin/rails runner 'WpPluginDemo::Seed.print_runbook_connection!'`
 
 1. Copy host base URL, client id, client secret into **Settings → WordPress Plugin Demo**, and the page recording id into the block.
 1. Full cold-start steps live in the repo at `docs/wordpress-plugin-demo-runbook.md`.

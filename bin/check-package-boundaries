@@ -4,7 +4,6 @@
 require_relative "package_boundaries"
 
 module PackageBoundaries
-  # Builds the gem and WordPress ZIP, then fails if dummy host code leaked into either artifact.
   class CLI
     def self.run(argv)
       new(argv).run

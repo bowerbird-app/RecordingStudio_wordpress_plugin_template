@@ -18,7 +18,6 @@ module WpPluginDemo
 
     module_function
 
-    # Idempotent for embed enablement. Does not create User/Workspace rows.
     def ensure_studio_embed!
       admin = User.find_by!(email: ADMIN_EMAIL)
       workspace = Workspace.find_by!(name: STUDIO_WORKSPACE_NAME)
@@ -37,8 +36,7 @@ module WpPluginDemo
       RecordingStudio::Recording.find_by!(recordable: page, trashed_at: nil).id
     end
 
-    # Creates a new OAuth client each call. Reuse the printed secret for Settings.
-    def connection_for_runbook!(host_base_url: "http://localhost:3000")
+    def issue_runbook_connection!(host_base_url: "http://localhost:3000")
       page_recording = ensure_studio_embed!
       admin = User.find_by!(email: ADMIN_EMAIL)
       workspace = Workspace.find_by!(name: STUDIO_WORKSPACE_NAME)
@@ -61,8 +59,8 @@ module WpPluginDemo
       )
     end
 
-    def print_connection_for_runbook!(host_base_url: "http://localhost:3000")
-      connection = connection_for_runbook!(host_base_url: host_base_url)
+    def print_runbook_connection!(host_base_url: "http://localhost:3000")
+      connection = issue_runbook_connection!(host_base_url: host_base_url)
       puts "host_base_url=#{connection.host_base_url}"
       puts "oauth_client_id=#{connection.oauth_client_id}"
       puts "oauth_client_secret=#{connection.oauth_client_secret}"

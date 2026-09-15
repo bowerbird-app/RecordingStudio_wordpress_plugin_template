@@ -33,7 +33,7 @@ Named API paths the plugin uses (do not change these unless the host is broken):
 Still from `test/dummy/`, print Settings fields and a concrete page recording id:
 
 ```bash
-bin/rails runner 'WpPluginDemo::Seed.print_connection_for_runbook!'
+bin/rails runner 'WpPluginDemo::Seed.print_runbook_connection!'
 ```
 
 Example output shape:
