@@ -147,7 +147,8 @@ New addons copied from this template are born on Recording Studio 4.x.
 - Comprehensive README and documentation
 - Basic test suite with Minitest
 
-[Unreleased]: https://github.com/bowerbird-app/RecordingStudio_wordpress_plugin_template/compare/v0.3.1...HEAD
+[Unreleased]: https://github.com/bowerbird-app/RecordingStudio_wordpress_plugin_template/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/bowerbird-app/RecordingStudio_wordpress_plugin_template/releases/tag/v0.4.0
 [0.3.1]: https://github.com/bowerbird-app/RecordingStudio_wordpress_plugin_template/releases/tag/v0.3.1
 [0.3.0]: https://github.com/bowerbird-app/RecordingStudio_wordpress_plugin_template/releases/tag/v0.3.0
 [0.2.2]: https://github.com/bowerbird-app/RecordingStudio_wordpress_plugin_template/releases/tag/v0.2.2
