@@ -16,12 +16,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Dummy Gemfile pins API `v0.5.5`, Embeddable `v0.2.1`, Admin `v2.0.2`, Publishable `v0.2.0`, and Attachable `v0.5.1`.
-- Dummy recordable types list includes Embed plus Publishable/Attachable gem types required to boot.
+- Dummy recordable types list includes Embed, Publishable/Attachable, and API gem types required to boot under CI eager load.
+- Dummy ignores Recording Studio Embeddable `lib/` on the host Zeitwerk loader so CI eager load does not expect `Version` from `version.rb`.
+- Dummy clears `admin_root_recordable_type_names` so AdminApi can load without mounting AdminRoot.
 
 ### Upgrade notes
 - Point dummy or host Gemfiles at the new API / Embeddable / Admin / Publishable / Attachable tags and run their migration generators.
 - Re-register default resource actions and Embeddable's soft `:embed` after `config.api :wp_plugin_demo` so the named API is not empty.
 - Do not mount Admin or enable Publishable on Page for this host shape.
+- On hosts that pin Embeddable and use CI/`config.eager_load`, ignore Embeddable `lib/` on the main autoloader (or wait for an Embeddable fix).
+- If you do not mount Admin, set `admin_root_recordable_type_names = []` and still list `RecordingStudioApi::AdminApi` when the API engine models load.
 
 ## [0.3.0] - 2026-09-14
 

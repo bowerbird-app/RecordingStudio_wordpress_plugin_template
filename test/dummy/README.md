@@ -10,6 +10,8 @@ This Rails app is the host for RecordingStudio WordPress widgets. It boots on it
 - Recording Studio default layout, FlatPack assets, and Tailwind source scanning
 - Mounted `RecordingStudio::Engine` route behavior inside a host app
 - Dummy-only `/docs/*` pages for host-app onboarding
+- Named API `wp_plugin_demo` with soft GET `:embed` (BrowserPayload schema v1)
+- CI eager-load workarounds: ignore Embeddable `lib/` on host Zeitwerk; clear API `admin_root_recordable_type_names` (no Admin mount)
 - Env-only connectivity placeholders. No widget models, widget APIs, or WordPress render routes
 
 ## Quick start

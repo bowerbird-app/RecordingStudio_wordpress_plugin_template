@@ -179,9 +179,30 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     assert_includes initializer_source, '"RecordingStudioEmbeddable::Embed"'
     assert_includes initializer_source, '"RecordingStudioPublishable::Publishable"'
     assert_includes initializer_source, '"RecordingStudioAttachable::Attachment"'
+    assert_includes initializer_source, '"RecordingStudio::Access"'
+    assert_includes initializer_source, '"RecordingStudioApi::ApiClient"'
+    assert_includes initializer_source, '"RecordingStudioApi::ApiCredential"'
+    assert_includes initializer_source, '"RecordingStudioApi::ApiAccessToken"'
+    assert_includes initializer_source, '"RecordingStudioApi::AdminApi"'
     refute_includes initializer_source, "config.include_children"
     refute_includes initializer_source, "config.features."
     refute_includes initializer_source, "v3"
+  end
+
+  def test_dummy_api_initializer_clears_admin_root_types
+    initializer_source = File.read(File.expand_path("dummy/config/initializers/recording_studio_api.rb", __dir__))
+
+    assert_includes initializer_source, "config.admin_root_recordable_type_names = []"
+    refute_includes initializer_source, "AdminRoot"
+  end
+
+  def test_dummy_ignores_embeddable_lib_on_host_zeitwerk
+    initializer_source = File.read(
+      File.expand_path("dummy/config/initializers/recording_studio_embeddable_zeitwerk.rb", __dir__)
+    )
+
+    assert_includes initializer_source, "Rails.autoloaders.main.ignore(embeddable_lib)"
+    assert_includes initializer_source, "RecordingStudioEmbeddable::Engine"
   end
 
   def test_dummy_readme_explains_dummy_app_purpose
