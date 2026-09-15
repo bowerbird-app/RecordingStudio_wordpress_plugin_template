@@ -33,6 +33,12 @@ module PackageBoundaries
     composer.lock
   ].freeze
 
+  # Baked SDK files the installable ZIP must ship (copied into build/sdk/ by npm run build).
+  REQUIRED_SDK_FILES = %w[
+    build/sdk/recording-studio-plugin-sdk.js
+    build/sdk/recording-studio-plugin-sdk.css
+  ].freeze
+
   DUMMY_PATH_FRAGMENTS = %w[
     test/dummy
     dummy/app/
@@ -110,15 +116,49 @@ module PackageBoundaries
     destination
   end
 
-  def build_wordpress_zip!(destination = default_zip_destination)
+  def build_wordpress_zip!(destination = default_zip_destination, compile: true)
     raise "plugin dir missing: #{PLUGIN_DIR}" unless File.directory?(PLUGIN_DIR)
+
+    compile_plugin_assets! if compile
+    assert_sdk_present!
 
     entries = wordpress_zip_entries
     raise "WordPress ZIP allowlist is empty" if entries.empty?
+    assert_zip_entries_include_sdk!(entries)
 
     FileUtils.mkdir_p(File.dirname(destination))
     write_zip(entries, destination)
     destination
+  end
+
+  # Runs npm ci && npm run build so the ZIP is reproducible from a clean tree.
+  def compile_plugin_assets!
+    raise "plugin dir missing: #{PLUGIN_DIR}" unless File.directory?(PLUGIN_DIR)
+    raise "package-lock.json missing in #{PLUGIN_DIR}" unless File.file?(File.join(PLUGIN_DIR, "package-lock.json"))
+
+    [
+      %w[npm ci],
+      %w[npm run build]
+    ].each do |command|
+      stdout, stderr, status = Open3.capture3(*command, chdir: PLUGIN_DIR)
+      next if status.success?
+
+      raise "#{command.join(' ')} failed in #{PLUGIN_DIR}: #{stdout}#{stderr}"
+    end
+  end
+
+  def assert_sdk_present!
+    missing = REQUIRED_SDK_FILES.reject { |relative| File.file?(File.join(PLUGIN_DIR, relative)) }
+    return if missing.empty?
+
+    raise "WordPress plugin SDK missing after build: #{missing.join(', ')}. Run npm run build in #{PLUGIN_DIR}."
+  end
+
+  def assert_zip_entries_include_sdk!(entries)
+    missing = REQUIRED_SDK_FILES.reject { |relative| entries.key?("#{PLUGIN_SLUG}/#{relative}") }
+    return if missing.empty?
+
+    raise "WordPress ZIP omit SDK files: #{missing.join(', ')}"
   end
 
   def wordpress_zip_entries

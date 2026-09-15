@@ -18,7 +18,9 @@ The plugin in `wordpress/recording-studio-widgets/` is a dynamic block named **W
 - **Block**: `pageRecordingId` attribute (UUID). Editor preview uses `GET /wp-json/recording-studio/v1/preview/{uuid}` (`edit_posts`).
 - **Front**: SSR `data-rs-payload` plus `viewScript` (`front.js`) calling `window.RecordingStudioPluginSdk.mount` — no secrets in the page.
 - **SDK**: committed under `assets/sdk/`, copied to `build/sdk/` on `npm run build`.
-- Provision OAuth credentials on the dummy host with `WpPluginDemo::Provision.isolated_client!` (see `test/dummy/README.md`).
+- Provision OAuth credentials on the dummy host with `WpPluginDemo::Seed.print_connection_for_runbook!` or `WpPluginDemo::Provision.isolated_client!` (see `test/dummy/README.md`).
+
+Cold start (clone → ZIP → working block): [docs/wordpress-plugin-demo-runbook.md](docs/wordpress-plugin-demo-runbook.md).
 
 `docs/gem_template/` stays as architectural reference for the engine conventions. `docs/wordpress-packaging.md` describes the gem and ZIP allowlists. This README is the product guide.
 
@@ -104,17 +106,27 @@ The dummy Gemfile keeps `github:` sources so Bundler can fetch those gems. The g
 
 ## How packaging is verified
 
-Run this from the repository root:
+Build an installable WordPress ZIP in one command from the repository root:
+
+```bash
+bin/build-plugin-zip
+```
+
+That runs `npm ci && npm run build` in `wordpress/recording-studio-widgets/`, asserts `build/sdk/` is present, and writes `pkg/recording-studio-widgets.zip`. Alias: `bin/package-wordpress-zip`.
+
+Verify both the gem and the ZIP stay free of dummy host code:
 
 ```bash
 bin/check-package-boundaries
 ```
 
-The script builds the gem into `pkg/` and an installable ZIP into `pkg/recording-studio-widgets.zip`. It then extracts both artifacts. It fails if dummy host paths or dummy source markers appear in either one.
+The script builds the gem into `pkg/` and the WordPress ZIP (compiling assets unless you pass `--skip-compile`). It fails if dummy host paths or dummy source markers appear in either artifact, or if the ZIP omits the baked SDK.
 
-The gem may contain `app/`, `config/`, `db/`, `lib/`, `MIT-LICENSE`, `Rakefile`, and `README.md`. The ZIP may contain the plugin bootstrap PHP, `includes/`, compiled `build/` assets, and `readme.txt`. See `docs/wordpress-packaging.md`.
+The gem may contain `app/`, `config/`, `db/`, `lib/`, `MIT-LICENSE`, `Rakefile`, and `README.md`. The ZIP may contain the plugin bootstrap PHP, `includes/`, compiled `build/` assets (including `build/sdk/`), and `readme.txt`. See `docs/wordpress-packaging.md`.
 
-CI runs the same script and uploads the ZIP.
+CI builds plugin assets, runs `bin/check-package-boundaries --skip-compile`, and uploads the ZIP.
+
+Step-by-step host + WordPress install: [docs/wordpress-plugin-demo-runbook.md](docs/wordpress-plugin-demo-runbook.md).
 
 ## Out of scope
 

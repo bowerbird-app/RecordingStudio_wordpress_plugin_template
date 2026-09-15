@@ -21,9 +21,25 @@ The ZIP is the installable plugin folder `recording-studio-widgets/`. Allowed pa
 - `includes/`
 - `build/`
 
-The ZIP does not include `src/`, `tests/`, `node_modules/`, `vendor/`, `package.json`, `.wp-env.json`, Ruby files, or repo metadata.
+The ZIP must include the baked SDK under `build/sdk/` (`recording-studio-plugin-sdk.js` and `.css`). Those files are copied from `assets/sdk/` by `npm run build`.
+
+The ZIP does not include `src/`, `assets/`, `tests/`, `node_modules/`, `vendor/`, `package.json`, `.wp-env.json`, Ruby files, or repo metadata.
 
 ## Commands
+
+Build an installable ZIP in one step (runs `npm ci`, `npm run build`, asserts SDK, writes the archive):
+
+```bash
+bin/build-plugin-zip
+```
+
+Alias:
+
+```bash
+bin/package-wordpress-zip
+```
+
+Pass `--skip-compile` when `wordpress/recording-studio-widgets/build/` (including `build/sdk/`) is already built.
 
 Build and inspect both artifacts:
 
@@ -31,38 +47,22 @@ Build and inspect both artifacts:
 bin/check-package-boundaries
 ```
 
+`bin/check-package-boundaries` compiles plugin assets by default. Pass `--skip-compile` after a prior `npm ci && npm run build` (CI does this). Pass `--zip-only` or `--gem-only` to limit which artifact is built.
+
 Build only the gem:
 
 ```bash
 bin/package-gem
 ```
 
-Build only the WordPress ZIP:
-
-```bash
-bin/package-wordpress-zip
-```
-
 Outputs land in `pkg/`. That directory is gitignored.
+
+Cold-start install and WordPress Settings steps: [wordpress-plugin-demo-runbook.md](wordpress-plugin-demo-runbook.md).
 
 ## How the check fails
 
-`bin/package_boundaries.rb` holds the allowlists and the dummy-host fingerprints. A path that contains `test/dummy` fails. File contents that include `module Dummy`, `Dummy::Application`, or `dummy_page_nav` fail.
+`bin/package_boundaries.rb` holds the allowlists, SDK requirements, and the dummy-host fingerprints. A path that contains `test/dummy` fails. File contents that include `module Dummy`, `Dummy::Application`, or `dummy_page_nav` fail. A ZIP without `build/sdk/recording-studio-plugin-sdk.js` (and the CSS sibling) fails before the archive is written.
 
 The gem also rejects `.php` and WordPress source trees. The ZIP also rejects `.rb`, `Gemfile`, and plugin development files.
 
 To confirm the fail path, place a dummy host file in a ZIP and run `PackageBoundaries.inspect_zip`. The check must report a dummy host violation.
-
-## Plugin build before you zip
-
-Compile assets before you package:
-
-```bash
-cd wordpress/recording-studio-widgets
-npm install
-npm run build
-```
-
-`bin/package-wordpress-zip` copies compiled files from `build/`. It does not run webpack.
-
-The installable ZIP includes compiled block assets under `build/recording-studio-widget/` and the baked Recording Studio plugin SDK under `build/sdk/` (copied from committed `assets/sdk/` during `npm run build`).

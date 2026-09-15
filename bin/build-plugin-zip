@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+# Alias for package-wordpress-zip: compile assets, assert SDK, write installable ZIP.
 require_relative "package_boundaries"
 
 skip_compile = ARGV.include?("--skip-compile")

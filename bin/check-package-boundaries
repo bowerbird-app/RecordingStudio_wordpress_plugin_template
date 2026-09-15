@@ -13,6 +13,7 @@ module PackageBoundaries
     def initialize(argv)
       @build_gem = !argv.include?("--zip-only")
       @build_zip = !argv.include?("--gem-only")
+      @compile_zip = !argv.include?("--skip-compile")
     end
 
     def run
@@ -49,7 +50,7 @@ module PackageBoundaries
     end
 
     def check_zip
-      path = PackageBoundaries.build_wordpress_zip!
+      path = PackageBoundaries.build_wordpress_zip!(compile: @compile_zip)
       result = PackageBoundaries.inspect_zip(path)
       result.merge(title: "zip #{path}")
     end
