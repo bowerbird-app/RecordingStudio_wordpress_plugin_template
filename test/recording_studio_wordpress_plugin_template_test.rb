@@ -4,7 +4,7 @@ require "test_helper"
 
 class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
   def test_version_matches_release
-    assert_equal "0.4.1", ::RecordingStudioWordpressPluginTemplate::VERSION
+    assert_equal "0.4.2", ::RecordingStudioWordpressPluginTemplate::VERSION
   end
 
   def test_engine_exists
@@ -160,13 +160,49 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
   def test_dummy_tailwind_keeps_flatpack_theme_selection_in_flatpack
     tailwind_source = File.read(File.expand_path("dummy/app/assets/tailwind/application.css", __dir__))
 
-    assert_includes tailwind_source, "../../../vendor/bundle/**/flatpack/app/components/**/*.{rb,erb}"
+    assert_includes tailwind_source, "../../../vendor/flat_pack/app/components/**/*.{rb,erb}"
+    assert_includes tailwind_source, "../../../vendor/recording_studio/app/views/**/*.erb"
     assert_includes tailwind_source, "flatpack-*/app/components/**/*.{rb,erb}"
-    assert_includes tailwind_source, "../../../vendor/bundle/**/recording_studio/app/views/**/*.erb"
-    assert_includes tailwind_source, "recordingstudio-*/app/views/**/*.erb"
+    assert_includes tailwind_source, "RecordingStudio-*/app/views/**/*.erb"
     refute_includes tailwind_source, "@theme"
     refute_includes tailwind_source, ":root {"
     refute_includes tailwind_source, "--color-fp-primary"
+  end
+
+  def test_dummy_tailwind_sources_resolve_via_vendor_symlinks
+    dummy_root = File.expand_path("dummy", __dir__)
+    gemfile = File.join(dummy_root, "Gemfile")
+    env = {
+      "BUNDLE_GEMFILE" => gemfile,
+      "BUNDLE_APP_CONFIG" => nil,
+      "BUNDLE_BIN_PATH" => nil,
+      "BUNDLE_LOCKFILE" => nil,
+      "BUNDLER_SETUP" => nil,
+      "BUNDLER_VERSION" => nil,
+      "RUBYLIB" => nil,
+      "RUBYOPT" => nil,
+      "RAILS_ENV" => "test",
+      "DISABLE_SIMPLECOV" => "true"
+    }
+    env["BUNDLE_PATH"] = ENV["BUNDLE_PATH"] if ENV["BUNDLE_PATH"]
+
+    success = Bundler.with_unbundled_env do
+      system(
+        env,
+        "bundle", "exec", "bin/rails", "recording_studio_root_switchable:link_tailwind_sources",
+        chdir: dummy_root,
+        out: File::NULL,
+        err: File::NULL
+      )
+    end
+    assert success, "link_tailwind_sources should succeed with the dummy Gemfile"
+
+    flat_pack = File.join(dummy_root, "vendor/flat_pack/app/components")
+    recording_studio = File.join(dummy_root, "vendor/recording_studio/app/views")
+
+    assert File.directory?(flat_pack), "expected vendor/flat_pack symlink after link_tailwind_sources"
+    assert File.directory?(recording_studio), "expected vendor/recording_studio symlink after link_tailwind_sources"
+    assert Dir.glob(File.join(flat_pack, "**/*.{rb,erb}")).any?, "FlatPack components should be scannable"
   end
 
   def test_recording_studio_keeps_strict_recordable_declarations_enabled

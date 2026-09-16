@@ -1,5 +1,19 @@
 # Migration Notes
 
+## Tailwind / FlatPack CSS in the dummy
+
+The dummy scans FlatPack components and Recording Studio views through machine-local symlinks under `test/dummy/vendor/`:
+
+```bash
+cd test/dummy
+bin/rails recording_studio_root_switchable:link_tailwind_sources
+bin/rails tailwindcss:build
+```
+
+`app/assets/tailwind/application.css` prefers `vendor/flat_pack` and `vendor/recording_studio`, with fallbacks for `vendor/bundle` and system gem paths. Without the link step, Tailwind builds a near-empty stylesheet and FlatPack screens look unstyled.
+
+---
+
 ## Current Requirements
 
 - Ruby 3.3 or newer

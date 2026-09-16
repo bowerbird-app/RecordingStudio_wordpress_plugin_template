@@ -162,9 +162,11 @@ class InstallGeneratorTest < Minitest::Test
   def tailwind_source_lines
     gem_views = "recording_studio_wordpress_plugin_template-*/app/views/**/*.erb"
     [
-      '@source "../../vendor/bundle/**/recording_studio_wordpress_plugin_template/app/views/**/*.erb";',
+      '@source "../../../vendor/recording_studio_wordpress_plugin_template/app/views/**/*.erb";',
+      '@source "../../../vendor/bundle/**/recording_studio_wordpress_plugin_template/app/views/**/*.erb";',
       "@source \"../../../../../../usr/local/bundle/ruby/**/bundler/gems/#{gem_views}\";",
-      '@source "../../vendor/bundle/**/flatpack/app/components/**/*.{rb,erb}";',
+      '@source "../../../vendor/flat_pack/app/components/**/*.{rb,erb}";',
+      '@source "../../../vendor/bundle/**/flatpack*/app/components/**/*.{rb,erb}";',
       '@source "../../../../../../usr/local/bundle/ruby/**/bundler/gems/flatpack-*/app/components/**/*.{rb,erb}";'
     ]
   end
