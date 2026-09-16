@@ -9,9 +9,7 @@ RecordingStudioApi.configure do |config|
   config.rate_limit_api_enabled = false
   config.rate_limit_oauth_enabled = false
   config.api_management_authorization_required = false
-  # This host does not mount Admin. Keep AdminApi loadable under CI eager_load
-  # without registering an admin-root parent type.
-  config.admin_root_recordable_type_names = []
+  config.admin_root_recordable_type_names = ["AdminRoot"]
 
   config.api WpPluginDemo::Contract::API_KEY do |api|
     api.openapi_title = WpPluginDemo::Contract::OPENAPI_TITLE

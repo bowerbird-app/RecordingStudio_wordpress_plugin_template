@@ -1,26 +1,18 @@
 module ApplicationHelper
   # Single registry for signed-in host chrome. Keep labels everyday (not gem jargon).
-  DummyHostNavItem = Data.define(:key, :text, :icon, :href_name)
+  DummyHostNavItem = Data.define(:key, :text, :icon)
+
+  REGISTERED_APPS_PATH = "/admin/screens/oauth_clients"
 
   DUMMY_HOST_NAV = [
-    DummyHostNavItem.new(key: :home, text: "Home", icon: :home, href_name: :root_path),
-    DummyHostNavItem.new(
-      key: :recordings_tree,
-      text: "Recordings tree",
-      icon: :folder,
-      href_name: :docs_recordings_tree_path
-    ),
-    DummyHostNavItem.new(
-      key: :plugin_credentials,
-      text: "Plugin credentials",
-      icon: :key,
-      href_name: :plugin_credentials_path
-    )
+    DummyHostNavItem.new(key: :home, text: "Home", icon: :home),
+    DummyHostNavItem.new(key: :recordings_tree, text: "Recordings tree", icon: :folder),
+    DummyHostNavItem.new(key: :registered_apps, text: "Registered apps", icon: :key)
   ].freeze
 
   def dummy_host_nav_items
     DUMMY_HOST_NAV.map do |item|
-      href = main_app.public_send(item.href_name)
+      href = dummy_host_nav_href(item.key)
       {
         key: item.key,
         text: item.text,
@@ -37,14 +29,27 @@ module ApplicationHelper
 
   private
 
+  def dummy_host_nav_href(key)
+    case key
+    when :home
+      main_app.root_path
+    when :recordings_tree
+      main_app.docs_recordings_tree_path
+    when :registered_apps
+      REGISTERED_APPS_PATH
+    else
+      raise ArgumentError, "unknown nav key: #{key}"
+    end
+  end
+
   def dummy_host_nav_active?(key, href)
     case key
     when :home
       current_page?(main_app.root_path)
     when :recordings_tree
       current_page?(main_app.docs_recordings_tree_path)
-    when :plugin_credentials
-      current_page?(main_app.plugin_credentials_path)
+    when :registered_apps
+      request.path.start_with?("/admin")
     else
       current_page?(href)
     end

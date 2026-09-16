@@ -10,10 +10,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_15_050029) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_16_090000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
+
+  create_table "admin_roots", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "folders", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
@@ -260,6 +266,82 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_15_050029) do
     t.index ["recording_id"], name: "index_recording_studio_events_on_recording_id"
   end
 
+  create_table "recording_studio_oauth_access_tokens", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "expires_at", null: false
+    t.datetime "last_used_at"
+    t.uuid "oauth_authorization_id", null: false
+    t.datetime "revoked_at"
+    t.string "token_digest", null: false
+    t.string "token_prefix", null: false
+    t.datetime "updated_at", null: false
+    t.index ["expires_at"], name: "index_recording_studio_oauth_access_tokens_on_expires_at"
+    t.index ["oauth_authorization_id"], name: "idx_on_oauth_authorization_id_7313b03aba"
+    t.index ["token_digest"], name: "index_recording_studio_oauth_access_tokens_on_token_digest", unique: true
+  end
+
+  create_table "recording_studio_oauth_authorization_codes", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "code_challenge"
+    t.string "code_challenge_method"
+    t.string "code_digest", null: false
+    t.datetime "created_at", null: false
+    t.datetime "expires_at", null: false
+    t.uuid "oauth_authorization_id", null: false
+    t.string "redirect_uri", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "used_at"
+    t.index ["code_digest"], name: "idx_on_code_digest_bcebd970b4", unique: true
+    t.index ["expires_at"], name: "index_recording_studio_oauth_authorization_codes_on_expires_at"
+    t.index ["oauth_authorization_id"], name: "idx_on_oauth_authorization_id_4cb485335a"
+  end
+
+  create_table "recording_studio_oauth_authorizations", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "access_recording_id"
+    t.datetime "created_at", null: false
+    t.uuid "manager_access_recording_id", null: false
+    t.uuid "manager_actor_id", null: false
+    t.string "manager_actor_type", null: false
+    t.uuid "oauth_client_id", null: false
+    t.datetime "revoked_at"
+    t.string "role", null: false
+    t.datetime "updated_at", null: false
+    t.index ["access_recording_id"], name: "idx_on_access_recording_id_94e16371a2"
+    t.index ["manager_access_recording_id"], name: "idx_on_manager_access_recording_id_ee8e9d6f9c"
+    t.index ["manager_actor_type", "manager_actor_id"], name: "index_rs_oauth_authorizations_on_manager_actor"
+    t.index ["oauth_client_id", "manager_actor_type", "manager_actor_id", "manager_access_recording_id"], name: "index_rs_oauth_authorizations_unique_active", unique: true, where: "(revoked_at IS NULL)"
+    t.index ["oauth_client_id"], name: "index_recording_studio_oauth_authorizations_on_oauth_client_id"
+    t.index ["revoked_at"], name: "index_recording_studio_oauth_authorizations_on_revoked_at"
+  end
+
+  create_table "recording_studio_oauth_clients", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "api_key", default: "public", null: false
+    t.string "client_id", null: false
+    t.string "client_secret_digest"
+    t.boolean "confidential", default: true, null: false
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.jsonb "redirect_uris", default: [], null: false
+    t.datetime "revoked_at"
+    t.datetime "updated_at", null: false
+    t.index ["api_key"], name: "index_recording_studio_oauth_clients_on_api_key"
+    t.index ["client_id"], name: "index_recording_studio_oauth_clients_on_client_id", unique: true
+  end
+
+  create_table "recording_studio_oauth_refresh_tokens", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "expires_at", null: false
+    t.uuid "oauth_authorization_id", null: false
+    t.uuid "replaced_by_id"
+    t.datetime "revoked_at"
+    t.string "token_digest", null: false
+    t.string "token_prefix", null: false
+    t.datetime "updated_at", null: false
+    t.index ["expires_at"], name: "index_recording_studio_oauth_refresh_tokens_on_expires_at"
+    t.index ["oauth_authorization_id"], name: "idx_on_oauth_authorization_id_a1e93340c5"
+    t.index ["replaced_by_id"], name: "index_recording_studio_oauth_refresh_tokens_on_replaced_by_id"
+    t.index ["token_digest"], name: "index_recording_studio_oauth_refresh_tokens_on_token_digest", unique: true
+  end
+
   create_table "recording_studio_publishable_publishables", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "canonical_url"
     t.datetime "created_at", null: false
@@ -322,6 +404,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_15_050029) do
     t.index ["root_recording_id"], name: "idx_rs_root_switchable_root_recording"
   end
 
+  create_table "recording_studio_site_settings", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+  end
+
   create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email", default: "", null: false
@@ -344,6 +431,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_15_050029) do
   add_foreign_key "recording_studio_api_api_credentials", "recording_studio_api_api_clients", column: "api_client_id"
   add_foreign_key "recording_studio_embeddable_view_logs", "recording_studio_embeddable_embeds", column: "embed_id"
   add_foreign_key "recording_studio_events", "recording_studio_recordings", column: "recording_id"
+  add_foreign_key "recording_studio_oauth_access_tokens", "recording_studio_oauth_authorizations", column: "oauth_authorization_id"
+  add_foreign_key "recording_studio_oauth_authorization_codes", "recording_studio_oauth_authorizations", column: "oauth_authorization_id"
+  add_foreign_key "recording_studio_oauth_authorizations", "recording_studio_oauth_clients", column: "oauth_client_id"
+  add_foreign_key "recording_studio_oauth_refresh_tokens", "recording_studio_oauth_authorizations", column: "oauth_authorization_id"
   add_foreign_key "recording_studio_publishable_publishables", "recording_studio_recordings", column: "social_image_attachment_recording_id", name: "fk_rs_publishables_social_image_attachment_recording"
   add_foreign_key "recording_studio_recordings", "recording_studio_recordings", column: "parent_recording_id"
   add_foreign_key "recording_studio_recordings", "recording_studio_recordings", column: "root_recording_id"
