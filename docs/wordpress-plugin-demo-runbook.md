@@ -120,6 +120,7 @@ Save settings. Use **Test connection**. A success notice means the host accepted
 ## 5. What “good” looks like
 
 - The published page shows the SDK mount from BrowserPayload `schema_version: 1` (inspect the block wrapper `data-rs-payload` JSON; top-level `schema_version` is `1`).
+- The block wrapper does not paint WordPress scaffold chrome (no teal card, no forced white text). Presentation matches the dummy Pages embed preview: host embed HTML and CSS pass through as-is.
 - Browser Network has no OAuth client secret and no access token. Token and embed calls stay on the WordPress server (PHP). The browser loads only the baked SDK script/CSS and the page HTML.
 - Editor preview (with `edit_posts`) can show the same mount without exposing secrets.
 

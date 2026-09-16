@@ -26,7 +26,14 @@ spl_autoload_register(
 	}
 );
 
-foreach ( array( 'BrowserPayloadTest.php', 'PluginSettingsTest.php', 'StudioClientTest.php' ) as $file ) {
+foreach (
+	array(
+		'BlockStylesheetTest.php',
+		'BrowserPayloadTest.php',
+		'PluginSettingsTest.php',
+		'StudioClientTest.php',
+	) as $file
+) {
 	require $plugin_root . '/tests/php/' . $file;
 }
 

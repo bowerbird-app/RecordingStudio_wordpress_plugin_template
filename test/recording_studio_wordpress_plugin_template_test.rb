@@ -4,7 +4,7 @@ require "test_helper"
 
 class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
   def test_version_matches_release
-    assert_equal "0.4.9", ::RecordingStudioWordpressPluginTemplate::VERSION
+    assert_equal "0.4.10", ::RecordingStudioWordpressPluginTemplate::VERSION
   end
 
   def test_engine_exists

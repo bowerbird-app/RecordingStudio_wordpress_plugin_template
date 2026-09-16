@@ -24,7 +24,6 @@ return array(
 		),
 		'textdomain' => 'recording-studio-widget',
 		'editorScript' => 'file:./index.js',
-		'style' => 'file:./style-index.css',
 		'viewScript' => 'file:./front.js',
 		'render' => 'file:./render.php'
 	)
