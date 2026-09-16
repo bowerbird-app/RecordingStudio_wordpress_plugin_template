@@ -61,13 +61,12 @@
     <% end %>
   </div>
 
-  <div>
+  <%= form_with url: plugin_credentials_path, method: :post, local: true do %>
     <%= render FlatPack::Button::Component.new(
       text: (@connection.oauth_client_id.present? ? "Regenerate credentials" : "Create credentials"),
       style: :primary,
       size: :md,
-      href: plugin_credentials_path,
-      method: :post
+      type: "submit"
     ) %>
-  </div>
+  <% end %>
 </div>
