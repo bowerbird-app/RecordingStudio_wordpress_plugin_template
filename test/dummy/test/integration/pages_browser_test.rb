@@ -35,9 +35,10 @@ class PagesBrowserTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "body[data-dummy-host-layout='true']", count: 1
-    assert_includes response.body, "WordPress embed preview"
+    refute_includes response.body, "WordPress embed preview"
+    refute_includes response.body, "Compare this host iframe"
     assert_select "iframe[title=?][src=?]",
-                  "WordPress embed preview",
+                  "Getting Started",
                   embed_preview_page_path(@page_recording)
   end
 

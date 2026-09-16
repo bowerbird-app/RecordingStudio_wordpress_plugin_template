@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.9] - 2026-09-16
+
+### Fixed
+- Dummy Pages show (`/pages/:id`) keeps host sidebar chrome only. Main content is the embed preview iframe. Removed the duplicate PageNav back control, PageTitle, and marketing subtitle.
+
+### Upgrade notes
+- Dummy-only. Open a page from `/pages` to see the iframe-only show screen. Use the sidebar **Pages** item to return to the list. No WordPress plugin or named API changes.
+
 ## [0.4.8] - 2026-09-16
 
 ### Added
