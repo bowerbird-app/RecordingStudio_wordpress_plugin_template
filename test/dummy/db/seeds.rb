@@ -29,13 +29,23 @@ grant_or_find_access = lambda do |recording, actor, role|
   )
   return result.value if result.success?
 
-  bootstrap = RecordingStudioAccessible.bootstrap_owner_access!(
-    recording: recording,
-    actor: actor
-  )
-  raise bootstrap.error if bootstrap.failure?
+  if role.to_s == "admin"
+    bootstrap = RecordingStudioAccessible.bootstrap_owner_access!(
+      recording: recording,
+      actor: actor
+    )
+    return bootstrap.value if bootstrap.success?
+  end
 
-  bootstrap.value
+  RecordingStudioAccessible::AccessCreationContext.allow do
+    access = RecordingStudio::Access.create!(actor: actor, role: role)
+    RecordingStudio.record!(
+      action: "created",
+      recordable: access,
+      root_recording: recording.root_recording || recording,
+      parent_recording: recording
+    ).recording
+  end
 end
 
 user = User.find_or_create_by!(email: "admin@admin.com") do |u|
@@ -65,13 +75,15 @@ begin
   private_root_recording = RecordingStudio.root_recording_for(private_workspace)
   admin_recording = RecordingStudio.root_recording_for(admin_root)
 
+  # Grant roots while they are still empty so bootstrap_owner_access! can run.
+  grant_or_find_access.call(root_recording, user, :admin)
+  grant_or_find_access.call(accessible_root_recording, user, :admin)
+  grant_or_find_access.call(admin_recording, user, :admin)
+
   folder_recording = find_or_record_child.call(folder, root_recording, root_recording)
   find_or_record_child.call(page, root_recording, folder_recording)
 
-  grant_or_find_access.call(root_recording, user, :admin)
-  grant_or_find_access.call(accessible_root_recording, user, :admin)
   grant_or_find_access.call(folder_recording, user, :edit)
-  grant_or_find_access.call(admin_recording, user, :admin)
 
   unless RecordingStudioSiteSettings.name_for(root_recording) == "Studio"
     RecordingStudioSiteSettings.update!(root_recording, name: "Studio", actor: user)

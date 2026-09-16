@@ -122,7 +122,8 @@ class DocsControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "flat-pack--sidebar-layout"
     assert_includes response.body, "Home"
     assert_includes response.body, "Recordings tree"
-    assert_includes response.body, "Plugin credentials"
+    assert_includes response.body, "Registered apps"
+    refute_includes response.body, "Plugin credentials"
   end
 
   private
