@@ -25,7 +25,7 @@ bin/rails tailwindcss:build
 
 ## 0.4.10
 
-The WordPress block stylesheet no longer forces create-block teal/white chrome on `.wp-block-recording-studio-recording-studio-widget`. Rebuild the plugin assets and reinstall the ZIP so editor and front stop overriding host embed presentation.
+The WordPress block no longer registers a create-block stylesheet on `.wp-block-recording-studio-recording-studio-widget`. Rebuild the plugin assets and reinstall the ZIP so editor and front stop overriding host embed presentation.
 
 ## 0.4.3
 
