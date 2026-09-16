@@ -27,5 +27,14 @@ class DummySeedOauthTest < ActiveSupport::TestCase
 
     client = RecordingStudioOauth::OauthClient.find_by(name: "Seed Demo App")
     assert_predicate client, :present?
+
+    refute RecordingStudio.capability_enabled?(:accessible, for: Folder)
+    folder = Folder.find_by!(name: "Product Docs")
+    folder_recording = RecordingStudio::Recording.find_by!(recordable: folder)
+    folder_access = RecordingStudioAccessible.access_recordings_for_actor(
+      recording: folder_recording,
+      actor: user
+    )
+    assert_empty folder_access
   end
 end
