@@ -1,12 +1,6 @@
 /**
- * The following styles get applied both on the front of your site
- * and in the editor.
+ * Intentionally empty.
  *
- * Replace them with your own styles or remove the file completely.
+ * WordPress must pass through host embed HTML and CSS as-is.
+ * Do not paint block-wrapper background or text color over the payload.
  */
-
-.wp-block-recording-studio-recording-studio-widget {
-	background-color: #21759b;
-	color: #fff;
-	padding: 2px;
-}

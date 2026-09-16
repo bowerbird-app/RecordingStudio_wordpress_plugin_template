@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.10] - 2026-09-16
+
+### Fixed
+- WordPress Plugin Demo block no longer ships create-block scaffold chrome (`#21759b` background and white text) on the block wrapper. Editor and front pass through host embed HTML/CSS as-is so future payload CSS from the host appears unchanged.
+
+### Upgrade notes
+- Rebuild and reinstall the plugin ZIP (`bin/build-plugin-zip` or `npm run build` under `wordpress/recording-studio-widgets`) so editor and front load the empty block stylesheet. Dummy Pages embed preview is unchanged. No named API or BrowserPayload changes.
+
 ## [0.4.9] - 2026-09-16
 
 ### Fixed

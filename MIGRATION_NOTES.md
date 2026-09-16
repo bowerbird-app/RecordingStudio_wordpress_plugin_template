@@ -23,6 +23,10 @@ bin/rails tailwindcss:build
 - FlatPack dummy tag `v0.1.177`
 - Public RubyGems and GitHub access for dependency installation
 
+## 0.4.10
+
+The WordPress block stylesheet no longer forces create-block teal/white chrome on `.wp-block-recording-studio-recording-studio-widget`. Rebuild the plugin assets and reinstall the ZIP so editor and front stop overriding host embed presentation.
+
 ## 0.4.3
 
 Host `Page` now declares `renderer: "pages/embed"`. The template renders WordPress Plugin Demo HTML from `WpPluginDemo::Seed.embed_body_html_for`. Without that template, Embeddable returns its fallback stub and a raw `#<Page:…>` dump in the WP block.
