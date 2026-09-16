@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.8] - 2026-09-16
+
+### Added
+- Dummy FlatPack sidebar **API Keys** item linking to Recording Studio API clients (`/recording_studio_api/api_clients`) for minting WordPress client credentials. Registered apps stays for Oauth Admin.
+
+### Upgrade notes
+- Dummy-only. Sign in and use sidebar **API Keys** for API client credentials; **Registered apps** remains Oauth Admin. No WordPress plugin or named API changes.
+
 ## [0.4.7] - 2026-09-16
 
 ### Fixed

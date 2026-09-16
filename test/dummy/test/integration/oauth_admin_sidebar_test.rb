@@ -30,6 +30,20 @@ class OauthAdminSidebarTest < ActionDispatch::IntegrationTest
     refute_includes response.body, "/plugin_credentials"
   end
 
+  test "signed-in sidebar links API Keys to api clients and keeps Registered apps" do
+    api_clients_path = recording_studio_api.api_clients_path
+
+    get root_path
+
+    assert_response :success
+    assert_includes response.body, "API Keys"
+    assert_includes response.body, api_clients_path
+    assert_select "a[href=?]", api_clients_path
+    assert_includes response.body, "Registered apps"
+    assert_includes response.body, REGISTERED_APPS_PATH
+    assert_select "a[href=?]", REGISTERED_APPS_PATH
+  end
+
   test "registered apps admin screen loads for seeded admin" do
     get REGISTERED_APPS_PATH
 

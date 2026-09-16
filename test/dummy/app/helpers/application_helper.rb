@@ -7,7 +7,8 @@ module ApplicationHelper
   DUMMY_HOST_NAV = [
     DummyHostNavItem.new(key: :home, text: "Home", icon: :home),
     DummyHostNavItem.new(key: :recordings_tree, text: "Recordings tree", icon: :folder),
-    DummyHostNavItem.new(key: :registered_apps, text: "Registered apps", icon: :key)
+    DummyHostNavItem.new(key: :registered_apps, text: "Registered apps", icon: :key),
+    DummyHostNavItem.new(key: :api_keys, text: "API Keys", icon: :lock)
   ].freeze
 
   def dummy_host_nav_items
@@ -37,6 +38,8 @@ module ApplicationHelper
       main_app.docs_recordings_tree_path
     when :registered_apps
       REGISTERED_APPS_PATH
+    when :api_keys
+      recording_studio_api.api_clients_path
     else
       raise ArgumentError, "unknown nav key: #{key}"
     end
@@ -50,6 +53,8 @@ module ApplicationHelper
       current_page?(main_app.docs_recordings_tree_path)
     when :registered_apps
       request.path.start_with?("/admin")
+    when :api_keys
+      request.path.start_with?(recording_studio_api.api_clients_path)
     else
       current_page?(href)
     end
