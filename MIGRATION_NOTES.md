@@ -9,6 +9,10 @@
 - FlatPack dummy tag `v0.1.177`
 - Public RubyGems and GitHub access for dependency installation
 
+## 0.4.2
+
+Dummy development and test host authorization allow `.trycloudflare.com` for Cloudflare quick tunnels. Restart the dummy host after upgrading before using a `trycloudflare.com` URL.
+
 ## Verification
 
 Install both bundles and run the complete gem and dummy app test path:

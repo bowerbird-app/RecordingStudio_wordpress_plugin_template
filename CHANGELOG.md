@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.2] - 2026-09-16
+
+### Changed
+- Dummy development host authorization allows `.trycloudflare.com` so `cloudflared` quick tunnels reach the Rails app instead of a 403 blocked-host page.
+
+### Upgrade notes
+- After pull, restart the dummy host (`bin/dev` or `bin/rails s`) before using a Cloudflare quick tunnel URL.
+
 ## [0.4.1] - 2026-09-15
 
 ### Added

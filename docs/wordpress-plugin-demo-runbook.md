@@ -21,6 +21,14 @@ bin/dev
 
 Open http://localhost:3000 and sign in at `/users/sign_in` with `admin@admin.com` / `Password`.
 
+To expose the host over HTTPS for WordPress on another machine, from another terminal:
+
+```bash
+cloudflared tunnel --url http://127.0.0.1:3000
+```
+
+Use the printed `https://….trycloudflare.com` URL as `host_base_url` (rewrite `localhost` in the seed output). Development already allows `.trycloudflare.com` hosts.
+
 `db:setup` seeds Studio Workspace, the Getting Started page, and enables embed on that page (`WpPluginDemo::Seed.ensure_studio_embed!`).
 
 Named API paths the plugin uses (do not change these unless the host is broken):
