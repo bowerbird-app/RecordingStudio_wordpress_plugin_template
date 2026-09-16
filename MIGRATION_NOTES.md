@@ -11,7 +11,8 @@
 
 ## 0.4.2
 
-Dummy development and test host authorization allow `.trycloudflare.com` for Cloudflare quick tunnels. Restart the dummy host after upgrading before using a `trycloudflare.com` URL.
+Dummy development host authorization allows `.trycloudflare.com` for Cloudflare quick tunnels. Restart the dummy host after upgrading before using a `trycloudflare.com` URL. Test stays unrestricted so Host Authorization does not block `www.example.com`.
+
 
 ## Verification
 
