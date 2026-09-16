@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.5] - 2026-09-16
+
+### Fixed
+- Dummy layouts load `flat_pack/application` so FlatPack's `.fp-skip-link` hide-until-focus rules apply. The Skip to content control stays keyboard-focusable and no longer overlaps the sidebar brand at rest.
+
+### Upgrade notes
+- Dummy-only. Restart the dummy (or hard-refresh) so the new stylesheet link loads. No WordPress plugin or named API changes.
+
 ## [0.4.4] - 2026-09-16
 
 ### Added
