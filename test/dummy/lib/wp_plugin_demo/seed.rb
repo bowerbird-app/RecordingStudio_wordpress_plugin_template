@@ -7,6 +7,21 @@ module WpPluginDemo
     ADMIN_EMAIL = "admin@admin.com"
     RUNBOOK_CLIENT_NAME = "WordPress Plugin Demo runbook"
 
+    GETTING_STARTED_LEAD =
+      "Connect the WordPress Plugin Demo block to this host and paste this page's recording id."
+    GETTING_STARTED_BODY_HTML = <<~HTML.squish
+      <p>#{GETTING_STARTED_LEAD}</p>
+      <p>OAuth client credentials stay on the WordPress server. The published block mounts BrowserPayload schema version 1 from the named API <code>wp_plugin_demo</code>.</p>
+      <ul>
+        <li>Settings → WordPress Plugin Demo for host URL and OAuth fields</li>
+        <li>Block attribute <code>pageRecordingId</code> for this Getting Started page</li>
+      </ul>
+    HTML
+
+    GENERIC_PAGE_BODY_HTML = <<~HTML.squish
+      <p>This page is part of the WordPress Plugin Demo host. Use a seeded Getting Started page recording id for the runbook block.</p>
+    HTML
+
     RunbookConnection = Data.define(
       :host_base_url,
       :oauth_client_id,
@@ -17,6 +32,13 @@ module WpPluginDemo
     )
 
     module_function
+
+    def embed_body_html_for(page)
+      title = page.respond_to?(:title) ? page.title.to_s : ""
+      return GETTING_STARTED_BODY_HTML if title == GETTING_STARTED_TITLE
+
+      GENERIC_PAGE_BODY_HTML
+    end
 
     def ensure_studio_embed!
       admin = User.find_by!(email: ADMIN_EMAIL)

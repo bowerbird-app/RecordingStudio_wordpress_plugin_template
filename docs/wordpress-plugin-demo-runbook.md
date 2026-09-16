@@ -21,7 +21,7 @@ bin/dev
 
 Open http://localhost:3000 and sign in at `/users/sign_in` with `admin@admin.com` / `Password`.
 
-`db:setup` seeds Studio Workspace, the Getting Started page, and enables embed on that page (`WpPluginDemo::Seed.ensure_studio_embed!`).
+`db:setup` seeds Studio Workspace, the Getting Started page, enables embed on that page (`WpPluginDemo::Seed.ensure_studio_embed!`), and registers the host Page renderer (`pages/embed`) so GET `:embed` returns real WordPress Plugin Demo HTML instead of Embeddable's fallback stub.
 
 Named API paths the plugin uses (do not change these unless the host is broken):
 
@@ -60,6 +60,10 @@ To look up only the seeded Getting Started id after seed:
 ```bash
 bin/rails runner 'puts WpPluginDemo::Seed.getting_started_page_recording_id'
 ```
+
+The id is the active `RecordingStudio::Recording` for the Page titled **Getting Started**. It stays stable across `db:seed` / `ensure_studio_embed!` on an existing database. A fresh `db:setup` or `db:reset` creates a new UUID. Re-print with `print_runbook_connection!` or the lookup above after reset, then paste the new id into the WordPress block.
+
+Embed HTML for Getting Started comes from `WpPluginDemo::Seed::GETTING_STARTED_BODY_HTML` via the host template `app/views/pages/embed.html.erb`. Re-seed does not rewrite that constant; change the constant (or template) and restart the dummy to refresh payload HTML.
 
 ## 3. Build the installable plugin ZIP
 

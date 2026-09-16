@@ -23,6 +23,16 @@ bin/rails tailwindcss:build
 - FlatPack dummy tag `v0.1.177`
 - Public RubyGems and GitHub access for dependency installation
 
+## 0.4.3
+
+Host `Page` now declares `renderer: "pages/embed"`. The template renders WordPress Plugin Demo HTML from `WpPluginDemo::Seed.embed_body_html_for`. Without that template, Embeddable returns its fallback stub and a raw `#<Page:…>` dump in the WP block.
+
+After upgrade:
+
+1. Restart the dummy host.
+2. Confirm GET `:embed` for Getting Started includes "WordPress Plugin Demo" and omits the stub phrase.
+3. After `db:reset`, re-print `page_recording_id` with `WpPluginDemo::Seed.getting_started_page_recording_id`.
+
 ## Verification
 
 Install both bundles and run the complete gem and dummy app test path:

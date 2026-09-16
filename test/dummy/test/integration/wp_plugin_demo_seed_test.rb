@@ -35,4 +35,18 @@ class WpPluginDemoSeedTest < ActiveSupport::TestCase
     assert result.success?, result.error&.message
     refute_nil result.value.fetch(:access_token)
   end
+
+  test "embed_body_html_for returns Getting Started demo copy and generic fallback" do
+    getting_started = Page.find_by!(title: "Getting Started")
+    other = Page.create!(title: "Other Demo Page")
+
+    body = WpPluginDemo::Seed.embed_body_html_for(getting_started)
+    assert_includes body, WpPluginDemo::Seed::GETTING_STARTED_LEAD
+    assert_includes body, "WordPress Plugin Demo"
+    refute_includes body, "does not define a custom embeddable renderer"
+
+    generic = WpPluginDemo::Seed.embed_body_html_for(other)
+    assert_includes generic, "WordPress Plugin Demo"
+    refute_equal body, generic
+  end
 end
