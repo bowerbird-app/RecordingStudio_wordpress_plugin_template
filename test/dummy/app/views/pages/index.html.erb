@@ -15,11 +15,7 @@
   } %>
 
   <%= render FlatPack::Table::Component.new(data: page_rows, class: "text-sm") do |table| %>
-    <% table.column(title: "Title") do |row| %>
-      <%= link_to row[:title], page_path(row[:recording]) %>
-    <% end %>
-    <% table.column(title: "Page id") do |row| %>
-      <code class="font-mono"><%= row[:recording].id %></code>
-    <% end %>
+    <% table.column(title: "Title") { |row| link_to row[:title], page_path(row[:recording]) } %>
+    <% table.column(title: "Page id") { |row| tag.code(row[:recording].id, class: "font-mono") } %>
   <% end %>
 </div>
