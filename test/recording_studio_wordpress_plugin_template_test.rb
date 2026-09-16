@@ -171,10 +171,31 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
 
   def test_dummy_tailwind_sources_resolve_via_vendor_symlinks
     dummy_root = File.expand_path("dummy", __dir__)
-    Dir.chdir(dummy_root) do
-      system("bundle", "exec", "rails", "recording_studio_root_switchable:link_tailwind_sources",
-             out: File::NULL, err: File::NULL)
+    gemfile = File.join(dummy_root, "Gemfile")
+    env = {
+      "BUNDLE_GEMFILE" => gemfile,
+      "BUNDLE_APP_CONFIG" => nil,
+      "BUNDLE_BIN_PATH" => nil,
+      "BUNDLE_LOCKFILE" => nil,
+      "BUNDLER_SETUP" => nil,
+      "BUNDLER_VERSION" => nil,
+      "RUBYLIB" => nil,
+      "RUBYOPT" => nil,
+      "RAILS_ENV" => "test",
+      "DISABLE_SIMPLECOV" => "true"
+    }
+    env["BUNDLE_PATH"] = ENV["BUNDLE_PATH"] if ENV["BUNDLE_PATH"]
+
+    success = Bundler.with_unbundled_env do
+      system(
+        env,
+        "bundle", "exec", "bin/rails", "recording_studio_root_switchable:link_tailwind_sources",
+        chdir: dummy_root,
+        out: File::NULL,
+        err: File::NULL
+      )
     end
+    assert success, "link_tailwind_sources should succeed with the dummy Gemfile"
 
     flat_pack = File.join(dummy_root, "vendor/flat_pack/app/components")
     recording_studio = File.join(dummy_root, "vendor/recording_studio/app/views")
