@@ -6,15 +6,14 @@ RecordingStudio.configure do |config|
     "Workspace",
     "Folder",
     "Page",
+    "AdminRoot",
     "RecordingStudioEmbeddable::Embed",
     # Publishable + Attachable gem types must be listed for boot even though this
     # host never enables those mixins on Page (Embeddable depends on Publishable;
     # Publishable::Publishable includes Attachable).
     "RecordingStudioPublishable::Publishable",
     "RecordingStudioAttachable::Attachment",
-    # API gem types load under CI eager_load / provision. AdminApi is listed with
-    # an empty admin_root_recordable_type_names in recording_studio_api.rb so this
-    # host does not need (or mount) an admin root.
+    "RecordingStudioSiteSettings::SiteSetting",
     "RecordingStudio::Access",
     "RecordingStudioApi::ApiClient",
     "RecordingStudioApi::ApiCredential",

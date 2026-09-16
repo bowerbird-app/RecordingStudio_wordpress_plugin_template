@@ -4,7 +4,7 @@ require "test_helper"
 
 class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
   def test_version_matches_release
-    assert_equal "0.4.5", ::RecordingStudioWordpressPluginTemplate::VERSION
+    assert_equal "0.4.6", ::RecordingStudioWordpressPluginTemplate::VERSION
   end
 
   def test_engine_exists
@@ -91,7 +91,8 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_admin", tag: "v2.0.2"'
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_publishable", tag: "v0.2.0"'
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_attachable", tag: "v0.5.1"'
-    refute_includes gemfile, "recording_studio_oauth"
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_Oauth", tag: "v0.2.0"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_site_settings", tag: "v0.1.0"'
     refute_includes gemfile, "recording_studio/v3.0.0"
     refute_includes gemfile, 'tag: "v0.1.133"'
     refute_includes gemfile, 'tag: "v0.6.0"'
@@ -149,7 +150,7 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     assert_includes sidebar, "dummy_host_nav_items"
     assert_includes helper_source, "Home"
     assert_includes helper_source, "Recordings tree"
-    assert_includes helper_source, "Plugin credentials"
+    assert_includes helper_source, "Registered apps"
   end
 
   def test_dummy_login_layout_keeps_flatpack_assets_without_tight_main_offset
@@ -227,16 +228,17 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     assert_includes initializer_source, '"RecordingStudioApi::ApiCredential"'
     assert_includes initializer_source, '"RecordingStudioApi::ApiAccessToken"'
     assert_includes initializer_source, '"RecordingStudioApi::AdminApi"'
+    assert_includes initializer_source, '"AdminRoot"'
+    assert_includes initializer_source, '"RecordingStudioSiteSettings::SiteSetting"'
     refute_includes initializer_source, "config.include_children"
     refute_includes initializer_source, "config.features."
     refute_includes initializer_source, "v3"
   end
 
-  def test_dummy_api_initializer_clears_admin_root_types
+  def test_dummy_api_initializer_registers_admin_root_types
     initializer_source = File.read(File.expand_path("dummy/config/initializers/recording_studio_api.rb", __dir__))
 
-    assert_includes initializer_source, "config.admin_root_recordable_type_names = []"
-    refute_includes initializer_source, "AdminRoot"
+    assert_includes initializer_source, 'config.admin_root_recordable_type_names = ["AdminRoot"]'
   end
 
   def test_dummy_ignores_embeddable_lib_on_host_zeitwerk
@@ -301,7 +303,8 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     view_source = File.read(view_path)
 
     assert_includes view_source, 'title: "WordPress widgets host"'
-    assert_includes view_source, 'subtitle: "This Rails dummy stays up on its own. WordPress is a separate origin."'
+    assert_includes view_source, "Registered apps"
+    refute_includes view_source, "Nothing talks to WordPress yet"
     assert_includes view_source, "FlatPack::Card::Component"
     assert_includes view_source, "dummy_page_nav"
     refute_includes view_source, 'title: "Template Demo"'

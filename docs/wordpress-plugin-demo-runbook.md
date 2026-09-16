@@ -30,9 +30,9 @@ Named API paths the plugin uses (do not change these unless the host is broken):
 
 ## 2. Create OAuth client credentials for `wp_plugin_demo`
 
-Preferred: sign in to the dummy and open **Plugin credentials** at `/plugin_credentials`. Create or regenerate, then copy Host URL, Client id, Client secret, and Page id into WordPress.
+Preferred for staff OAuth apps: sign in to the dummy and open sidebar **Registered apps** (`/admin/screens/oauth_clients`). For the named API `wp_plugin_demo` client used by the plugin block, use the console print below.
 
-Still from `test/dummy/`, the console print also works:
+From `test/dummy/`:
 
 ```bash
 bin/rails runner 'WpPluginDemo::Seed.print_runbook_connection!'

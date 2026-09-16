@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.6] - 2026-09-16
+
+### Changed
+- Dummy host replaces the custom `/plugin_credentials` mint screen with Recording Studio Oauth Admin (**Registered apps** in the FlatPack sidebar, `/admin/screens/oauth_clients`).
+- Dummy pins `recording_studio_oauth` v0.2.0 and `recording_studio_site_settings` v0.1.0; seeds Admin root, Accessible grants, and optional Seed Demo App OAuth client.
+
+### Removed
+- Dummy route, controller, views, and integration tests for `plugin_credentials`.
+
+### Upgrade notes
+- Dummy-only. Sign in and use sidebar **Registered apps** for OAuth client management. Console runners (`WpPluginDemo::Seed.print_runbook_connection!`, `WpPluginDemo::Provision.isolated_client!`) still provision `wp_plugin_demo` API credentials for WordPress.
+
 ## [0.4.5] - 2026-09-16
 
 ### Fixed

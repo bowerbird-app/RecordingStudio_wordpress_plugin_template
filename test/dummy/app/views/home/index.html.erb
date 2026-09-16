@@ -3,7 +3,7 @@
 <div class="flex w-full flex-col gap-6">
   <%= render FlatPack::PageTitle::Component.new(
     title: "WordPress widgets host",
-    subtitle: "This Rails dummy stays up on its own. WordPress is a separate origin.",
+    subtitle: "This Rails dummy is the Recording Studio host. WordPress stays a separate origin.",
     variant: :h1
   ) %>
 
@@ -20,9 +20,9 @@
 
       <% card.body do %>
         <ul class="space-y-3 text-sm leading-6">
-          <li>Recording Studio routes, Devise, and FlatPack are wired in this host.</li>
-          <li>Connectivity placeholders are env-only. Nothing talks to WordPress yet.</li>
-          <li>This app has no widget models, widget APIs, or WordPress render routes.</li>
+          <li>Recording Studio, Devise, FlatPack, and the named API are wired in this host.</li>
+          <li>Sidebar opens Home, the recordings tree, and Oauth Admin Registered apps.</li>
+          <li>Staff register OAuth apps under Admin. The WordPress plugin talks to the named API when you connect it.</li>
         </ul>
       <% end %>
     <% end %>

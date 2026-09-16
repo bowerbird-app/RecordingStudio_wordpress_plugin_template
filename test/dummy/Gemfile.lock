@@ -19,6 +19,20 @@ GIT
       recording_studio_publishable (~> 0.2.0)
 
 GIT
+  remote: https://github.com/bowerbird-app/RecordingStudio_Oauth.git
+  revision: 406b0ba4708607ffe6fce337d25a2440b6d74d3d
+  tag: v0.2.0
+  specs:
+    recording_studio_oauth (0.2.0)
+      flat_pack (~> 0.1.144)
+      rails (~> 8.1.0)
+      recording_studio (~> 4.2)
+      recording_studio_accessible (~> 0.9)
+      recording_studio_admin (~> 2.0)
+      recording_studio_api (~> 0.5.2)
+      recording_studio_site_settings (~> 0.1)
+
+GIT
   remote: https://github.com/bowerbird-app/RecordingStudio_accessible.git
   revision: bdff3ee3ace5cf3bfe33ba40476c1522cf1b6d61
   tag: v0.9.1
@@ -80,6 +94,19 @@ GIT
       recording_studio_accessible (~> 0.6)
 
 GIT
+  remote: https://github.com/bowerbird-app/RecordingStudio_site_settings.git
+  revision: fdc54708838734d7657c376cbebb3c63f23384dd
+  tag: v0.1.0
+  specs:
+    recording_studio_site_settings (0.1.0)
+      flat_pack (>= 0.1.144)
+      rails (~> 8.1.0)
+      recording_studio (~> 4.2)
+      recording_studio_accessible (~> 0.8)
+      recording_studio_admin (~> 2.0)
+      recording_studio_attachable (~> 0.5)
+
+GIT
   remote: https://github.com/bowerbird-app/flatpack.git
   revision: ac45389d5f20b6cd034d09805e6bb195369c4a5c
   tag: v0.1.177
@@ -93,7 +120,7 @@ GIT
 PATH
   remote: ../..
   specs:
-    recording_studio_wordpress_plugin_template (0.4.5)
+    recording_studio_wordpress_plugin_template (0.4.6)
       rails (~> 8.1.0)
       recording_studio (~> 4.2)
 
@@ -527,8 +554,10 @@ DEPENDENCIES
   recording_studio_api!
   recording_studio_attachable!
   recording_studio_embeddable!
+  recording_studio_oauth!
   recording_studio_publishable!
   recording_studio_root_switchable!
+  recording_studio_site_settings!
   recording_studio_wordpress_plugin_template!
   rubocop-rails-omakase
   solid_cable
@@ -660,9 +689,11 @@ CHECKSUMS
   recording_studio_api (0.5.5)
   recording_studio_attachable (0.5.1)
   recording_studio_embeddable (0.2.1)
+  recording_studio_oauth (0.2.0)
   recording_studio_publishable (0.2.0)
   recording_studio_root_switchable (0.5.0)
-  recording_studio_wordpress_plugin_template (0.4.5)
+  recording_studio_site_settings (0.1.0)
+  recording_studio_wordpress_plugin_template (0.4.6)
   redis (5.4.1) sha256=b5e675b57ad22b15c9bcc765d5ac26f60b675408af916d31527af9bd5a81faae
   redis-client (0.30.1) sha256=5151bc5c7bbfe48623732cdae3b900d8a22dc691cc7cdfacfb351ac55116522d
   regexp_parser (2.11.3) sha256=ca13f381a173b7a93450e53459075c9b76a10433caadcb2f1180f2c741fc55a4
