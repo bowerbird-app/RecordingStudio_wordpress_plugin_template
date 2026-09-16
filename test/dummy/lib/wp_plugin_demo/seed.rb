@@ -70,14 +70,25 @@ module WpPluginDemo
         name: RUNBOOK_CLIENT_NAME
       )
 
-      host = host_base_url.to_s.strip.chomp("/")
-      RunbookConnection.new(
-        host_base_url: host,
+      build_runbook_connection(
+        host_base_url: host_base_url,
         oauth_client_id: oauth_client_id,
         oauth_client_secret: oauth_client_secret,
-        page_recording_id: page_recording.id,
-        token_path: Contract::TOKEN_PATH,
-        embed_path: Contract.actions_embed_path(page_recording.id)
+        page_recording_id: page_recording.id
+      )
+    end
+
+    # Signed-in host admin screen. Never returns a secret unless the caller
+    # passes one from a one-shot mint (flash after create/regenerate).
+    def present_runbook_connection(host_base_url:, oauth_client_secret: nil)
+      page_recording = ensure_studio_embed!
+      credential = latest_runbook_credential
+
+      build_runbook_connection(
+        host_base_url: host_base_url,
+        oauth_client_id: credential&.token_public_id,
+        oauth_client_secret: oauth_client_secret,
+        page_recording_id: page_recording.id
       )
     end
 
@@ -91,5 +102,29 @@ module WpPluginDemo
       puts "embed_url=#{connection.host_base_url}#{connection.embed_path}"
       connection
     end
+
+    def latest_runbook_credential
+      client = RecordingStudioApi::ApiClient
+        .where(name: RUNBOOK_CLIENT_NAME, api_key: Contract::API_KEY.to_s)
+        .order(created_at: :desc, id: :desc)
+        .first
+      return if client.nil?
+
+      client.credentials.active.order(created_at: :desc, id: :desc).first
+    end
+    private_class_method :latest_runbook_credential
+
+    def build_runbook_connection(host_base_url:, oauth_client_id:, oauth_client_secret:, page_recording_id:)
+      host = host_base_url.to_s.strip.chomp("/")
+      RunbookConnection.new(
+        host_base_url: host,
+        oauth_client_id: oauth_client_id,
+        oauth_client_secret: oauth_client_secret,
+        page_recording_id: page_recording_id,
+        token_path: Contract::TOKEN_PATH,
+        embed_path: Contract.actions_embed_path(page_recording_id)
+      )
+    end
+    private_class_method :build_runbook_connection
   end
 end

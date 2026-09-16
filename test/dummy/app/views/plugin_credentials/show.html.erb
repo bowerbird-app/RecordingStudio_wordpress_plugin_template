@@ -1,0 +1,72 @@
+<% content_for :title, "Plugin credentials" %>
+
+<div class="flex w-full flex-col gap-6">
+  <%= render FlatPack::PageTitle::Component.new(
+    title: "Plugin credentials",
+    subtitle: "Hand these to WordPress Settings so the block can talk to this host.",
+    variant: :h1
+  ) %>
+
+  <%= render FlatPack::Alert::Component.new(
+    description: "Paste the host URL and OAuth fields into Settings → WordPress Plugin Demo. Put the page id on the block.",
+    style: :info
+  ) %>
+
+  <div class="flex w-full flex-col gap-4">
+    <%= render FlatPack::TextInput::Component.new(
+      name: "host_base_url",
+      label: "Host URL",
+      value: @connection.host_base_url,
+      quick_copy: true
+    ) %>
+
+    <%= render FlatPack::TextInput::Component.new(
+      name: "page_recording_id",
+      label: "Page id",
+      value: @connection.page_recording_id,
+      help_text: "Getting Started page. Paste this into the WordPress Plugin Demo block.",
+      quick_copy: true
+    ) %>
+
+    <% if @connection.oauth_client_id.present? %>
+      <%= render FlatPack::TextInput::Component.new(
+        name: "oauth_client_id",
+        label: "Client id",
+        value: @connection.oauth_client_id,
+        quick_copy: true
+      ) %>
+    <% else %>
+      <%= render FlatPack::Alert::Component.new(
+        description: "No OAuth client yet. Create credentials to mint a client id and secret.",
+        style: :warning
+      ) %>
+    <% end %>
+
+    <% if @connection.oauth_client_secret.present? %>
+      <%= render FlatPack::Alert::Component.new(
+        description: "This is the only time the client secret is shown. Copy it before you leave.",
+        style: :warning
+      ) %>
+      <%= render FlatPack::TextInput::Component.new(
+        name: "oauth_client_secret",
+        label: "Client secret",
+        value: @connection.oauth_client_secret,
+        quick_copy: true
+      ) %>
+    <% elsif @connection.oauth_client_id.present? %>
+      <%= render FlatPack::Alert::Component.new(
+        description: "Client secret is hidden. Regenerate if WordPress needs a new one.",
+        style: :info
+      ) %>
+    <% end %>
+  </div>
+
+  <%= form_with url: plugin_credentials_path, method: :post, local: true do %>
+    <%= render FlatPack::Button::Component.new(
+      text: (@connection.oauth_client_id.present? ? "Regenerate credentials" : "Create credentials"),
+      style: :primary,
+      size: :md,
+      type: "submit"
+    ) %>
+  <% end %>
+</div>

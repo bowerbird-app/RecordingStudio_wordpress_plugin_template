@@ -4,7 +4,7 @@ require "test_helper"
 
 class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
   def test_version_matches_release
-    assert_equal "0.4.3", ::RecordingStudioWordpressPluginTemplate::VERSION
+    assert_equal "0.4.4", ::RecordingStudioWordpressPluginTemplate::VERSION
   end
 
   def test_engine_exists
@@ -134,16 +134,22 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     assert_empty RecordingStudio.configuration.enabled_recordable_types_for(:example)
   end
 
-  def test_dummy_app_uses_recording_studio_default_layout
+  def test_dummy_app_uses_flatpack_host_sidebar_layout
     application_controller_path = File.expand_path("dummy/app/controllers/application_controller.rb", __dir__)
     controller_source = File.read(application_controller_path)
+    host_layout = File.read(File.expand_path("dummy/app/views/layouts/host.html.erb", __dir__))
+    sidebar = File.read(File.expand_path("dummy/app/views/layouts/flat_pack/_sidebar.html.erb", __dir__))
 
     assert_includes controller_source, "include RecordingStudio::UsesDefaultLayout"
-    assert_includes controller_source, '"recording_studio/default_layout"'
+    assert_includes controller_source, '"host"'
     assert_includes controller_source, "devise_controller? ? \"application\""
-    refute_includes controller_source, "flat_pack_sidebar"
-    refute File.exist?(File.expand_path("dummy/app/views/layouts/flat_pack_sidebar.html.erb", __dir__))
-    refute File.exist?(File.expand_path("dummy/app/views/layouts/flat_pack/_sidebar.html.erb", __dir__))
+    assert File.exist?(File.expand_path("dummy/app/views/layouts/flat_pack/_sidebar.html.erb", __dir__))
+    helper_source = File.read(File.expand_path("dummy/app/helpers/application_helper.rb", __dir__))
+    assert_includes host_layout, "FlatPack::SidebarLayout::Component"
+    assert_includes sidebar, "dummy_host_nav_items"
+    assert_includes helper_source, "Home"
+    assert_includes helper_source, "Recordings tree"
+    assert_includes helper_source, "Plugin credentials"
   end
 
   def test_dummy_login_layout_keeps_flatpack_assets_without_tight_main_offset
