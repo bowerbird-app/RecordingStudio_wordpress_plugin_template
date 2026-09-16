@@ -36,7 +36,7 @@ Then open the app and sign in with:
 - Email: `admin@admin.com`
 - Password: `Password`
 
-After sign-in, use sidebar **Registered apps** to open Oauth Admin (`/admin/screens/oauth_clients`). Switch the root switcher to **Admin** if staff screens say you lack access.
+After sign-in, use sidebar **Registered apps** to open Oauth Admin (`/admin/screens/oauth_clients`). Switch the root switcher to **Admin** if staff screens say you lack access. The Registered apps table loads through a Turbo frame, so `app/javascript/application.js` must import `@hotwired/turbo-rails`.
 
 ## Useful routes
 
