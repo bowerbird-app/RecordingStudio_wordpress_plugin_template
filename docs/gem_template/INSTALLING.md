@@ -87,11 +87,11 @@ See [CONFIGURATION.md](CONFIGURATION.md) for all options.
 If your app uses Tailwind, the generator adds `@source` directives to include engine views and FlatPack components:
 
 ```css
-@source "../../vendor/bundle/**/gem_template/app/views/**/*.erb";
-@source "../../vendor/bundle/**/flatpack/app/components/**/*.{rb,erb}";
+@source "../../../vendor/recording_studio_wordpress_plugin_template/app/views/**/*.erb";
+@source "../../../vendor/flat_pack/app/components/**/*.{rb,erb}";
 ```
 
-This ensures Tailwind scans the engine's templates for class names during CSS compilation.
+If you use Root Switchable, also run `bin/rails recording_studio_root_switchable:link_tailwind_sources` so `vendor/flat_pack` resolves. Rebuild with `bin/rails tailwindcss:build`.
 
 ---
 
@@ -127,13 +127,14 @@ end
 Add to your `app/assets/tailwind/application.css`:
 
 ```css
-@source "../../vendor/bundle/**/gem_template/app/views/**/*.erb";
-@source "../../vendor/bundle/**/flatpack/app/components/**/*.{rb,erb}";
+@source "../../../vendor/recording_studio_wordpress_plugin_template/app/views/**/*.erb";
+@source "../../../vendor/flat_pack/app/components/**/*.{rb,erb}";
 ```
 
 Then rebuild:
 
 ```bash
+bin/rails recording_studio_root_switchable:link_tailwind_sources
 bin/rails tailwindcss:build
 ```
 
@@ -220,7 +221,7 @@ If you want a branded landing page in a host app, create one in your application
 | Issue | Solution |
 |-------|----------|
 | Route not found | Ensure engine is mounted in `config/routes.rb`. |
-| Styles missing | Run `bin/rails tailwindcss:build` after adding `@source`. |
+| Styles missing | Run `bin/rails recording_studio_root_switchable:link_tailwind_sources` then `bin/rails tailwindcss:build` after adding `@source`. |
 | Generator fails | Check that the gem is installed: `bundle show gem_template`. |
 | Configuration not applied | Ensure initializer runs after engine loads. |
 

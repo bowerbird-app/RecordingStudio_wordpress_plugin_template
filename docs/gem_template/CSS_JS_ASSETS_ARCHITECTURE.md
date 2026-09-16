@@ -256,9 +256,18 @@ The file `test/dummy/app/assets/tailwind/application.css` configures Tailwind:
 ```css
 @import "tailwindcss";
 
-/* Include the engine's views in the Tailwind build */
+/* Dummy views */
+@source "../../views/**/*.erb";
+
+/* Gem sources via vendor/ symlinks (recording_studio_root_switchable:link_tailwind_sources) */
+@source "../../../vendor/flat_pack/app/components/**/*.{rb,erb}";
+@source "../../../vendor/recording_studio/app/views/**/*.erb";
+
+/* Engine views */
 @source "../../../../../app/views/**/*.erb";
 ```
+
+Run `bin/rails recording_studio_root_switchable:link_tailwind_sources` before `tailwindcss:build` so those `vendor/*` paths resolve. Fallback `@source` lines cover `vendor/bundle` and system gem trees when symlinks are absent.
 
 > **Note:** The relative path `../../../../../app/views/**/*.erb` points from the dummy app up to the engine's `app/views` folder so Tailwind can detect classes used in engine templates. Host applications will use the gem path instead.
 

@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.4.2] - 2026-09-16
+## [0.4.3] - 2026-09-16
 
 ### Added
 - Host Page embed renderer at `pages/embed` with seeded Getting Started HTML for the WordPress Plugin Demo BrowserPayload.
@@ -21,6 +21,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Restart the dummy after upgrade so the new `pages/embed` template loads.
 - Re-run `bin/rails db:seed` (or `WpPluginDemo::Seed.ensure_studio_embed!`) if embed was never enabled on Getting Started.
 - After `db:reset`, look up `WpPluginDemo::Seed.getting_started_page_recording_id` again before pasting into the WordPress block.
+
+## [0.4.2] - 2026-09-16
+
+### Fixed
+- Dummy Tailwind `@source` paths now scan FlatPack and Recording Studio through `vendor/flat_pack` and `vendor/recording_studio` symlinks (from `recording_studio_root_switchable:link_tailwind_sources`), so Cloud Agent / Cloudflare tunnel CSS includes FlatPack utilities instead of a near-empty build.
+- CI and dummy rake explicitly link Tailwind gem sources before `tailwindcss:build` (Root Switchable's enhance can miss when load order skips it).
+
+### Changed
+- Cloud Agent `install.sh` / `start.sh` link Tailwind gem sources before building or watching CSS.
+- `.gitignore` ignores the machine-local `vendor/flat_pack`, `vendor/recording_studio`, and `vendor/recording_studio_root_switchable` symlinks.
+
+### Upgrade notes
+- In the dummy (or any host using the same layout), run:
+  `bin/rails recording_studio_root_switchable:link_tailwind_sources && bin/rails tailwindcss:build`
+- Point Tailwind `@source` at `vendor/flat_pack/...` and `vendor/recording_studio/...` (not only `vendor/bundle/**` or `/usr/local/bundle/ruby/**`).
 
 ## [0.4.1] - 2026-09-15
 

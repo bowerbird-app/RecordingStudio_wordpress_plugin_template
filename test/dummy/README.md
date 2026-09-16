@@ -21,8 +21,12 @@ This Rails app is the host for RecordingStudio WordPress widgets. It boots on it
 cd test/dummy
 bundle install
 bin/rails db:setup
+bin/rails recording_studio_root_switchable:link_tailwind_sources
+bin/rails tailwindcss:build
 bin/dev
 ```
+
+`link_tailwind_sources` creates `vendor/flat_pack` and `vendor/recording_studio` so Tailwind can scan FlatPack classes. Without it, the dummy CSS build is nearly empty and the UI looks unstyled.
 
 Run the commands above from the dummy app directory, not the repository root.
 
