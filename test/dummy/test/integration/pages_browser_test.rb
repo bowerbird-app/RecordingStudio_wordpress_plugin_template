@@ -20,7 +20,7 @@ class PagesBrowserTest < ActionDispatch::IntegrationTest
     Current.actor = nil if defined?(Current)
   end
 
-  test "pages index lists Getting Started with recording id" do
+  test "pages index lists Getting Started with page id" do
     get pages_path
 
     assert_response :success

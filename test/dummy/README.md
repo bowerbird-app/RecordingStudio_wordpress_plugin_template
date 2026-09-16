@@ -38,7 +38,7 @@ Then open the app and sign in with:
 - Email: `admin@admin.com`
 - Password: `Password`
 
-After sign-in, use sidebar **API Keys** to open API clients (`/recording_studio_api/api_clients`) when you need WordPress client credentials. Use sidebar **Pages** to browse page recording ids and open the WordPress embed preview. Oauth Admin registered apps stay at `/admin/screens/oauth_clients` (not in the sidebar). Switch the root switcher to **Admin** if staff screens say you lack access. Admin tables load through a Turbo frame, so `app/javascript/application.js` must import `@hotwired/turbo-rails`.
+After sign-in, use sidebar **API Keys** to open API clients (`/recording_studio_api/api_clients`) when you need WordPress client credentials. Use sidebar **Pages** to browse page ids and open the WordPress embed preview. Oauth Admin registered apps stay at `/admin/screens/oauth_clients` (not in the sidebar). Switch the root switcher to **Admin** if staff screens say you lack access. Admin tables load through a Turbo frame, so `app/javascript/application.js` must import `@hotwired/turbo-rails`.
 
 ## Useful routes
 

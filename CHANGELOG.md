@@ -18,7 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Dummy sidebar order is Home, Recordings tree, API Keys, Pages.
 
 ### Upgrade notes
-- Dummy-only. Sign in and use sidebar **API Keys** for API client credentials and **Pages** for recording ids plus the embed preview. Oauth Admin remains at `/admin/screens/oauth_clients` without a sidebar link. No WordPress plugin or named API changes.
+- Dummy-only. Sign in and use sidebar **API Keys** for API client credentials and **Pages** for page ids plus the embed preview. Oauth Admin remains at `/admin/screens/oauth_clients` without a sidebar link. No WordPress plugin or named API changes.
 
 ## [0.4.7] - 2026-09-16
 

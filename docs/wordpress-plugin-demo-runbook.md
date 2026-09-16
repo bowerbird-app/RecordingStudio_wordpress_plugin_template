@@ -30,7 +30,7 @@ Named API paths the plugin uses (do not change these unless the host is broken):
 
 ## 2. Create OAuth client credentials for `wp_plugin_demo`
 
-Preferred for minting WordPress API client credentials: sign in to the dummy and open sidebar **API Keys** (`/recording_studio_api/api_clients`). Preferred for browsing page recording ids and the host embed preview: sidebar **Pages** (`/pages`). Staff OAuth apps stay at `/admin/screens/oauth_clients` (not in the sidebar). For the named API `wp_plugin_demo` client used by the plugin block, the console print below still works.
+Preferred for minting WordPress API client credentials: sign in to the dummy and open sidebar **API Keys** (`/recording_studio_api/api_clients`). Preferred for browsing page ids and the host embed preview: sidebar **Pages** (`/pages`). Staff OAuth apps stay at `/admin/screens/oauth_clients` (not in the sidebar). For the named API `wp_plugin_demo` client used by the plugin block, the console print below still works.
 
 From `test/dummy/`:
 

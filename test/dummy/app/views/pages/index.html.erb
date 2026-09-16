@@ -3,7 +3,7 @@
 <div class="flex w-full flex-col gap-6">
   <%= render FlatPack::PageTitle::Component.new(
     title: "Pages",
-    subtitle: "Copy a recording id into the WordPress Plugin Demo block.",
+    subtitle: "Paste a page id into the WordPress Plugin Demo block.",
     variant: :h1
   ) %>
 
@@ -18,7 +18,7 @@
     <% table.column(title: "Title") do |row| %>
       <%= link_to row[:title], page_path(row[:recording]) %>
     <% end %>
-    <% table.column(title: "Recording id") do |row| %>
+    <% table.column(title: "Page id") do |row| %>
       <code class="font-mono"><%= row[:recording].id %></code>
     <% end %>
   <% end %>
