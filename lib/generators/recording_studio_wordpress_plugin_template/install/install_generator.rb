@@ -82,11 +82,13 @@ module RecordingStudioWordpressPluginTemplate
       end
 
       def formatted_tailwind_source_block(missing_lines)
+        engine_lines = missing_lines.select { |line| line.include?("recording_studio_wordpress_plugin_template") }
+        flatpack_lines = missing_lines - engine_lines
         [
           "\n/* Include RecordingStudioWordpressPluginTemplate engine views for Tailwind CSS */",
-          missing_lines.first(2),
+          engine_lines,
           "\n/* Include FlatPack component sources for Tailwind CSS */",
-          missing_lines.drop(2)
+          flatpack_lines
         ].flatten.reject(&:empty?).join("\n")
       end
 
@@ -101,9 +103,11 @@ module RecordingStudioWordpressPluginTemplate
       def tailwind_source_lines
         gem_views = "recording_studio_wordpress_plugin_template-*/app/views/**/*.erb"
         [
-          '@source "../../vendor/bundle/**/recording_studio_wordpress_plugin_template/app/views/**/*.erb";',
+          '@source "../../../vendor/recording_studio_wordpress_plugin_template/app/views/**/*.erb";',
+          '@source "../../../vendor/bundle/**/recording_studio_wordpress_plugin_template/app/views/**/*.erb";',
           "@source \"../../../../../../usr/local/bundle/ruby/**/bundler/gems/#{gem_views}\";",
-          '@source "../../vendor/bundle/**/flatpack/app/components/**/*.{rb,erb}";',
+          '@source "../../../vendor/flat_pack/app/components/**/*.{rb,erb}";',
+          '@source "../../../vendor/bundle/**/flatpack*/app/components/**/*.{rb,erb}";',
           '@source "../../../../../../usr/local/bundle/ruby/**/bundler/gems/flatpack-*/app/components/**/*.{rb,erb}";'
         ]
       end

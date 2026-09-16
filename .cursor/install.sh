@@ -73,6 +73,9 @@ bundle install
 # ---------------------------------------------------------------------------
 log "Preparing dummy app database and assets"
 ( cd test/dummy && bundle exec rails db:prepare )
+# Link FlatPack / Recording Studio into vendor/ so Tailwind @source paths resolve,
+# then build CSS. tailwindcss:build also enhances with link_tailwind_sources.
+( cd test/dummy && bundle exec rails recording_studio_root_switchable:link_tailwind_sources )
 ( cd test/dummy && bundle exec rails tailwindcss:build )
 
 # ---------------------------------------------------------------------------

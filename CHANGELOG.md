@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.2] - 2026-09-16
+
+### Fixed
+- Dummy Tailwind `@source` paths now scan FlatPack and Recording Studio through `vendor/flat_pack` and `vendor/recording_studio` symlinks (from `recording_studio_root_switchable:link_tailwind_sources`), so Cloud Agent / Cloudflare tunnel CSS includes FlatPack utilities instead of a near-empty build.
+
+### Changed
+- Cloud Agent `install.sh` / `start.sh` link Tailwind gem sources before building or watching CSS.
+- `.gitignore` ignores the machine-local `vendor/flat_pack`, `vendor/recording_studio`, and `vendor/recording_studio_root_switchable` symlinks.
+
+### Upgrade notes
+- In the dummy (or any host using the same layout), run:
+  `bin/rails recording_studio_root_switchable:link_tailwind_sources && bin/rails tailwindcss:build`
+- Point Tailwind `@source` at `vendor/flat_pack/...` and `vendor/recording_studio/...` (not only `vendor/bundle/**` or `/usr/local/bundle/ruby/**`).
+
 ## [0.4.1] - 2026-09-15
 
 ### Added

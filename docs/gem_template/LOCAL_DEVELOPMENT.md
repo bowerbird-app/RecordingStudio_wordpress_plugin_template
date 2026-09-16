@@ -174,7 +174,7 @@ bin/rails db:migrate
 |-------|----------|
 | `PG::ConnectionBad` | Ensure PostgreSQL is running and credentials are correct. |
 | `relation does not exist` | Run `bin/rails db:prepare` to create tables. |
-| Tailwind styles missing | Run `bin/rails tailwindcss:build`. |
+| Tailwind styles missing | Run `bin/rails recording_studio_root_switchable:link_tailwind_sources` then `bin/rails tailwindcss:build`. Confirm `vendor/flat_pack` exists under the dummy app. |
 | Port 3000 in use | Use `PORT=3001 bin/dev`. |
 | Redis connection refused | Start Redis: `redis-server` or `brew services start redis`. |
 | Bundle install fails | Check Ruby version matches `.ruby-version` (3.3.0). |
