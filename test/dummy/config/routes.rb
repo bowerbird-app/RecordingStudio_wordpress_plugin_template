@@ -32,5 +32,12 @@ Rails.application.routes.draw do
   get "docs/gem_views", to: "docs#gem_views", as: :docs_gem_views
   get "docs/methods", to: "docs#methods", as: :docs_methods
 
+  resources :pages, only: %i[index show] do
+    member do
+      get :embed_preview
+    end
+  end
+
   root "home#index"
 end
+

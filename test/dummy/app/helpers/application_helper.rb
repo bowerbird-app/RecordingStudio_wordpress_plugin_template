@@ -2,12 +2,11 @@ module ApplicationHelper
   # Single registry for signed-in host chrome. Keep labels everyday (not gem jargon).
   DummyHostNavItem = Data.define(:key, :text, :icon)
 
-  REGISTERED_APPS_PATH = "/admin/screens/oauth_clients"
-
   DUMMY_HOST_NAV = [
     DummyHostNavItem.new(key: :home, text: "Home", icon: :home),
     DummyHostNavItem.new(key: :recordings_tree, text: "Recordings tree", icon: :folder),
-    DummyHostNavItem.new(key: :registered_apps, text: "Registered apps", icon: :key)
+    DummyHostNavItem.new(key: :api_keys, text: "API Keys", icon: :lock),
+    DummyHostNavItem.new(key: :pages, text: "Pages", icon: :document_text)
   ].freeze
 
   def dummy_host_nav_items
@@ -35,8 +34,10 @@ module ApplicationHelper
       main_app.root_path
     when :recordings_tree
       main_app.docs_recordings_tree_path
-    when :registered_apps
-      REGISTERED_APPS_PATH
+    when :api_keys
+      recording_studio_api.api_clients_path
+    when :pages
+      main_app.pages_path
     else
       raise ArgumentError, "unknown nav key: #{key}"
     end
@@ -48,8 +49,10 @@ module ApplicationHelper
       current_page?(main_app.root_path)
     when :recordings_tree
       current_page?(main_app.docs_recordings_tree_path)
-    when :registered_apps
-      request.path.start_with?("/admin")
+    when :api_keys
+      request.path.start_with?(recording_studio_api.api_clients_path)
+    when :pages
+      request.path.start_with?("/pages")
     else
       current_page?(href)
     end

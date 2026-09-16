@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.8] - 2026-09-16
+
+### Added
+- Dummy FlatPack sidebar **API Keys** item linking to Recording Studio API clients (`/recording_studio_api/api_clients`) for minting WordPress client credentials.
+- Dummy **Pages** browser (`/pages`, `/pages/:id`) with a FlatPack table of untrashed Page recordings and a host show screen that iframes an isolated WordPress embed preview (`/pages/:id/embed_preview`).
+
+### Changed
+- Dummy sidebar hides **Registered apps**. Oauth Admin routes and screens at `/admin/screens/oauth_clients` stay available; they are no longer a sidebar destination.
+- Dummy sidebar order is Home, Recordings tree, API Keys, Pages.
+
+### Upgrade notes
+- Dummy-only. Sign in and use sidebar **API Keys** for API client credentials and **Pages** for page ids plus the embed preview. Oauth Admin remains at `/admin/screens/oauth_clients` without a sidebar link. No WordPress plugin or named API changes.
+
 ## [0.4.7] - 2026-09-16
 
 ### Fixed

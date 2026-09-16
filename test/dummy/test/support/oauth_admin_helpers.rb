@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module OauthAdminHelpers
-  REGISTERED_APPS_PATH = ApplicationHelper::REGISTERED_APPS_PATH
+  REGISTERED_APPS_PATH = "/admin/screens/oauth_clients"
 
   def switch_to_admin_root!
     admin_root = AdminRoot.find_by!(name: "Admin")

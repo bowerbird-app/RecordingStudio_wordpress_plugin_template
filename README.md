@@ -52,7 +52,8 @@ The login form is prefilled with these credentials.
 - `/` is the dummy app home page
 - `/users/sign_in` is the Devise sign-in page
 - `/recording_studio` redirects to `/` while the mounted Recording Studio engine remains data and API focused
-- `/` home, `/docs/recordings_tree`, and `/admin/screens/oauth_clients` (**Registered apps**, signed-in) are the dummy sidebar destinations
+- `/` home, `/docs/recordings_tree`, `/recording_studio_api/api_clients` (**API Keys**, signed-in), and `/pages` (**Pages**, signed-in) are the dummy sidebar destinations
+- `/admin/screens/oauth_clients` remains for Oauth Admin registered apps (signed-in, Admin root) but is not a sidebar item
 - `/docs/install`, `/docs/config`, `/docs/recordable_types`, `/docs/recordings_tree`, `/docs/gem_views`, `/docs/methods` are dummy-only starter pages
 
 ## Start WordPress with wp-env
