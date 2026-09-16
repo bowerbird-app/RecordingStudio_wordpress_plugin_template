@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.7] - 2026-09-16
+
+### Fixed
+- Dummy `application.js` imports `@hotwired/turbo-rails` so Admin lazy `turbo-frame` tables (Registered apps) load instead of staying on skeletons forever.
+
+### Upgrade notes
+- Dummy-only. Restart the dummy (or hard-refresh) so the new importmap entry for Turbo boots. No WordPress plugin or named API changes.
+
 ## [0.4.6] - 2026-09-16
 
 ### Changed
