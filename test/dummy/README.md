@@ -11,6 +11,7 @@ This Rails app is the host for RecordingStudio WordPress widgets. It boots on it
 - Mounted `RecordingStudio::Engine` route behavior inside a host app
 - Dummy-only `/docs/*` pages for host-app onboarding
 - Named API `wp_plugin_demo` with soft GET `:embed` (BrowserPayload schema v1)
+- Host Page embed renderer (`pages/embed`) with seeded Getting Started HTML for the WordPress Plugin Demo block
 - CI eager-load workarounds: ignore Embeddable `lib/` on host Zeitwerk; clear API `admin_root_recordable_type_names` (no Admin mount)
 - Env-only connectivity placeholders. No widget models, widget APIs, or WordPress render routes
 
@@ -59,6 +60,12 @@ bin/rails runner 'c = WpPluginDemo::Provision.isolated_client!; puts [c.oauth_cl
 ```
 
 Use the printed values in WordPress under **Settings → WordPress Plugin Demo** and as the block page recording id.
+
+After `db:reset`, the Getting Started `page_recording_id` changes. Look it up again with:
+
+```bash
+bin/rails runner 'puts WpPluginDemo::Seed.getting_started_page_recording_id'
+```
 
 Full cold-start steps: [../../docs/wordpress-plugin-demo-runbook.md](../../docs/wordpress-plugin-demo-runbook.md).
 

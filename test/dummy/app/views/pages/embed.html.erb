@@ -1,0 +1,5 @@
+<% page = @page || @parent_recordable %>
+<article data-wordpress-plugin-demo-embed="page">
+  <h1><%= ERB::Util.html_escape(page&.title.presence || "Page") %></h1>
+  <%= raw WpPluginDemo::Seed.embed_body_html_for(page) %>
+</article>

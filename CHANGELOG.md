@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.2] - 2026-09-16
+
+### Added
+- Host Page embed renderer at `pages/embed` with seeded Getting Started HTML for the WordPress Plugin Demo BrowserPayload.
+- Integration coverage that GET `:embed` for Getting Started returns real demo HTML (not Embeddable's fallback stub).
+
+### Changed
+- `Page` registers Embeddable with `renderer: "pages/embed"`.
+- Runbook and dummy README document re-seed and `page_recording_id` lookup after `db:reset`.
+
+### Upgrade notes
+- Restart the dummy after upgrade so the new `pages/embed` template loads.
+- Re-run `bin/rails db:seed` (or `WpPluginDemo::Seed.ensure_studio_embed!`) if embed was never enabled on Getting Started.
+- After `db:reset`, look up `WpPluginDemo::Seed.getting_started_page_recording_id` again before pasting into the WordPress block.
+
 ## [0.4.1] - 2026-09-15
 
 ### Added

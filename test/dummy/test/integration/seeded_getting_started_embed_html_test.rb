@@ -4,7 +4,6 @@ require "test_helper"
 
 class SeededGettingStartedEmbedHtmlTest < ActionDispatch::IntegrationTest
   STUB_PHRASE = "This recording does not define a custom embeddable renderer yet."
-  PAGE_DUMP = "#&lt;Page:"
   DEMO_MARKER = "WordPress Plugin Demo"
 
   setup do
@@ -36,7 +35,6 @@ class SeededGettingStartedEmbedHtmlTest < ActionDispatch::IntegrationTest
 
     html = payload.html
     refute_includes html, STUB_PHRASE
-    refute_includes html, PAGE_DUMP
     refute_match(/#&lt;Page:/, html)
     assert_includes html, DEMO_MARKER
     assert_includes html, "Getting Started"
