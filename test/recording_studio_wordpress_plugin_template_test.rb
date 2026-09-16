@@ -144,11 +144,12 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     assert_includes controller_source, '"host"'
     assert_includes controller_source, "devise_controller? ? \"application\""
     assert File.exist?(File.expand_path("dummy/app/views/layouts/flat_pack/_sidebar.html.erb", __dir__))
+    helper_source = File.read(File.expand_path("dummy/app/helpers/application_helper.rb", __dir__))
     assert_includes host_layout, "FlatPack::SidebarLayout::Component"
     assert_includes sidebar, "dummy_host_nav_items"
-    assert_includes File.read(File.expand_path("dummy/app/helpers/application_helper.rb", __dir__)), "Home"
-    assert_includes File.read(File.expand_path("dummy/app/helpers/application_helper.rb", __dir__)), "Recordings tree"
-    assert_includes File.read(File.expand_path("dummy/app/helpers/application_helper.rb", __dir__)), "Plugin credentials"
+    assert_includes helper_source, "Home"
+    assert_includes helper_source, "Recordings tree"
+    assert_includes helper_source, "Plugin credentials"
   end
 
   def test_dummy_login_layout_keeps_flatpack_assets_without_tight_main_offset
