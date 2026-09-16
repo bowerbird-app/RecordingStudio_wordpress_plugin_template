@@ -9,7 +9,7 @@
 		"build": "wp-scripts build --webpack-copy-php --blocks-manifest && npm run copy-sdk",
 		"copy-sdk": "mkdir -p build/sdk && cp -r assets/sdk/* build/sdk/",
 		"format": "wp-scripts format",
-		"lint:css": "wp-scripts lint-style 'src/**/*.scss'",
+		"lint:css": "sh -c 'files=$(find src -name \"*.scss\" -print); [ -z \"$files\" ] || wp-scripts lint-style $files'",
 		"lint:js": "wp-scripts lint-js ./src",
 		"packages-update": "wp-scripts packages-update",
 		"plugin-zip": "wp-scripts plugin-zip",
