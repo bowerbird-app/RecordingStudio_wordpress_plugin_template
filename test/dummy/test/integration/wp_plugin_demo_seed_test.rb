@@ -36,6 +36,22 @@ class WpPluginDemoSeedTest < ActiveSupport::TestCase
     refute_nil result.value.fetch(:access_token)
   end
 
+  test "present_runbook_connection shows id without secret until a secret is passed in" do
+    issued = WpPluginDemo::Seed.issue_runbook_connection!(host_base_url: "http://localhost:3000")
+
+    presented = WpPluginDemo::Seed.present_runbook_connection(host_base_url: "http://www.example.com")
+    assert_equal "http://www.example.com", presented.host_base_url
+    assert_equal issued.oauth_client_id, presented.oauth_client_id
+    assert_nil presented.oauth_client_secret
+    assert_equal issued.page_recording_id, presented.page_recording_id
+
+    with_secret = WpPluginDemo::Seed.present_runbook_connection(
+      host_base_url: "http://www.example.com",
+      oauth_client_secret: "one-shot-secret"
+    )
+    assert_equal "one-shot-secret", with_secret.oauth_client_secret
+  end
+
   test "embed_body_html_for returns Getting Started demo copy and generic fallback" do
     getting_started = Page.find_by!(title: "Getting Started")
     other = Page.create!(title: "Other Demo Page")

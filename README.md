@@ -52,6 +52,7 @@ The login form is prefilled with these credentials.
 - `/` is the dummy app home page
 - `/users/sign_in` is the Devise sign-in page
 - `/recording_studio` redirects to `/` while the mounted Recording Studio engine remains data and API focused
+- `/` home, `/docs/recordings_tree`, and `/plugin_credentials` (signed-in) are the dummy sidebar destinations
 - `/docs/install`, `/docs/config`, `/docs/recordable_types`, `/docs/recordings_tree`, `/docs/gem_views`, `/docs/methods` are dummy-only starter pages
 
 ## Start WordPress with wp-env
@@ -134,7 +135,7 @@ Later phases may add widget discovery, richer editor pickers, and embed response
 
 ## Dummy Recording Studio host
 
-Authenticated dummy pages use Recording Studio's shared default layout (`RecordingStudio::UsesDefaultLayout`) plus FlatPack CSS and JS. Devise keeps its own sign-in layout.
+Authenticated dummy pages use the FlatPack host sidebar layout (`layouts/host`) plus FlatPack CSS and JS. Devise keeps its own sign-in layout.
 
 The dummy host follows Recording Studio's root recording pattern:
 

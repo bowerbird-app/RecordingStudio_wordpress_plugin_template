@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.4] - 2026-09-16
+
+### Added
+- Dummy host FlatPack sidebar shell with Home, Recordings tree, and Plugin credentials links.
+- Signed-in Plugin credentials page at `/plugin_credentials` that shows host URL, Getting Started page id, and mint/regenerate for `wp_plugin_demo` OAuth client credentials (secret reveal-once via flash).
+- `WpPluginDemo::Seed.present_runbook_connection` for admin-screen display without leaking secrets on ordinary GETs.
+
+### Changed
+- Authenticated dummy pages use `layouts/host` (`FlatPack::SidebarLayout`) instead of Recording Studio's sidebar-free default layout. Devise sign-in still uses `layouts/application`.
+
+### Upgrade notes
+- Dummy-only. Restart the dummy and sign in to see the sidebar. Existing WordPress plugin Settings and named API paths are unchanged.
+- Prefer `/plugin_credentials` for handing OAuth fields to WordPress; `print_runbook_connection!` still works from the console.
+
 ## [0.4.3] - 2026-09-16
 
 ### Added
