@@ -7,7 +7,7 @@ This Rails app is the host for RecordingStudio WordPress widgets. It boots on it
 - Devise authentication with a seeded admin user
 - `Current.actor` wiring for Recording Studio events
 - Root workspace plus seeded folder and page recordables
-- Recording Studio host shell with FlatPack sidebar (Home, Recordings tree, Plugin credentials), FlatPack assets, and Tailwind source scanning
+- Recording Studio host shell with FlatPack sidebar (Home, Recordings tree, Plugin credentials), FlatPack kit CSS (`variables`, `application`, `rich_text`), and Tailwind source scanning
 - Mounted `RecordingStudio::Engine` route behavior inside a host app
 - Dummy-only `/docs/*` pages for host-app onboarding
 - Signed-in `/plugin_credentials` to mint or regenerate `wp_plugin_demo` OAuth fields for WordPress Settings
