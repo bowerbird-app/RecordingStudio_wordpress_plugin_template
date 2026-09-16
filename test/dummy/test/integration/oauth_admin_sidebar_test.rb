@@ -12,7 +12,7 @@ class OauthAdminSidebarTest < ActionDispatch::IntegrationTest
 
     @user = User.find_by!(email: "admin@admin.com")
     sign_in @user
-    switch_to_admin_root!(@user)
+    switch_to_admin_root!
   end
 
   teardown do
