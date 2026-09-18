@@ -24,6 +24,10 @@ bin/rails tailwindcss:build
 - Users dummy tag `v0.11.0`
 - Public RubyGems and GitHub access for dependency installation
 
+## 0.4.12
+
+Dummy sidebar **Registered Apps** opens Oauth Admin at `/admin/screens/oauth_clients`. Use it to find the Connect public client id. Switch the root switcher to **Admin** if the screen returns 403. API Keys and Pages stay in the sidebar.
+
 ## 0.4.11
 
 This version mounts Recording Studio Users auth chrome on the dummy host and adds WordPress Plugin Demo Connect.
