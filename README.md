@@ -8,7 +8,7 @@ Two packages live here. The Rails dummy host proves the engine. The WordPress pl
 
 ## Architecture
 
-The dummy app in `test/dummy/` is a Rails 8.1 host. It mounts Recording Studio, signs in with Devise, and renders FlatPack. It boots with no WordPress process. Connectivity placeholders are env-only. The dummy app has no widget models, widget APIs, or WordPress render routes.
+The dummy app in `test/dummy/` is a Rails 8.1 host. It mounts Recording Studio. Sign-in uses Recording Studio Users chrome on a Devise `User`. Screens render FlatPack. It boots with no WordPress process. Connectivity placeholders are env-only. The dummy app has no widget models, widget APIs, or WordPress render routes.
 
 The plugin in `wordpress/recording-studio-widgets/` is a dynamic block named **WordPress Plugin Demo**. It stores OAuth client credentials server-side, fetches BrowserPayload v1 JSON from the dummy host named API `wp_plugin_demo`, server-renders the payload, and mounts the baked plugin SDK on the front. `wp-env` serves WordPress on port 8888. The dummy host serves Rails on port 3000.
 
