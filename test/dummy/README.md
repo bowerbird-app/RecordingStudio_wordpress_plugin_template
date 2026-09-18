@@ -53,7 +53,7 @@ After sign-in, use sidebar **API Keys** to open API clients (`/recording_studio_
 - `/docs/install`, `/docs/config`, `/docs/recordable_types`, `/docs/recordings_tree`, `/docs/gem_views`, `/docs/methods` are dummy-only starter pages
 - `/up` is the Rails health check
 - WordPress Plugin Demo named API (not the public `/recording_studio_api/api/v1` surface):
-  - `GET /recording_studio_oauth/oauth/authorize` (Connect; signed-out visitors use Users chrome)
+  - `GET /recording_studio_oauth/oauth/authorize` (Connect; signed-out visitors use Users chrome; consent submit is a full page)
   - `POST /recording_studio_api/apis/wp_plugin_demo/oauth/token` (Connect authorization_code + refresh_token, and Advanced client_credentials)
   - `GET /recording_studio_api/apis/wp_plugin_demo/v1/pages` (Page index for the WordPress picker)
   - `GET /recording_studio_api/apis/wp_plugin_demo/v1/pages/:id/actions/embed`

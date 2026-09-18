@@ -93,6 +93,7 @@ These versions come from the gemspec, the dummy Gemfile, `@wordpress/create-bloc
 | Attachable | dummy GitHub tag `v0.5.1` (Publishable boot dep) |
 | Root Switchable | dummy GitHub tag `v0.5.0` |
 | Users | dummy GitHub tag `v0.11.0` |
+| Oauth | dummy GitHub tag `v0.2.1` (Connect consent is a full page, not Turbo) |
 | FlatPack | dummy GitHub tag `v0.1.177` |
 | Devise | latest |
 | `@wordpress/create-block` | 4.98.0 |

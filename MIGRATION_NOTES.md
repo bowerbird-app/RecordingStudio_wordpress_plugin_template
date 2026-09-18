@@ -24,6 +24,12 @@ bin/rails tailwindcss:build
 - Users dummy tag `v0.11.0`
 - Public RubyGems and GitHub access for dependency installation
 
+## 0.4.15
+
+Dummy host pins Recording Studio Oauth `v0.2.1`. Connect consent is a full-page submit (`data-turbo="false"`), so WordPress Connect can return to wp-admin without a Turbo fetch or CORS failure.
+
+From `test/dummy`, run `bundle update recording_studio_oauth`. Restart the dummy host. Do not create new Oauth clients.
+
 ## 0.4.14
 
 Connect start prints a short leaving-WordPress page, then sends the browser to the same allowlisted authorize URL. Settings still accept `rs_notice=connected` and always show **This site is connected.** from stored Connect tokens.
