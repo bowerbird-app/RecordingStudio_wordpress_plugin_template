@@ -149,7 +149,7 @@ bin/rails runner 'c = WpPluginDemo::Provision.isolated_client!; puts [c.oauth_cl
 | OAuth client secret | printed `oauth_client_secret` |
 | Token URL override | leave blank unless your host differs; default is `{host}/recording_studio_api/apis/wp_plugin_demo/oauth/token` |
 
-Save settings. Use **Test connection**. A success notice means the host accepted client credentials.
+Save settings. Use **Test connection**. A success notice means the host accepted client credentials. Leave **OAuth client secret** empty and save to clear a stored secret. A failed Connect refresh does not use this secret as a fallback.
 
 ### Insert the block
 

@@ -665,6 +665,63 @@ function test_saved_connect_tokens_never_appear_in_settings_html(): void {
 	}
 }
 
+function test_failed_connect_refresh_does_not_use_leftover_api_keys(): void {
+	update_option(
+		PluginSettings::OPTION_KEY,
+		array(
+			'host_base_url' => 'http://localhost:3000',
+			'client_id'     => 'wp-public-client',
+			'client_secret' => 'leftover-advanced-secret',
+		)
+	);
+	ConnectSession::clear();
+	$tokens = new ConnectTokens( 'rsoauth_at_stale', 'rsoauth_rt_stale', time() - 120 );
+	$tokens->save();
+
+	$grants = array();
+	StudioClient::set_test_http_handlers(
+		static function ( string $url, array $fields ) use ( &$grants ) {
+			$grants[] = (string) ( $fields['grant_type'] ?? '' );
+			if ( 'client_credentials' === ( $fields['grant_type'] ?? '' ) ) {
+				throw new RuntimeException( 'Connect refresh must not fall back to client_credentials' );
+			}
+			return array(
+				'status' => 400,
+				'body'   => array( 'error' => 'invalid_grant' ),
+			);
+		},
+		static function () {
+			throw new RuntimeException( 'embed should not run after a failed refresh' );
+		}
+	);
+
+	$page = PageRecordingId::parse( RS_TEST_PAGE_UUID );
+	if ( $page instanceof \RecordingStudio\EmbedResult ) {
+		throw new RuntimeException( 'invalid test uuid' );
+	}
+
+	$result = StudioClient::from_wp_options()->embed_payload_for_page( $page, EmbedRequest::for_editor( $page ) );
+	StudioClient::set_test_http_handlers( null, null );
+
+	if ( ! $result->is_error() || ConnectNotice::RECONNECT_NEEDED !== $result->error_code() ) {
+		throw new RuntimeException( 'expected reconnect_needed, got ' . ( $result->is_error() ? $result->error_code() : 'ok' ) );
+	}
+	if ( 'This site needs to connect again.' !== $result->error_message() ) {
+		throw new RuntimeException( 'expected reconnect copy, got ' . $result->error_message() );
+	}
+	if ( false !== strpos( $result->error_message(), 'Host rejected the OAuth client credentials. Check client id and secret.' ) ) {
+		throw new RuntimeException( 'leftover Advanced secret produced the API-keys rejection message' );
+	}
+	if ( array( 'refresh_token' ) !== $grants ) {
+		throw new RuntimeException( 'expected only a refresh grant, got ' . implode( ',', $grants ) );
+	}
+
+	$stored = ConnectTokens::load();
+	if ( null === $stored || 'rsoauth_at_stale' !== $stored->access_token ) {
+		throw new RuntimeException( 'failed refresh cleared tokens' );
+	}
+}
+
 function test_expired_connect_refresh_keeps_tokens_and_asks_reconnect(): void {
 	rs_seed_connect_settings_without_secret();
 	$tokens = new ConnectTokens( 'rsoauth_at_stale', 'rsoauth_rt_stale', time() - 120 );

@@ -28,6 +28,10 @@ bin/rails tailwindcss:build
 
 Connect start prints a short leaving-WordPress page, then sends the browser to the same allowlisted authorize URL. Settings still accept `rs_notice=connected` and always show **This site is connected.** from stored Connect tokens.
 
+If Connect tokens are the chosen source and refresh fails, the plugin returns that Connect error. It does not POST `client_credentials` with a leftover Advanced secret.
+
+Submit Advanced with an empty client secret to clear a stored secret.
+
 Rebuild and reinstall the plugin ZIP. No dummy host, named API, or Oauth seed changes.
 
 ## 0.4.13

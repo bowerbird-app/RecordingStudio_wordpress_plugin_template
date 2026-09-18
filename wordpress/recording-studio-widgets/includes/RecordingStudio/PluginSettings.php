@@ -82,10 +82,7 @@ final class PluginSettings {
 			: trim( (string) ( $existing['client_id'] ?? '' ) );
 
 		if ( array_key_exists( 'client_secret', $incoming ) ) {
-			$client_secret = (string) $incoming['client_secret'];
-			if ( '' === trim( $client_secret ) ) {
-				$client_secret = (string) ( $existing['client_secret'] ?? '' );
-			}
+			$client_secret = trim( (string) $incoming['client_secret'] );
 		} else {
 			$client_secret = (string) ( $existing['client_secret'] ?? '' );
 		}
