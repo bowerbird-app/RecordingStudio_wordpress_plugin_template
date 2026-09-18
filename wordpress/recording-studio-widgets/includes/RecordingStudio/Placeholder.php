@@ -17,7 +17,7 @@ final class Placeholder {
 	}
 
 	public static function settings_incomplete_message(): string {
-		return __( 'Set the host URL and OAuth client credentials under Settings → WordPress Plugin Demo.', 'recording-studio-widget' );
+		return __( 'Connect this site under Settings → WordPress Plugin Demo, or add API keys under Advanced.', 'recording-studio-widget' );
 	}
 
 	public static function embed_error_message( string $code, ?EmbedRequest $request = null ): string {

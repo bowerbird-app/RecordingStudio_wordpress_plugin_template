@@ -11,6 +11,8 @@ use RecordingStudio\StudioClient;
 const RS_TEST_PAGE_UUID = '11111111-1111-4111-8111-111111111111';
 
 function rs_seed_settings(): void {
+	\RecordingStudio\ConnectTokens::clear();
+	\RecordingStudio\ConnectSession::clear();
 	update_option(
 		PluginSettings::OPTION_KEY,
 		array(
@@ -19,6 +21,7 @@ function rs_seed_settings(): void {
 			'client_secret' => 'demo-secret',
 		)
 	);
+	StudioClient::from_wp_options()->flush_token_cache();
 }
 
 function test_studio_client_fetches_token_then_embed(): void {

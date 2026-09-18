@@ -20,6 +20,17 @@ final class HostUrls {
 		return $this->settings->host_base_url . ContractPaths::token_path();
 	}
 
+	public function connect_token_post_url(): string {
+		return $this->settings->host_base_url . ContractPaths::connect_token_path();
+	}
+
+	/**
+	 * @param array<string, string> $query Authorize query.
+	 */
+	public function authorize_url( array $query ): string {
+		return $this->settings->host_base_url . ContractPaths::authorize_path() . '?' . http_build_query( $query );
+	}
+
 	public function embed_get_url( PageRecordingId $page_recording_id ): string {
 		return $this->settings->host_base_url . ContractPaths::embed_path( $page_recording_id->to_string() );
 	}

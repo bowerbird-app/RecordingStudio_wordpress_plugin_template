@@ -44,8 +44,19 @@ if ( ! function_exists( 'update_option' ) ) {
 	 * @param mixed  $value Value.
 	 * @return bool
 	 */
-	function update_option( string $key, $value ): bool {
+	function update_option( string $key, $value, bool $autoload = true ): bool {
 		$GLOBALS['rs_test_options'][ $key ] = $value;
+		return true;
+	}
+}
+
+if ( ! function_exists( 'delete_option' ) ) {
+	/**
+	 * @param string $key Option key.
+	 * @return bool
+	 */
+	function delete_option( string $key ): bool {
+		unset( $GLOBALS['rs_test_options'][ $key ] );
 		return true;
 	}
 }
@@ -160,6 +171,92 @@ if ( ! function_exists( 'esc_url_raw' ) ) {
 	 */
 	function esc_url_raw( $url ): string {
 		return trim( (string) $url );
+	}
+}
+
+if ( ! function_exists( 'esc_html__' ) ) {
+	/**
+	 * @param string $text Text.
+	 * @return string
+	 */
+	function esc_html__( string $text ): string {
+		return htmlspecialchars( $text, ENT_QUOTES, 'UTF-8' );
+	}
+}
+
+if ( ! function_exists( 'admin_url' ) ) {
+	/**
+	 * @param string $path Path.
+	 * @return string
+	 */
+	function admin_url( string $path = '' ): string {
+		return 'http://localhost:8888/wp-admin/' . ltrim( $path, '/' );
+	}
+}
+
+if ( ! function_exists( 'add_query_arg' ) ) {
+	/**
+	 * @param mixed ...$args Query args and URL.
+	 * @return string
+	 */
+	function add_query_arg( ...$args ): string {
+		if ( is_array( $args[0] ) ) {
+			$params = $args[0];
+			$url    = isset( $args[1] ) ? (string) $args[1] : '';
+		} else {
+			$params = array( $args[0] => $args[1] );
+			$url    = isset( $args[2] ) ? (string) $args[2] : '';
+		}
+
+		$parts = wp_parse_url( $url );
+		$query = array();
+		if ( ! empty( $parts['query'] ) ) {
+			parse_str( (string) $parts['query'], $query );
+		}
+		foreach ( $params as $key => $value ) {
+			$query[ $key ] = $value;
+		}
+
+		$scheme = isset( $parts['scheme'] ) ? $parts['scheme'] . '://' : '';
+		$host   = $parts['host'] ?? '';
+		$path   = $parts['path'] ?? '';
+		return $scheme . $host . $path . '?' . http_build_query( $query );
+	}
+}
+
+if ( ! function_exists( 'wp_parse_url' ) ) {
+	/**
+	 * @param string $url URL.
+	 * @return array<string, mixed>|false
+	 */
+	function wp_parse_url( string $url ) {
+		return parse_url( $url );
+	}
+}
+
+if ( ! function_exists( 'wp_generate_password' ) ) {
+	/**
+	 * @param int  $length Length.
+	 * @param bool $special_chars Special chars.
+	 * @param bool $extra_special Extra special chars.
+	 * @return string
+	 */
+	function wp_generate_password( int $length = 12, bool $special_chars = true, bool $extra_special = false ): string {
+		$chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+		if ( $special_chars ) {
+			$chars .= '!@#$%^&*()';
+		}
+		if ( $extra_special ) {
+			$chars .= '-_ []{}<>~`+=,.;:/?|';
+		}
+
+		$password = '';
+		$max      = strlen( $chars ) - 1;
+		for ( $i = 0; $i < $length; $i++ ) {
+			$password .= $chars[ random_int( 0, $max ) ];
+		}
+
+		return $password;
 	}
 }
 
