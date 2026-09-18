@@ -7,20 +7,15 @@ namespace RecordingStudio;
 final class PluginSettings {
 	public const OPTION_KEY = 'recording_studio_plugin_demo_settings';
 
-	/** @var string */
-	public $host_base_url;
+	public string $host_base_url;
 
-	/** @var string */
-	public $client_id;
+	public string $client_id;
 
-	/** @var string */
-	public $api_key;
+	public string $api_key;
 
-	/** @var string */
-	public $client_secret;
+	public string $client_secret;
 
-	/** @var string|null */
-	public $token_url_override;
+	public ?string $token_url_override;
 
 	public function __construct(
 		string $host_base_url,
@@ -37,7 +32,7 @@ final class PluginSettings {
 	}
 
 	/**
-	 * @param array<string, mixed> $stored Stored option value.
+	 * @param array<string, mixed> $stored
 	 */
 	public static function from_storage_array( array $stored ): self {
 		return new self(
@@ -72,7 +67,7 @@ final class PluginSettings {
 	}
 
 	/**
-	 * @param array<string, mixed> $incoming From SettingsForm or partial update.
+	 * @param array<string, mixed> $incoming
 	 */
 	public static function validate_and_merge( array $incoming ): self {
 		$existing = get_option( self::OPTION_KEY, array() );

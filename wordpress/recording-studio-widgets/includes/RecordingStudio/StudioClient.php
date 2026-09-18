@@ -17,10 +17,8 @@ final class StudioClient {
 	 */
 	private static $test_http_get = null;
 
-	/** @var PluginSettings */
 	private PluginSettings $settings;
 
-	/** @var HostUrls */
 	private HostUrls $urls;
 
 	private function __construct( PluginSettings $settings, HostUrls $urls ) {
