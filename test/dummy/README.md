@@ -4,7 +4,7 @@ This Rails app is the host for RecordingStudio WordPress widgets. It boots on it
 
 ## What it covers
 
-- Devise authentication with a seeded admin user
+- Recording Studio Users auth chrome with a seeded admin user (`admin@admin.com` / `Password`)
 - `Current.actor` wiring for Recording Studio events
 - Root workspace plus seeded folder and page recordables
 - Recording Studio host shell with FlatPack sidebar (Home, Recordings tree, API Keys, Pages), FlatPack kit CSS (`variables`, `application`, `rich_text`), and Tailwind source scanning
@@ -14,6 +14,7 @@ This Rails app is the host for RecordingStudio WordPress widgets. It boots on it
 - Mounted `RecordingStudio::Engine` route behavior inside a host app
 - Dummy-only `/docs/*` pages for host-app onboarding
 - Named API `wp_plugin_demo` with soft GET `:embed` (BrowserPayload schema v1)
+- Public **WordPress Plugin Demo** Oauth client for Connect (exact wp-admin admin-post redirect URIs) plus **Seed Demo App** for dummy Oauth tests
 - Host Page embed renderer (`pages/embed`) with seeded Getting Started HTML for the WordPress Plugin Demo block
 - CI eager-load workarounds: ignore Embeddable `lib/` on host Zeitwerk
 - Env-only connectivity placeholders. No widget models or WordPress render routes in Rails
@@ -33,7 +34,7 @@ bin/dev
 
 Run the commands above from the dummy app directory, not the repository root.
 
-Then open the app and sign in with:
+Then open `/users/sign_in`. The first screen asks for email. The second screen asks for password.
 
 - Email: `admin@admin.com`
 - Password: `Password`
@@ -48,23 +49,31 @@ After sign-in, use sidebar **API Keys** to open API clients (`/recording_studio_
 - `/admin/screens/oauth_clients` (signed-in, Admin root) lists and manages OAuth apps
 - `/recording_studio_api/api_clients` (signed-in) lists and mints API client credentials for WordPress
 - `/recording_studio` redirects to `/` while the mounted Recording Studio engine stays available under that prefix for non-root routes
-- `/users/sign_in` is the Devise sign-in page
+- `/users/sign_in` is Recording Studio Users auth chrome (email first, then password)
 - `/docs/install`, `/docs/config`, `/docs/recordable_types`, `/docs/recordings_tree`, `/docs/gem_views`, `/docs/methods` are dummy-only starter pages
 - `/up` is the Rails health check
 - WordPress Plugin Demo named API (not the public `/recording_studio_api/api/v1` surface):
-  - `POST /recording_studio_api/apis/wp_plugin_demo/oauth/token`
+  - `GET /recording_studio_oauth/oauth/authorize` (Connect; signed-out visitors use Users chrome)
+  - `POST /recording_studio_api/apis/wp_plugin_demo/oauth/token` (Connect authorization_code + refresh_token, and Advanced client_credentials)
+  - `GET /recording_studio_api/apis/wp_plugin_demo/v1/pages` (Page index for the WordPress picker)
   - `GET /recording_studio_api/apis/wp_plugin_demo/v1/pages/:id/actions/embed`
   - short alias `GET .../pages/:id/embed`
 
 ## OAuth client for the WordPress plugin
 
-The WordPress plugin talks to the named API `wp_plugin_demo` with OAuth client credentials.
+Connect is the primary path. The plugin starts PKCE authorize against the public **WordPress Plugin Demo** client, then users sign in with Users chrome and pick a workspace.
 
-For minting API client credentials in the host UI, use sidebar **API Keys** after sign-in (`/recording_studio_api/api_clients`).
+```bash
+bin/rails runner 'WpPluginDemo::Seed.print_connect_client!'
+```
 
-For staff-managed OAuth apps (PKCE public clients, etc.), open `/admin/screens/oauth_clients` after sign-in (Admin root).
+That prints the public client id (no secret), authorize URL, named token URL, wp-admin callback, and Getting Started page id.
 
-For the cold-start `wp_plugin_demo` API client used in the WordPress runbook, console runners still work:
+Seeded exact redirect URIs are `http://localhost:8888/wp-admin/admin-post.php?action=recording_studio_oauth_callback` and the `127.0.0.1` twin. Add any other WordPress origin as an exact URI in Oauth Admin Registered apps (`/admin/screens/oauth_clients`).
+
+For minting Advanced API keys in the host UI, use sidebar **API Keys** after sign-in (`/recording_studio_api/api_clients`).
+
+For the cold-start `wp_plugin_demo` API client used under Advanced, console runners still work:
 
 ```bash
 bin/rails runner 'WpPluginDemo::Seed.print_runbook_connection!'
@@ -76,7 +85,7 @@ Isolated tree (new workspace and page each run):
 bin/rails runner 'c = WpPluginDemo::Provision.isolated_client!; puts [c.oauth_client_id, c.oauth_client_secret, c.page_recording_id].join("\n")'
 ```
 
-Use the printed values in WordPress under **Settings → WordPress Plugin Demo** and as the block page recording id.
+Use `print_connect_client!` for Settings → Connect. Use the Advanced print for API keys. In the block, pick a page from the host list or paste a page id.
 
 After `db:reset`, the Getting Started `page_recording_id` changes. Look it up again with:
 

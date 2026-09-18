@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+/* Include RecordingStudioUser engine views for Tailwind CSS */
+@source "../../vendor/bundle/**/recording_studio_user/app/views/**/*.erb";
+@source "../../../../../../usr/local/bundle/ruby/**/bundler/gems/recording_studio_user-*/app/views/**/*.erb";
+@source "../../../../../../usr/local/lib/ruby/gems/*/bundler/gems/recording_studio_user-*/app/views/**/*.erb";
+@source "../../../../../../usr/local/lib/ruby/gems/*/bundler/gems/RecordingStudio_users-*/app/views/**/*.erb";
+
 /* Include RecordingStudioSiteSettings engine views for Tailwind CSS */
 @source "../../vendor/bundle/**/recording_studio_site_settings/app/views/**/*.erb";
 @source "../../../../../../usr/local/bundle/ruby/**/bundler/gems/recording_studio_site_settings-*/app/views/**/*.erb";

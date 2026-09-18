@@ -28,6 +28,13 @@ class DummySeedOauthTest < ActiveSupport::TestCase
     client = RecordingStudioOauth::OauthClient.find_by(name: "Seed Demo App")
     assert_predicate client, :present?
 
+    wp_client = RecordingStudioOauth::OauthClient.find_by(name: "WordPress Plugin Demo")
+    assert_predicate wp_client, :present?
+    refute wp_client.confidential?
+    assert_equal "wp_plugin_demo", wp_client.api_key
+    assert_equal WpPluginDemo::Seed::CONNECT_REDIRECT_URIS, wp_client.redirect_uris
+    assert_nil wp_client.client_secret_digest
+
     refute RecordingStudio.capability_enabled?(:accessible, for: Folder)
     folder = Folder.find_by!(name: "Product Docs")
     folder_recording = RecordingStudio::Recording.find_by!(recordable: folder)

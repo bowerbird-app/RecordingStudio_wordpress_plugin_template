@@ -2,19 +2,20 @@
 
 declare(strict_types=1);
 
+use RecordingStudio\ConnectFlow;
+use RecordingStudio\ConnectStatus;
+use RecordingStudio\HostUrls;
 use RecordingStudio\PluginSettings;
 use RecordingStudio\SettingsForm;
+use RecordingStudio\SettingsPage;
 use RecordingStudio\StudioClient;
 
-/**
- * Renders the WordPress Plugin Demo settings screen.
- */
 function recording_studio_plugin_demo_render_settings_page(): void {
 	if ( ! current_user_can( 'manage_options' ) ) {
 		return;
 	}
 
-	$notice = '';
+	$notice = isset( $_GET['rs_notice'] ) ? sanitize_text_field( wp_unslash( (string) $_GET['rs_notice'] ) ) : '';
 	$stored = get_option( PluginSettings::OPTION_KEY, array() );
 	if ( ! is_array( $stored ) ) {
 		$stored = array();
@@ -39,40 +40,71 @@ function recording_studio_plugin_demo_render_settings_page(): void {
 		$notice = $probe->is_error() ? 'probe_failed' : 'probe_ok';
 	}
 
-	$host      = (string) ( $stored['host_base_url'] ?? '' );
-	$client_id = (string) ( $stored['client_id'] ?? '' );
-	$secret    = (string) ( $stored['client_secret'] ?? '' );
-	$token_url = (string) ( $stored['token_url_override'] ?? '' );
-
-	echo '<div class="wrap">';
-	echo '<h1>' . esc_html( get_admin_page_title() ) . '</h1>';
-
-	if ( 'saved' === $notice ) {
-		echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Settings saved.', 'recording-studio-widget' ) . '</p></div>';
-	}
-	if ( 'probe_ok' === $notice ) {
-		echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Connection test succeeded. The host accepted the OAuth client credentials.', 'recording-studio-widget' ) . '</p></div>';
-	}
-	if ( 'probe_failed' === $notice ) {
-		echo '<div class="notice notice-error is-dismissible"><p>' . esc_html__( 'Connection test failed. Check the host URL and OAuth client credentials.', 'recording-studio-widget' ) . '</p></div>';
-	}
-
-	echo '<form method="post">';
+	ob_start();
 	wp_nonce_field( 'rs_plugin_demo_settings' );
-	echo '<table class="form-table" role="presentation">';
-	echo '<tr><th scope="row"><label for="rs_host_base_url">' . esc_html__( 'Host base URL', 'recording-studio-widget' ) . '</label></th>';
-	echo '<td><input name="rs_host_base_url" id="rs_host_base_url" type="url" class="regular-text" value="' . esc_attr( $host ) . '" placeholder="http://localhost:3000" /></td></tr>';
-	echo '<tr><th scope="row"><label for="rs_client_id">' . esc_html__( 'OAuth client id', 'recording-studio-widget' ) . '</label></th>';
-	echo '<td><input name="rs_client_id" id="rs_client_id" type="text" class="regular-text" value="' . esc_attr( $client_id ) . '" autocomplete="off" /></td></tr>';
-	echo '<tr><th scope="row"><label for="rs_client_secret">' . esc_html__( 'OAuth client secret', 'recording-studio-widget' ) . '</label></th>';
-	echo '<td><input name="rs_client_secret" id="rs_client_secret" type="password" class="regular-text" value="' . esc_attr( $secret ) . '" autocomplete="new-password" /></td></tr>';
-	echo '<tr><th scope="row"><label for="rs_token_url_override">' . esc_html__( 'Token URL override (optional)', 'recording-studio-widget' ) . '</label></th>';
-	echo '<td><input name="rs_token_url_override" id="rs_token_url_override" type="url" class="regular-text" value="' . esc_attr( $token_url ) . '" /></td></tr>';
-	echo '</table>';
-	echo '<p class="submit">';
-	echo '<button type="submit" name="rs_save_settings" class="button button-primary">' . esc_html__( 'Save settings', 'recording-studio-widget' ) . '</button> ';
-	echo '<button type="submit" name="rs_test_connection" class="button">' . esc_html__( 'Test connection', 'recording-studio-widget' ) . '</button>';
-	echo '</p>';
-	echo '</form>';
-	echo '</div>';
+	$nonce_html = (string) ob_get_clean();
+
+	// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- SettingsPage::markup escapes visible text and attributes.
+	echo SettingsPage::markup(
+		$stored,
+		$notice,
+		ConnectStatus::current(),
+		admin_url( 'admin-post.php?action=' . ConnectFlow::START_ACTION ),
+		admin_url( 'admin-post.php?action=' . ConnectFlow::DISCONNECT_ACTION ),
+		$nonce_html
+	);
+	// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
+}
+
+function recording_studio_plugin_demo_settings_url( string $notice ): string {
+	return add_query_arg(
+		array(
+			'page'      => 'recording-studio-plugin-demo',
+			'rs_notice' => $notice,
+		),
+		admin_url( 'options-general.php' )
+	);
+}
+
+function recording_studio_plugin_demo_require_manage_options(): void {
+	if ( ! current_user_can( 'manage_options' ) ) {
+		wp_die( esc_html__( 'Sorry, you are not allowed to do that.', 'recording-studio-widget' ) );
+	}
+}
+
+function recording_studio_plugin_demo_persist_posted_settings(): PluginSettings {
+	$incoming = SettingsForm::read_post();
+	$saved    = PluginSettings::validate_and_merge( $incoming );
+	update_option( PluginSettings::OPTION_KEY, $saved->to_storage_array(), false );
+	return $saved;
+}
+
+function recording_studio_plugin_demo_connect_start(): void {
+	recording_studio_plugin_demo_require_manage_options();
+	check_admin_referer( 'rs_plugin_demo_settings' );
+	$settings = recording_studio_plugin_demo_persist_posted_settings();
+	if ( ! $settings->can_start_connect() ) {
+		wp_safe_redirect( recording_studio_plugin_demo_settings_url( 'connect_failed' ) );
+		exit;
+	}
+
+	$url = ConnectFlow::start( $settings, new HostUrls( $settings ) );
+	wp_safe_redirect( $url );
+	exit;
+}
+
+function recording_studio_plugin_demo_connect_callback(): void {
+	recording_studio_plugin_demo_require_manage_options();
+	$query  = wp_unslash( $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	$notice = ConnectFlow::finish( $query, StudioClient::from_wp_options() );
+	wp_safe_redirect( recording_studio_plugin_demo_settings_url( $notice ) );
+	exit;
+}
+
+function recording_studio_plugin_demo_disconnect(): void {
+	recording_studio_plugin_demo_require_manage_options();
+	check_admin_referer( 'rs_plugin_demo_settings' );
+	$notice = ConnectFlow::disconnect();
+	wp_safe_redirect( recording_studio_plugin_demo_settings_url( $notice ) );
+	exit;
 }

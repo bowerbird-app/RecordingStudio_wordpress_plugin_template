@@ -3,8 +3,6 @@
 require Rails.root.join("lib/wp_plugin_demo/contract")
 
 RecordingStudioApi.configure do |config|
-  # No Redis in this dummy. Set on the named API too — inheritance from public at
-  # create time is a trap.
   config.rate_limit_api_pre_auth_enabled = false
   config.rate_limit_api_enabled = false
   config.rate_limit_oauth_enabled = false
@@ -33,7 +31,7 @@ RecordingStudioApi.register_recordable_type_api(
 RecordingStudioApi.register_recordable_type_api(
   "Page",
   api: WpPluginDemo::Contract::API_KEY,
-  operations: %i[show],
+  operations: %i[index show],
   capability_actions: %i[embed], # allowlist only — no host handler
   serializer: ->(page, **) { { title: page.title } },
   output_keys: %i[title]

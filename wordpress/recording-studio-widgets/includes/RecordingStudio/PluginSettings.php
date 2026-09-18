@@ -61,12 +61,7 @@ final class PluginSettings {
 			return null;
 		}
 
-		$settings = self::from_storage_array( $stored );
-		if ( ! $settings->is_complete() ) {
-			return null;
-		}
-
-		return $settings;
+		return self::from_storage_array( $stored );
 	}
 
 	/**
@@ -105,10 +100,18 @@ final class PluginSettings {
 		return new self( $host, $client_id, $client_secret, $token_override );
 	}
 
-	public function is_complete(): bool {
+	public function has_api_keys(): bool {
 		return '' !== $this->host_base_url
 			&& '' !== $this->client_id
 			&& '' !== $this->client_secret;
+	}
+
+	public function can_start_connect(): bool {
+		return '' !== $this->host_base_url && '' !== $this->client_id;
+	}
+
+	public function is_complete( ?ConnectTokens $connect_tokens = null ): bool {
+		return TokenPreference::resolve( $this, $connect_tokens )->is_complete();
 	}
 
 	public function fingerprint(): string {

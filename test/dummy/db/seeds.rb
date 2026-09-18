@@ -38,9 +38,21 @@ grant_or_find_access = lambda do |recording, actor, role|
   bootstrap.value
 end
 
-user = User.find_or_create_by!(email: "admin@admin.com") do |u|
-  u.password = "Password"
-  u.password_confirmation = "Password"
+user = User.find_or_initialize_by(email: "admin@admin.com")
+if user.new_record?
+  user.password = "Password"
+  user.password_confirmation = "Password"
+end
+user.save! if user.new_record? || user.changed?
+
+if RecordingStudioUser.profile_for(user).nil?
+  RecordingStudioUser.record_profile!(
+    user,
+    first_name: "Avery",
+    last_name: "Admin",
+    time_zone: "UTC",
+    actor: user
+  )
 end
 
 workspace = Workspace.find_or_create_by!(name: "Studio Workspace")
@@ -55,6 +67,8 @@ oauth_client.redirect_uris = ["http://127.0.0.1:3000/callback"]
 oauth_client.confidential = false
 oauth_client.api_key = "wp_plugin_demo"
 oauth_client.save!
+
+wp_connect_client = WpPluginDemo::Seed.ensure_connect_client!
 
 previous_actor = Current.actor
 Current.actor = user
@@ -82,10 +96,12 @@ end
 WpPluginDemo::Seed.ensure_studio_embed!
 
 puts "Seeded: admin@admin.com / Password"
+puts "Seeded: Avery Admin profile under the shared People root"
 puts "Seeded: Workspace '#{workspace.name}' with root recording ##{root_recording.id}"
 puts "Seeded: Workspace '#{accessible_workspace.name}' with root recording ##{accessible_root_recording.id}"
 puts "Seeded: Workspace '#{private_workspace.name}' with root recording ##{private_root_recording.id}"
 puts "Seeded: Folder '#{folder.name}' and page '#{page.title}'"
 puts "Seeded: Admin root for Oauth Admin (Registered apps)"
 puts "Seeded: Seed Demo App client_id=#{oauth_client.client_id}"
+puts "Seeded: WordPress Plugin Demo client_id=#{wp_connect_client.client_id}"
 puts "Seeded: Getting Started embed ready for the WordPress plugin demo"

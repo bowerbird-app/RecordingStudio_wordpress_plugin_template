@@ -18,10 +18,10 @@ final class StudioClient {
 	private static $test_http_get = null;
 
 	/** @var PluginSettings */
-	private $settings;
+	private PluginSettings $settings;
 
 	/** @var HostUrls */
-	private $urls;
+	private HostUrls $urls;
 
 	private function __construct( PluginSettings $settings, HostUrls $urls ) {
 		$this->settings = $settings;
@@ -49,7 +49,7 @@ final class StudioClient {
 	public function embed_payload_for_page( PageRecordingId $page_recording_id, ?EmbedRequest $request = null ): EmbedResult {
 		$request = $request ?? EmbedRequest::for_server_render( $page_recording_id );
 
-		if ( ! $this->settings->is_complete() ) {
+		if ( ! $this->settings->is_complete( ConnectTokens::load() ) ) {
 			return EmbedResult::err(
 				'settings_incomplete',
 				Placeholder::settings_incomplete_message(),
@@ -65,7 +65,7 @@ final class StudioClient {
 	}
 
 	public function probe_credentials(): EmbedResult {
-		if ( ! $this->settings->is_complete() ) {
+		if ( ! $this->settings->has_api_keys() ) {
 			return EmbedResult::err(
 				'settings_incomplete',
 				Placeholder::settings_incomplete_message(),
@@ -73,12 +73,79 @@ final class StudioClient {
 		}
 
 		$this->flush_token_cache();
-		$token_result = $this->ensure_access_token();
+		$token_result = $this->request_api_key_token();
 		if ( $token_result instanceof EmbedResult ) {
 			return $token_result;
 		}
 
 		return EmbedResult::probe_ok();
+	}
+
+	/**
+	 * @return EmbedResult|ConnectTokens|HostError
+	 */
+	public function exchange_connect_code( string $code, string $redirect_uri, string $code_verifier ) {
+		$response = $this->http_post(
+			$this->urls->connect_token_post_url(),
+			array(
+				'grant_type'    => ContractPaths::CONNECT_GRANT,
+				'client_id'     => $this->settings->client_id,
+				'code'          => $code,
+				'redirect_uri'  => $redirect_uri,
+				'code_verifier' => $code_verifier,
+			)
+		);
+
+		return $this->connect_tokens_from_response( $response );
+	}
+
+	public function list_pages(): PageListResult {
+		if ( ! $this->settings->is_complete( ConnectTokens::load() ) ) {
+			return PageListResult::err(
+				'settings_incomplete',
+				Placeholder::settings_incomplete_message()
+			);
+		}
+
+		$token_result = $this->ensure_access_token();
+		if ( $token_result instanceof EmbedResult ) {
+			return PageListResult::from_embed_error( $token_result );
+		}
+
+		$response = $this->http_get(
+			$this->urls->pages_get_url(),
+			array(
+				'Authorization' => 'Bearer ' . $token_result,
+				'Accept'        => 'application/json',
+			)
+		);
+
+		if ( ! empty( $response['error'] ) ) {
+			return PageListResult::err(
+				'embed_http_error',
+				Placeholder::embed_error_message( 'embed_http_error' )
+			);
+		}
+
+		$status = (int) $response['status'];
+		if ( 401 === $status ) {
+			$this->flush_token_cache();
+			return PageListResult::err(
+				ConnectNotice::EMBED_UNAUTHORIZED,
+				ConnectNotice::message( ConnectNotice::EMBED_UNAUTHORIZED ),
+				401
+			);
+		}
+
+		if ( 200 !== $status ) {
+			return PageListResult::err(
+				'embed_failed',
+				Placeholder::embed_error_message( 'embed_failed' ),
+				$status
+			);
+		}
+
+		return PageListResult::ok( PageChoice::list_from_index_body( $response['body'] ) );
 	}
 
 	public function flush_token_cache(): void {
@@ -93,18 +160,138 @@ final class StudioClient {
 	 * @return EmbedResult|string
 	 */
 	private function ensure_access_token() {
-		$cached = CachedAccessToken::load( $this->token_cache_key() );
-		if ( null !== $cached && $cached->is_valid( time() ) ) {
-			return $cached->access_token;
+		$preference = TokenPreference::resolve( $this->settings, ConnectTokens::load() );
+
+		if ( $preference->uses_connect() ) {
+			$connect_result = $this->ensure_connect_access_token( $preference->connect_tokens );
+			if ( is_string( $connect_result ) ) {
+				return $connect_result;
+			}
+			if ( $this->settings->has_api_keys() ) {
+				return $this->ensure_api_key_access_token();
+			}
+
+			return $connect_result;
 		}
 
-		return $this->request_token();
+		if ( $preference->uses_api_keys() ) {
+			return $this->ensure_api_key_access_token();
+		}
+
+		return EmbedResult::err(
+			'settings_incomplete',
+			Placeholder::settings_incomplete_message(),
+		);
 	}
 
 	/**
 	 * @return EmbedResult|string
 	 */
-	private function request_token() {
+	private function ensure_connect_access_token( ConnectTokens $tokens ) {
+		if ( $tokens->is_fresh( time() ) ) {
+			return $tokens->access_token;
+		}
+
+		return $this->refresh_connect_tokens( $tokens );
+	}
+
+	/**
+	 * @return EmbedResult|string
+	 */
+	private function refresh_connect_tokens( ConnectTokens $tokens ) {
+		if ( '' === $tokens->refresh_token ) {
+			return EmbedResult::err(
+				ConnectNotice::RECONNECT_NEEDED,
+				ConnectNotice::message( ConnectNotice::RECONNECT_NEEDED )
+			);
+		}
+
+		$response = $this->http_post(
+			$this->urls->connect_token_post_url(),
+			array(
+				'grant_type'    => ContractPaths::REFRESH_GRANT,
+				'client_id'     => $this->settings->client_id,
+				'refresh_token' => $tokens->refresh_token,
+			)
+		);
+
+		$refreshed = $this->connect_tokens_from_response( $response );
+		if ( $refreshed instanceof HostError ) {
+			$code = $refreshed->notice_code();
+			$code = ConnectNotice::EXPIRED_OR_USED_CODE === $code ? ConnectNotice::RECONNECT_NEEDED : $code;
+			return EmbedResult::err( $code, ConnectNotice::message( $code ) );
+		}
+		if ( $refreshed instanceof EmbedResult ) {
+			return $refreshed;
+		}
+
+		$refreshed->save();
+		return $refreshed->access_token;
+	}
+
+	/**
+	 * @param array{status: int, body: mixed, error?: string} $response
+	 * @return EmbedResult|ConnectTokens|HostError
+	 */
+	private function connect_tokens_from_response( array $response ) {
+		$host_error = HostError::parse( $response['body'] ?? null );
+		if ( null !== $host_error ) {
+			return $host_error;
+		}
+
+		if ( ! empty( $response['error'] ) ) {
+			return EmbedResult::err(
+				'token_http_error',
+				__( 'Could not reach the host token endpoint.', 'recording-studio-widget' ),
+			);
+		}
+
+		$status = (int) $response['status'];
+		if ( 200 !== $status ) {
+			return EmbedResult::err(
+				'token_denied',
+				__( 'Host rejected the connected session. Connect again or add API keys under Advanced.', 'recording-studio-widget' ),
+				$status
+			);
+		}
+
+		$body = $response['body'];
+		if ( ! is_array( $body ) ) {
+			return EmbedResult::err(
+				'token_invalid',
+				__( 'Host returned an unexpected token response.', 'recording-studio-widget' ),
+				$status
+			);
+		}
+
+		$tokens = ConnectTokens::parse_response( $body );
+		if ( null === $tokens ) {
+			return EmbedResult::err(
+				'token_invalid',
+				__( 'Host returned an unexpected token response.', 'recording-studio-widget' ),
+				$status
+			);
+		}
+
+		return $tokens;
+	}
+
+	/**
+	 * @return EmbedResult|string
+	 */
+	private function ensure_api_key_access_token() {
+		$cached = CachedAccessToken::load( $this->token_cache_key() );
+		if ( null !== $cached && $cached->is_valid( time() ) ) {
+			return $cached->access_token;
+		}
+
+		return $this->request_api_key_token();
+	}
+
+	/**
+	 * @return EmbedResult|string
+	 */
+	private function request_api_key_token() {
 		$response = $this->http_post(
 			$this->urls->token_post_url(),
 			array(

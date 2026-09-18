@@ -8,17 +8,17 @@ Two packages live here. The Rails dummy host proves the engine. The WordPress pl
 
 ## Architecture
 
-The dummy app in `test/dummy/` is a Rails 8.1 host. It mounts Recording Studio, signs in with Devise, and renders FlatPack. It boots with no WordPress process. Connectivity placeholders are env-only. The dummy app has no widget models, widget APIs, or WordPress render routes.
+The dummy app in `test/dummy/` is a Rails 8.1 host. It mounts Recording Studio. Sign-in uses Recording Studio Users chrome on a Devise `User`. Screens render FlatPack. It boots with no WordPress process. Connectivity placeholders are env-only. The dummy app has no widget models, widget APIs, or WordPress render routes.
 
-The plugin in `wordpress/recording-studio-widgets/` is a dynamic block named **WordPress Plugin Demo**. It stores OAuth client credentials server-side, fetches BrowserPayload v1 JSON from the dummy host named API `wp_plugin_demo`, server-renders the payload, and mounts the baked plugin SDK on the front. `wp-env` serves WordPress on port 8888. The dummy host serves Rails on port 3000.
+The plugin in `wordpress/recording-studio-widgets/` is a dynamic block named **WordPress Plugin Demo**. It stores Connect tokens or API keys server-side, fetches BrowserPayload v1 JSON from the dummy host named API `wp_plugin_demo`, server-renders the payload, and mounts the baked plugin SDK on the front. `wp-env` serves WordPress on port 8888. The dummy host serves Rails on port 3000.
 
 ### Phase 4 (WordPress Plugin Demo client)
 
-- **Settings → WordPress Plugin Demo**: host base URL, OAuth client id/secret, optional token URL override, and **Test connection**.
+- **Settings → WordPress Plugin Demo**: host base URL, public OAuth client id, **Connect to Recording Studio** (PKCE), connected state + **Disconnect**. Advanced keeps client secret, token URL override, Save, and **Test connection**.
 - **Block**: `pageRecordingId` attribute (UUID). Editor preview uses `GET /wp-json/recording-studio/v1/preview/{uuid}` (`edit_posts`).
 - **Front**: SSR `data-rs-payload` plus `viewScript` (`front.js`) calling `window.RecordingStudioPluginSdk.mount` — no secrets in the page.
 - **SDK**: committed under `assets/sdk/`, copied to `build/sdk/` on `npm run build`.
-- Provision OAuth credentials on the dummy host with `WpPluginDemo::Seed.print_runbook_connection!` or `WpPluginDemo::Provision.isolated_client!` (see `test/dummy/README.md`).
+- Print the public Connect client with `WpPluginDemo::Seed.print_connect_client!`. Keep `print_runbook_connection!` or `WpPluginDemo::Provision.isolated_client!` for Advanced API keys (see `test/dummy/README.md`).
 
 Cold start (clone → ZIP → working block): [docs/wordpress-plugin-demo-runbook.md](docs/wordpress-plugin-demo-runbook.md).
 
@@ -45,12 +45,14 @@ A Cloud Agent already starts PostgreSQL and the dummy server from `.cursor/`. Op
 | Email    | admin@admin.com   |
 | Password | Password          |
 
-The login form is prefilled with these credentials.
+Sign-in is email first, then password. The form is not prefilled.
 
 ### Useful dummy routes
 
 - `/` is the dummy app home page
-- `/users/sign_in` is the Devise sign-in page
+- `/users/sign_in` is Recording Studio Users auth chrome (email first, then password)
+- `/recording_studio_oauth/oauth/authorize` is the Connect authorize screen (signed-out visitors land on Users chrome)
+- `/recording_studio_api/apis/wp_plugin_demo/oauth/token` is the Connect and Advanced token + refresh endpoint
 - `/recording_studio` redirects to `/` while the mounted Recording Studio engine remains data and API focused
 - `/` home, `/docs/recordings_tree`, `/recording_studio_api/api_clients` (**API Keys**, signed-in), and `/pages` (**Pages**, signed-in) are the dummy sidebar destinations
 - `/admin/screens/oauth_clients` remains for Oauth Admin registered apps (signed-in, Admin root) but is not a sidebar item
@@ -91,6 +93,7 @@ These versions come from the gemspec, the dummy Gemfile, `@wordpress/create-bloc
 | Publishable | dummy GitHub tag `v0.2.0` (Embeddable hard dep; not mixed into Page) |
 | Attachable | dummy GitHub tag `v0.5.1` (Publishable boot dep) |
 | Root Switchable | dummy GitHub tag `v0.5.0` |
+| Users | dummy GitHub tag `v0.11.0` |
 | FlatPack | dummy GitHub tag `v0.1.177` |
 | Devise | latest |
 | `@wordpress/create-block` | 4.98.0 |
@@ -136,7 +139,7 @@ Later phases may add widget discovery, richer editor pickers, and embed response
 
 ## Dummy Recording Studio host
 
-Authenticated dummy pages use the FlatPack host sidebar layout (`layouts/host`) plus FlatPack CSS and JS. Devise keeps its own sign-in layout.
+Authenticated dummy pages use the FlatPack host sidebar layout (`layouts/host`) plus FlatPack CSS and JS. Sign-in, sign-up, and password reset use Recording Studio Users auth chrome.
 
 The dummy host follows Recording Studio's root recording pattern:
 

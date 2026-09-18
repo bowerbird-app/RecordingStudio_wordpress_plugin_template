@@ -52,6 +52,24 @@ class WpPluginDemoSeedTest < ActiveSupport::TestCase
     assert_equal "one-shot-secret", with_secret.oauth_client_secret
   end
 
+  test "print_connect_client! prints public client fields and no secret" do
+    output = capture_io do
+      connection = WpPluginDemo::Seed.print_connect_client!(host_base_url: "http://localhost:3000")
+      assert_equal "http://localhost:3000", connection.host_base_url
+      assert_equal connection.connect_client_id, RecordingStudioOauth::OauthClient.find_by!(name: "WordPress Plugin Demo").client_id
+      assert_equal "http://localhost:3000#{WpPluginDemo::Contract::AUTHORIZE_PATH}", connection.authorize_url
+      assert_equal "http://localhost:3000#{WpPluginDemo::Contract::CONNECT_TOKEN_PATH}", connection.token_url
+      assert_equal WpPluginDemo::Seed::CONNECT_REDIRECT_URIS.fetch(0), connection.redirect_uri
+      assert_equal WpPluginDemo::Seed.getting_started_page_recording_id, connection.page_recording_id
+    end.first
+
+    assert_includes output, "connect_client_id="
+    assert_includes output, "authorize_url="
+    assert_includes output, "token_url=http://localhost:3000/recording_studio_api/apis/wp_plugin_demo/oauth/token"
+    refute_includes output, "client_secret"
+    refute_includes output, "oauth_client_secret"
+  end
+
   test "embed_body_html_for returns Getting Started demo copy and generic fallback" do
     getting_started = Page.find_by!(title: "Getting Started")
     other = Page.create!(title: "Other Demo Page")

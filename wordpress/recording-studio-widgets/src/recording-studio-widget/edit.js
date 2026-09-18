@@ -1,13 +1,15 @@
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
-import { PanelBody, TextControl, Spinner, Notice } from '@wordpress/components';
+import {
+	PanelBody,
+	TextControl,
+	SelectControl,
+	Spinner,
+	Notice,
+} from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import apiFetch from '@wordpress/api-fetch';
 import { useState, useEffect } from '@wordpress/element';
 
-/**
- * @param {string} pageRecordingId UUID.
- * @return {Promise<object>} BrowserPayload v1 JSON.
- */
 async function fetchEditorPreview( pageRecordingId ) {
 	return apiFetch( {
 		path: `/recording-studio/v1/preview/${ pageRecordingId }`,
@@ -15,13 +17,40 @@ async function fetchEditorPreview( pageRecordingId ) {
 }
 
 /**
- * @param {{ attributes: { pageRecordingId: string }, setAttributes: (p: object) => void }} props Block props.
+ * @return {Promise<{ pages?: { id: string, title: string }[] }>} Page list.
  */
+async function fetchPages() {
+	return apiFetch( {
+		path: '/recording-studio/v1/pages',
+	} );
+}
+
 export default function Edit( { attributes, setAttributes } ) {
 	const { pageRecordingId = '' } = attributes;
 	const [ preview, setPreview ] = useState( null );
 	const [ error, setError ] = useState( null );
 	const [ loading, setLoading ] = useState( false );
+	const [ pages, setPages ] = useState( [] );
+
+	useEffect( () => {
+		let cancelled = false;
+		fetchPages()
+			.then( ( payload ) => {
+				if ( ! cancelled ) {
+					setPages(
+						Array.isArray( payload?.pages ) ? payload.pages : []
+					);
+				}
+			} )
+			.catch( () => {
+				if ( ! cancelled ) {
+					setPages( [] );
+				}
+			} );
+		return () => {
+			cancelled = true;
+		};
+	}, [] );
 
 	useEffect( () => {
 		const trimmed = pageRecordingId.trim();
@@ -64,6 +93,16 @@ export default function Edit( { attributes, setAttributes } ) {
 	}, [ pageRecordingId ] );
 
 	const blockProps = useBlockProps();
+	const pageOptions = [
+		{
+			label: __( 'Pick a page', 'recording-studio-widget' ),
+			value: '',
+		},
+		...pages.map( ( page ) => ( {
+			label: page.title || page.id,
+			value: page.id,
+		} ) ),
+	];
 
 	return (
 		<>
@@ -74,17 +113,24 @@ export default function Edit( { attributes, setAttributes } ) {
 						'recording-studio-widget'
 					) }
 				>
+					{ pages.length > 0 && (
+						<SelectControl
+							label={ __( 'Page', 'recording-studio-widget' ) }
+							value={ pageRecordingId }
+							options={ pageOptions }
+							onChange={ ( value ) =>
+								setAttributes( { pageRecordingId: value } )
+							}
+						/>
+					) }
 					<TextControl
-						label={ __(
-							'Page recording id',
-							'recording-studio-widget'
-						) }
+						label={ __( 'Page id', 'recording-studio-widget' ) }
 						value={ pageRecordingId }
 						onChange={ ( value ) =>
 							setAttributes( { pageRecordingId: value } )
 						}
 						help={ __(
-							'UUID of the Page recording to embed from the host.',
+							'Pick a page, or paste an id if the list is empty.',
 							'recording-studio-widget'
 						) }
 					/>
@@ -94,7 +140,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				{ ! pageRecordingId.trim() && (
 					<p>
 						{ __(
-							'Add a page recording id in the block settings to preview the WordPress Plugin Demo embed.',
+							'Pick a page in the block settings to preview the WordPress Plugin Demo embed.',
 							'recording-studio-widget'
 						) }
 					</p>
