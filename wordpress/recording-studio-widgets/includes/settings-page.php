@@ -10,9 +10,6 @@ use RecordingStudio\SettingsForm;
 use RecordingStudio\SettingsPage;
 use RecordingStudio\StudioClient;
 
-/**
- * Renders the WordPress Plugin Demo settings screen.
- */
 function recording_studio_plugin_demo_render_settings_page(): void {
 	if ( ! current_user_can( 'manage_options' ) ) {
 		return;
@@ -98,7 +95,6 @@ function recording_studio_plugin_demo_connect_start(): void {
 
 function recording_studio_plugin_demo_connect_callback(): void {
 	recording_studio_plugin_demo_require_manage_options();
-	// Host OAuth redirect. State is checked in ConnectFlow::finish.
 	$query  = wp_unslash( $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 	$notice = ConnectFlow::finish( $query, StudioClient::from_wp_options() );
 	wp_safe_redirect( recording_studio_plugin_demo_settings_url( $notice ) );

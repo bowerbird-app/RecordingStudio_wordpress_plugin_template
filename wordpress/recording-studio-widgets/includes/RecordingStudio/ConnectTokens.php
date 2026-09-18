@@ -9,13 +9,13 @@ final class ConnectTokens {
 	private const EXPIRY_SKEW_SECONDS = 60;
 
 	/** @var string */
-	public $access_token;
+	public string $access_token;
 
 	/** @var string */
-	public $refresh_token;
+	public string $refresh_token;
 
 	/** @var int */
-	public $expires_at;
+	public int $expires_at;
 
 	public function __construct( string $access_token, string $refresh_token, int $expires_at ) {
 		$this->access_token  = $access_token;

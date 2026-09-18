@@ -92,8 +92,6 @@ module WpPluginDemo
       )
     end
 
-    # Signed-in host admin screen. Never returns a secret unless the caller
-    # passes one from a one-shot mint (flash after create/regenerate).
     def present_runbook_connection(host_base_url:, oauth_client_secret: nil)
       page_recording = ensure_studio_embed!
       credential = latest_runbook_credential

@@ -6,10 +6,10 @@ namespace RecordingStudio;
 
 final class Pkce {
 	/** @var string */
-	public $verifier;
+	public string $verifier;
 
 	/** @var string */
-	public $challenge;
+	public string $challenge;
 
 	public function __construct( string $verifier, string $challenge ) {
 		$this->verifier  = $verifier;

@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 module WpPluginDemo
-  # Single source of truth for the WordPress Plugin Demo named API.
   module Contract
     API_KEY = :wp_plugin_demo
     OPENAPI_TITLE = "WordPress Plugin Demo"
@@ -24,7 +23,6 @@ module WpPluginDemo
     CONFIGURATION_KEYS = %w[theme sizing].freeze
     HANDLER = "RecordingStudioEmbeddable::Api::EmbedRecording"
 
-    # Source tokens the named-API initializer must contain, in this relative order.
     BOOT_CONFIG_API = "config.api WpPluginDemo::Contract::API_KEY"
     BOOT_DEFAULT_RESOURCE_ACTIONS = "register_default_resource_actions!(api: WpPluginDemo::Contract::API_KEY)"
     BOOT_EMBED_CAPABILITY_ACTION = "RecordingStudioEmbeddable::Api.register_capability_action!"

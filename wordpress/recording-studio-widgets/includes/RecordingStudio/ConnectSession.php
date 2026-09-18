@@ -9,13 +9,13 @@ final class ConnectSession {
 	public const TTL_SECONDS   = 600;
 
 	/** @var string */
-	public $verifier;
+	public string $verifier;
 
 	/** @var string */
-	public $state;
+	public string $state;
 
 	/** @var string */
-	public $redirect_uri;
+	public string $redirect_uri;
 
 	public function __construct( string $verifier, string $state, string $redirect_uri ) {
 		$this->verifier     = $verifier;

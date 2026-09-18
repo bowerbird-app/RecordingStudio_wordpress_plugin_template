@@ -10,10 +10,10 @@ final class TokenPreference {
 	public const INCOMPLETE = 'incomplete';
 
 	/** @var string */
-	public $source;
+	public string $source;
 
 	/** @var ConnectTokens|null */
-	public $connect_tokens;
+	public ?ConnectTokens $connect_tokens;
 
 	private function __construct( string $source, ?ConnectTokens $connect_tokens ) {
 		$this->source         = $source;
