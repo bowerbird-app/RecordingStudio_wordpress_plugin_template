@@ -24,6 +24,12 @@ bin/rails tailwindcss:build
 - Users dummy tag `v0.11.0`
 - Public RubyGems and GitHub access for dependency installation
 
+## 0.4.15
+
+Dummy host pins Recording Studio Oauth `v0.2.2` and API `v0.5.6`. Connect consent stays a full-page submit. A handmade public Registered App can finish Connect token exchange and call named `wp_plugin_demo` resources with that bearer.
+
+From `test/dummy`, run `bundle update recording_studio_oauth recording_studio_api`. Restart the dummy host. Keep the seeded WordPress Plugin Demo client. Do not create new Oauth clients.
+
 ## 0.4.14
 
 Connect start prints a short leaving-WordPress page, then sends the browser to the same allowlisted authorize URL. Settings still accept `rs_notice=connected` and always show **This site is connected.** from stored Connect tokens.

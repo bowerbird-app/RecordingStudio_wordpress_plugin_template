@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.15] - 2026-09-18
+
+### Changed
+- Dummy host pins `recording_studio_oauth` v0.2.2 and `recording_studio_api` v0.5.6. Connect consent stays a full page. A public Registered App can finish `authorization_code` on the named token URL and use that bearer on named resource paths.
+
+### Upgrade notes
+- Dummy-only. Point Oauth at GitHub tag `v0.2.2` and API at `v0.5.6`. From `test/dummy` run `bundle update recording_studio_oauth recording_studio_api`. Keep the seeded WordPress Plugin Demo client. A handmade public client (`api_key=public`) can Connect and call named `wp_plugin_demo` resources. No WordPress plugin ZIP rebuild. No new Oauth clients.
+
 ## [0.4.14] - 2026-09-18
 
 ### Fixed
