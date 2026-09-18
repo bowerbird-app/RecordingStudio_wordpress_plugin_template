@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.14] - 2026-09-18
+
+### Fixed
+- Connect to Recording Studio and Connect again now show a short leaving-WordPress page before the host authorize URL. Settings keep the `connected` return notice and always show a success banner from Connect status, so a missed `rs_notice` still reads as connected.
+- A failed Connect refresh no longer silently swaps in Advanced `client_credentials`. The block shows the Connect reconnect error instead of **Host rejected the OAuth client credentials.**
+- Saving Settings with an empty Advanced client secret now clears the stored secret. A leftover public-client secret no longer sticks after a blank submit.
+
+### Upgrade notes
+- Rebuild and reinstall the plugin ZIP (`bin/build-plugin-zip` or `npm run build` under `wordpress/recording-studio-widgets`). Connect still uses the same PKCE path and host allowlist. If a leftover Advanced secret is still stored, submit Advanced with the secret field empty to clear it. PKCE and token storage are unchanged.
+
 ## [0.4.13] - 2026-09-18
 
 ### Fixed

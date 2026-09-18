@@ -54,7 +54,7 @@ final class SettingsPage {
 
 	private static function connect_buttons( bool $connected, string $connect_action_url, string $disconnect_action_url ): string {
 		if ( $connected ) {
-			return '<p>' . esc_html( 'This site is connected.' ) . '</p>'
+			return self::connected_status_banner()
 				. '<p class="submit">'
 				. '<button type="submit" class="button" formaction="' . esc_attr( $disconnect_action_url ) . '">' . esc_html( 'Disconnect' ) . '</button> '
 				. '<button type="submit" class="button" formaction="' . esc_attr( $connect_action_url ) . '">' . esc_html( 'Connect again' ) . '</button>'
@@ -69,6 +69,10 @@ final class SettingsPage {
 		$placeholder_attr = '' !== $placeholder ? ' placeholder="' . esc_attr( $placeholder ) . '"' : '';
 		return '<tr><th scope="row"><label for="' . esc_attr( $name ) . '">' . esc_html( $label ) . '</label></th>'
 			. '<td><input name="' . esc_attr( $name ) . '" id="' . esc_attr( $name ) . '" type="' . esc_attr( $type ) . '" class="regular-text" value="' . esc_attr( $value ) . '"' . $placeholder_attr . $autocomplete . ' /></td></tr>';
+	}
+
+	private static function connected_status_banner(): string {
+		return '<div class="notice notice-success"><p>' . esc_html( ConnectNotice::message( ConnectNotice::CONNECTED ) ) . '</p></div>';
 	}
 
 	private static function notice_markup( string $notice ): string {

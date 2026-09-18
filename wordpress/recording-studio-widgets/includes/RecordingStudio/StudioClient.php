@@ -163,15 +163,7 @@ final class StudioClient {
 		$preference = TokenPreference::resolve( $this->settings, ConnectTokens::load() );
 
 		if ( $preference->uses_connect() ) {
-			$connect_result = $this->ensure_connect_access_token( $preference->connect_tokens );
-			if ( is_string( $connect_result ) ) {
-				return $connect_result;
-			}
-			if ( $this->settings->has_api_keys() ) {
-				return $this->ensure_api_key_access_token();
-			}
-
-			return $connect_result;
+			return $this->ensure_connect_access_token( $preference->connect_tokens );
 		}
 
 		if ( $preference->uses_api_keys() ) {

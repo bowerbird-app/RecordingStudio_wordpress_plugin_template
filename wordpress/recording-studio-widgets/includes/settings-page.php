@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use RecordingStudio\ConnectFlow;
+use RecordingStudio\ConnectHandoff;
 use RecordingStudio\ConnectStatus;
 use RecordingStudio\HostUrls;
 use RecordingStudio\PluginSettings;
@@ -99,7 +100,21 @@ function recording_studio_plugin_demo_connect_start(): void {
 			}
 		);
 	}
-	wp_safe_redirect( $url );
+
+	$validated = wp_validate_redirect( $url, '' );
+	if ( '' === $validated ) {
+		wp_safe_redirect( recording_studio_plugin_demo_settings_url( 'connect_failed' ) );
+		recording_studio_plugin_demo_halt();
+	}
+
+	ConnectHandoff::print( $validated );
+	recording_studio_plugin_demo_halt();
+}
+
+function recording_studio_plugin_demo_halt(): void {
+	if ( function_exists( 'rs_test_halt' ) ) {
+		rs_test_halt();
+	}
 	exit;
 }
 

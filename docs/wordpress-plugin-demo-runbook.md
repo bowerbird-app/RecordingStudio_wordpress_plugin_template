@@ -107,11 +107,11 @@ If that WordPress is not `localhost:8888` or `127.0.0.1:8888`, add its exact `ad
 
 1. Set **Host base URL** to `http://localhost:3000` (or the printed `host_base_url`). A Cloudflare tunnel origin is fine.
 2. Set **OAuth client id** to the printed `connect_client_id`.
-3. Click **Connect to Recording Studio**. WordPress redirects to that host's authorize URL. It does not bounce to `/wp-admin/`.
+3. Click **Connect to Recording Studio**. WordPress shows **Taking you to Recording Studio to connect…**, then opens that host's authorize URL. It does not bounce to `/wp-admin/`.
 4. Sign in on the host with Users chrome (`admin@admin.com` / `Password` on the dummy).
 5. Pick the Studio workspace when the host asks which workspace to connect.
 
-A success notice means Connect tokens are stored on the WordPress server. Settings then shows **This site is connected.**, **Disconnect**, and **Connect again**. Disconnect clears the stored tokens only. Connect again starts PKCE and leaves the current tokens in place until finish succeeds. The host is not called with a revoke URL.
+A success notice means Connect tokens are stored on the WordPress server. Settings then shows **This site is connected.** as both the return notice and a success banner, plus **Disconnect** and **Connect again**. The banner stays after you refresh. Disconnect clears the stored tokens only. Connect again shows the same leaving page, starts PKCE, and leaves the current tokens in place until finish succeeds. The host is not called with a revoke URL.
 
 ### Advanced (API keys fallback)
 
@@ -149,7 +149,7 @@ bin/rails runner 'c = WpPluginDemo::Provision.isolated_client!; puts [c.oauth_cl
 | OAuth client secret | printed `oauth_client_secret` |
 | Token URL override | leave blank unless your host differs; default is `{host}/recording_studio_api/apis/wp_plugin_demo/oauth/token` |
 
-Save settings. Use **Test connection**. A success notice means the host accepted client credentials.
+Save settings. Use **Test connection**. A success notice means the host accepted client credentials. Leave **OAuth client secret** empty and save to clear a stored secret. A failed Connect refresh does not use this secret as a fallback.
 
 ### Insert the block
 

@@ -23,6 +23,13 @@ $GLOBALS['rs_test_filters'] = array();
 class RsTestRedirectException extends RuntimeException {
 }
 
+class RsTestHaltException extends RuntimeException {
+}
+
+function rs_test_halt(): void {
+	throw new RsTestHaltException( 'halt' );
+}
+
 if ( ! function_exists( '__' ) ) {
 	/**
 	 * @param string $text Text.
@@ -177,6 +184,16 @@ if ( ! function_exists( 'esc_url_raw' ) ) {
 	 */
 	function esc_url_raw( $url ): string {
 		return trim( (string) $url );
+	}
+}
+
+if ( ! function_exists( 'esc_url' ) ) {
+	/**
+	 * @param string $url URL.
+	 * @return string
+	 */
+	function esc_url( string $url ): string {
+		return htmlspecialchars( trim( $url ), ENT_QUOTES, 'UTF-8' );
 	}
 }
 
