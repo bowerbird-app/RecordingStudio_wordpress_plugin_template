@@ -4,7 +4,7 @@ require "test_helper"
 
 class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
   def test_version_matches_release
-    assert_equal "0.4.10", ::RecordingStudioWordpressPluginTemplate::VERSION
+    assert_equal "0.4.11", ::RecordingStudioWordpressPluginTemplate::VERSION
   end
 
   def test_engine_exists
@@ -93,6 +93,7 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_attachable", tag: "v0.5.1"'
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_Oauth", tag: "v0.2.0"'
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_site_settings", tag: "v0.1.0"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_users", tag: "v0.11.0"'
     refute_includes gemfile, "recording_studio/v3.0.0"
     refute_includes gemfile, 'tag: "v0.1.133"'
     refute_includes gemfile, 'tag: "v0.6.0"'
@@ -231,6 +232,8 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     assert_includes initializer_source, '"RecordingStudioApi::ApiAccessToken"'
     assert_includes initializer_source, '"RecordingStudioApi::AdminApi"'
     assert_includes initializer_source, '"AdminRoot"'
+    assert_includes initializer_source, '"RecordingStudioUser::People"'
+    assert_includes initializer_source, '"RecordingStudioUser::Profile"'
     assert_includes initializer_source, '"RecordingStudioSiteSettings::SiteSetting"'
     refute_includes initializer_source, "config.include_children"
     refute_includes initializer_source, "config.features."
