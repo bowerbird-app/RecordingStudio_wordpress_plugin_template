@@ -21,7 +21,26 @@ bin/rails tailwindcss:build
 - Recording Studio 4.x (`~> 4.2` in the gemspec; dummy GitHub tag `v4.2.0`)
 - Accessible dummy tag `v0.9.1` and Root Switchable dummy tag `v0.5.0`
 - FlatPack dummy tag `v0.1.177`
+- Users dummy tag `v0.11.0`
 - Public RubyGems and GitHub access for dependency installation
+
+## 0.4.11
+
+Phase 1 mounts Recording Studio Users auth chrome on the dummy host. Host `User` stays the Devise actor. People is the shared root. Profile is the only child.
+
+From `test/dummy/`:
+
+1. Pin `recording_studio_user` at GitHub tag `v0.11.0` in the dummy Gemfile. Do not add it to the root Gemfile or gemspec.
+2. Run `bundle install`.
+3. Run `bin/rails generate recording_studio_user:install`.
+4. Run `bin/rails generate recording_studio_user:migrations`.
+5. Register `"RecordingStudioUser::People"` and `"RecordingStudioUser::Profile"` in `config/initializers/recording_studio.rb`.
+6. Skip Devise sessions, registrations, and passwords. Point confirmations and OmniAuth callbacks at the Users controllers. Add `recording_studio_user_auth_for :users`.
+7. Enable `section :users` on `AdminRoot`.
+8. Run `bin/rails db:migrate`.
+9. Re-seed so `RecordingStudioUser.record_profile!` creates Avery Admin's Profile when `profile_for` is nil.
+
+Leave `omniauth_providers = {}`. Leave OTP off. Do not add People to the root switcher. Do not bootstrap People as an owned access root. WordPress Connect and PKCE stay Phase 2.
 
 ## 0.4.10
 

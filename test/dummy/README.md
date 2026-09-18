@@ -4,7 +4,7 @@ This Rails app is the host for RecordingStudio WordPress widgets. It boots on it
 
 ## What it covers
 
-- Devise authentication with a seeded admin user
+- Recording Studio Users auth chrome with a seeded admin user (`admin@admin.com` / `Password`)
 - `Current.actor` wiring for Recording Studio events
 - Root workspace plus seeded folder and page recordables
 - Recording Studio host shell with FlatPack sidebar (Home, Recordings tree, API Keys, Pages), FlatPack kit CSS (`variables`, `application`, `rich_text`), and Tailwind source scanning
@@ -33,7 +33,7 @@ bin/dev
 
 Run the commands above from the dummy app directory, not the repository root.
 
-Then open the app and sign in with:
+Then open `/users/sign_in`. The first screen asks for email. The second screen asks for password.
 
 - Email: `admin@admin.com`
 - Password: `Password`
@@ -48,7 +48,7 @@ After sign-in, use sidebar **API Keys** to open API clients (`/recording_studio_
 - `/admin/screens/oauth_clients` (signed-in, Admin root) lists and manages OAuth apps
 - `/recording_studio_api/api_clients` (signed-in) lists and mints API client credentials for WordPress
 - `/recording_studio` redirects to `/` while the mounted Recording Studio engine stays available under that prefix for non-root routes
-- `/users/sign_in` is the Devise sign-in page
+- `/users/sign_in` is Recording Studio Users auth chrome (email first, then password)
 - `/docs/install`, `/docs/config`, `/docs/recordable_types`, `/docs/recordings_tree`, `/docs/gem_views`, `/docs/methods` are dummy-only starter pages
 - `/up` is the Rails health check
 - WordPress Plugin Demo named API (not the public `/recording_studio_api/api/v1` surface):

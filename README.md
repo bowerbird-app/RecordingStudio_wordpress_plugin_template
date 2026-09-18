@@ -45,12 +45,12 @@ A Cloud Agent already starts PostgreSQL and the dummy server from `.cursor/`. Op
 | Email    | admin@admin.com   |
 | Password | Password          |
 
-The login form is prefilled with these credentials.
+Sign-in is email first, then password. The form is not prefilled.
 
 ### Useful dummy routes
 
 - `/` is the dummy app home page
-- `/users/sign_in` is the Devise sign-in page
+- `/users/sign_in` is Recording Studio Users auth chrome (email first, then password)
 - `/recording_studio` redirects to `/` while the mounted Recording Studio engine remains data and API focused
 - `/` home, `/docs/recordings_tree`, `/recording_studio_api/api_clients` (**API Keys**, signed-in), and `/pages` (**Pages**, signed-in) are the dummy sidebar destinations
 - `/admin/screens/oauth_clients` remains for Oauth Admin registered apps (signed-in, Admin root) but is not a sidebar item
@@ -91,6 +91,7 @@ These versions come from the gemspec, the dummy Gemfile, `@wordpress/create-bloc
 | Publishable | dummy GitHub tag `v0.2.0` (Embeddable hard dep; not mixed into Page) |
 | Attachable | dummy GitHub tag `v0.5.1` (Publishable boot dep) |
 | Root Switchable | dummy GitHub tag `v0.5.0` |
+| Users | dummy GitHub tag `v0.11.0` |
 | FlatPack | dummy GitHub tag `v0.1.177` |
 | Devise | latest |
 | `@wordpress/create-block` | 4.98.0 |
@@ -136,7 +137,7 @@ Later phases may add widget discovery, richer editor pickers, and embed response
 
 ## Dummy Recording Studio host
 
-Authenticated dummy pages use the FlatPack host sidebar layout (`layouts/host`) plus FlatPack CSS and JS. Devise keeps its own sign-in layout.
+Authenticated dummy pages use the FlatPack host sidebar layout (`layouts/host`) plus FlatPack CSS and JS. Sign-in, sign-up, and password reset use Recording Studio Users auth chrome.
 
 The dummy host follows Recording Studio's root recording pattern:
 

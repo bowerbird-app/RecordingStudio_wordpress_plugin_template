@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.11] - 2026-09-18
+
+### Added
+- Dummy host mounts Recording Studio Users auth chrome at `/users/sign_in`. The first screen is email only. Password is the second screen. Phase 1 is host-only. WordPress Connect and PKCE stay Phase 2.
+- Dummy Gemfile pins `recording_studio_user` `v0.11.0`. Seed records Avery Admin's Profile under the shared People root with Accessible owner access.
+
+### Upgrade notes
+- Dummy-only. Run `bin/rails generate recording_studio_user:install` and `bin/rails generate recording_studio_user:migrations` from `test/dummy`. Register `RecordingStudioUser::People` and `RecordingStudioUser::Profile`. Skip Devise sessions, registrations, and passwords. Add `recording_studio_user_auth_for :users`. Re-seed so the admin Profile exists. Oauth, API Keys, Pages, and embed stay the same.
+
 ## [0.4.10] - 2026-09-16
 
 ### Fixed
