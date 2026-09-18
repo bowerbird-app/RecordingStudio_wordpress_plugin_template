@@ -17,7 +17,7 @@ final class PageChoice {
 	}
 
 	/**
-	 * @param mixed $body Index JSON.
+	 * @param mixed $body
 	 * @return list<self>
 	 */
 	public static function list_from_index_body( $body ): array {
@@ -29,7 +29,7 @@ final class PageChoice {
 	}
 
 	/**
-	 * @param mixed $records Index records.
+	 * @param mixed $records
 	 * @return list<self>
 	 */
 	public static function list_from_records( $records ): array {
@@ -49,7 +49,7 @@ final class PageChoice {
 	}
 
 	/**
-	 * @param mixed $record One records[] item.
+	 * @param mixed $record
 	 */
 	public static function from_record( $record ): ?self {
 		if ( ! is_array( $record ) ) {

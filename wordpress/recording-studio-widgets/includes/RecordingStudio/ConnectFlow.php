@@ -33,7 +33,7 @@ final class ConnectFlow {
 	}
 
 	/**
-	 * @param array<string, mixed> $query Callback query.
+	 * @param array<string, mixed> $query
 	 */
 	public static function finish( array $query, StudioClient $client ): string {
 		$query_error = HostError::parse( $query );

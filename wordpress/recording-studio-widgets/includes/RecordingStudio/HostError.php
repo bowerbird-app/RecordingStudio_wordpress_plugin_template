@@ -30,7 +30,7 @@ final class HostError {
 	}
 
 	/**
-	 * @param mixed $payload Token or authorize JSON/query.
+	 * @param mixed $payload
 	 */
 	public static function parse( $payload ): ?self {
 		if ( ! is_array( $payload ) ) {

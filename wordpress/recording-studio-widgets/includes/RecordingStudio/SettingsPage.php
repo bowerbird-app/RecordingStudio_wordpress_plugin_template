@@ -6,7 +6,7 @@ namespace RecordingStudio;
 
 final class SettingsPage {
 	/**
-	 * @param array<string, mixed> $stored Settings option.
+	 * @param array<string, mixed> $stored
 	 */
 	public static function markup(
 		array $stored,

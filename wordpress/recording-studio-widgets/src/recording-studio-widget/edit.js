@@ -10,10 +10,6 @@ import { __ } from '@wordpress/i18n';
 import apiFetch from '@wordpress/api-fetch';
 import { useState, useEffect } from '@wordpress/element';
 
-/**
- * @param {string} pageRecordingId UUID.
- * @return {Promise<object>} BrowserPayload v1 JSON.
- */
 async function fetchEditorPreview( pageRecordingId ) {
 	return apiFetch( {
 		path: `/recording-studio/v1/preview/${ pageRecordingId }`,
@@ -29,9 +25,6 @@ async function fetchPages() {
 	} );
 }
 
-/**
- * @param {{ attributes: { pageRecordingId: string }, setAttributes: (p: object) => void }} props Block props.
- */
 export default function Edit( { attributes, setAttributes } ) {
 	const { pageRecordingId = '' } = attributes;
 	const [ preview, setPreview ] = useState( null );
