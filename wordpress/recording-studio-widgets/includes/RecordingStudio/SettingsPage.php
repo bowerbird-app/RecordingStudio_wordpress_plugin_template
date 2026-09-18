@@ -16,7 +16,7 @@ final class SettingsPage {
 		string $disconnect_action_url,
 		string $nonce_html = ''
 	): string {
-		$settings = PluginSettings::from_storage_array( $stored );
+		$settings  = PluginSettings::from_storage_array( $stored );
 		$host      = $settings->host_base_url;
 		$client_id = $settings->client_id;
 		$api_key   = $settings->advanced_api_key();
