@@ -26,9 +26,9 @@ bin/rails tailwindcss:build
 
 ## 0.4.15
 
-Dummy host pins Recording Studio Oauth `v0.2.1`. Connect consent is a full-page submit (`data-turbo="false"`), so WordPress Connect can return to wp-admin without a Turbo fetch or CORS failure.
+Dummy host pins Recording Studio Oauth `v0.2.2`. Connect consent stays a full-page submit (`data-turbo="false"`). A handmade public Registered App can finish Connect token exchange on the named `wp_plugin_demo` token URL.
 
-From `test/dummy`, run `bundle update recording_studio_oauth`. Restart the dummy host. Do not create new Oauth clients.
+From `test/dummy`, run `bundle update recording_studio_oauth`. Restart the dummy host. Keep the seeded WordPress Plugin Demo client. Do not create new Oauth clients. Named-resource embed with a `public` bearer stays later work.
 
 ## 0.4.14
 
