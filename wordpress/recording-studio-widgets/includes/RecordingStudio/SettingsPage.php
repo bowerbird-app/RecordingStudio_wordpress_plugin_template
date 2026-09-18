@@ -62,7 +62,7 @@ final class SettingsPage {
 	}
 
 	private static function text_row( string $name, string $label, string $type, string $value, string $placeholder ): string {
-		$autocomplete = 'password' === $type ? ' autocomplete="new-password"' : ( 'text' === $type ? ' autocomplete="off"' : '' );
+		$autocomplete     = 'password' === $type ? ' autocomplete="new-password"' : ( 'text' === $type ? ' autocomplete="off"' : '' );
 		$placeholder_attr = '' !== $placeholder ? ' placeholder="' . esc_attr( $placeholder ) . '"' : '';
 		return '<tr><th scope="row"><label for="' . esc_attr( $name ) . '">' . esc_html( $label ) . '</label></th>'
 			. '<td><input name="' . esc_attr( $name ) . '" id="' . esc_attr( $name ) . '" type="' . esc_attr( $type ) . '" class="regular-text" value="' . esc_attr( $value ) . '"' . $placeholder_attr . $autocomplete . ' /></td></tr>';

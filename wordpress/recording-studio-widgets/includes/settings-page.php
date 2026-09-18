@@ -47,6 +47,7 @@ function recording_studio_plugin_demo_render_settings_page(): void {
 	wp_nonce_field( 'rs_plugin_demo_settings' );
 	$nonce_html = (string) ob_get_clean();
 
+	// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- SettingsPage::markup escapes visible text and attributes.
 	echo SettingsPage::markup(
 		$stored,
 		$notice,
@@ -55,6 +56,7 @@ function recording_studio_plugin_demo_render_settings_page(): void {
 		admin_url( 'admin-post.php?action=' . ConnectFlow::DISCONNECT_ACTION ),
 		$nonce_html
 	);
+	// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
 }
 
 function recording_studio_plugin_demo_settings_url( string $notice ): string {
@@ -96,7 +98,9 @@ function recording_studio_plugin_demo_connect_start(): void {
 
 function recording_studio_plugin_demo_connect_callback(): void {
 	recording_studio_plugin_demo_require_manage_options();
-	$notice = ConnectFlow::finish( wp_unslash( $_GET ), StudioClient::from_wp_options() );
+	// Host OAuth redirect. State is checked in ConnectFlow::finish.
+	$query  = wp_unslash( $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	$notice = ConnectFlow::finish( $query, StudioClient::from_wp_options() );
 	wp_safe_redirect( recording_studio_plugin_demo_settings_url( $notice ) );
 	exit;
 }

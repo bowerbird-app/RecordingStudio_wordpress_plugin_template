@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace RecordingStudio;
 
 final class ConnectTokens {
-	public const OPTION_KEY         = 'recording_studio_plugin_demo_connect_tokens';
+	public const OPTION_KEY           = 'recording_studio_plugin_demo_connect_tokens';
 	private const EXPIRY_SKEW_SECONDS = 60;
 
 	/** @var string */

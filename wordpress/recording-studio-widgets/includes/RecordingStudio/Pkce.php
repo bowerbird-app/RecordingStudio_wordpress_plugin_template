@@ -22,7 +22,9 @@ final class Pkce {
 	}
 
 	public static function s256_challenge( string $verifier ): string {
-		return rtrim( strtr( base64_encode( hash( 'sha256', $verifier, true ) ), '+/', '-_' ), '=' );
+		$digest = hash( 'sha256', $verifier, true );
+		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- PKCE S256 challenge, not obfuscation.
+		return rtrim( strtr( base64_encode( $digest ), '+/', '-_' ), '=' );
 	}
 
 	private static function random_verifier(): string {
