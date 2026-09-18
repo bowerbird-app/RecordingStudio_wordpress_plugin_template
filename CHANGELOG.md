@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.13] - 2026-09-18
+
+### Fixed
+- Connect to Recording Studio now allowlists the configured host origin before `wp_safe_redirect`. An external host such as a Cloudflare tunnel reaches its authorize URL instead of falling back to `/wp-admin/`.
+
+### Upgrade notes
+- Rebuild and reinstall the plugin ZIP (`bin/build-plugin-zip` or `npm run build` under `wordpress/recording-studio-widgets`) so Settings Connect can leave wp-admin for the configured host. No named API or dummy host changes.
+
+### Follow-up
+- Clearing and prefilling the Advanced client secret stays later work.
+
 ## [0.4.11] - 2026-09-18
 
 ### Added
