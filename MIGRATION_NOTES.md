@@ -26,7 +26,9 @@ bin/rails tailwindcss:build
 
 ## 0.4.11
 
-Phase 1 mounts Recording Studio Users auth chrome on the dummy host. Host `User` stays the Devise actor. People is the shared root. Profile is the only child.
+This version mounts Recording Studio Users auth chrome on the dummy host and adds WordPress Plugin Demo Connect.
+
+Host `User` stays the Devise actor. People is the shared root. Profile is the only child. Connect is the primary WordPress path. API keys stay under Advanced.
 
 From `test/dummy/`:
 
@@ -38,9 +40,15 @@ From `test/dummy/`:
 6. Skip Devise sessions, registrations, and passwords. Point confirmations and OmniAuth callbacks at the Users controllers. Add `recording_studio_user_auth_for :users`. Keep `:omniauthable` on host `User` so that `devise_for` mapping boots while `omniauth_providers` stays empty.
 7. Enable `section :users` on `AdminRoot`.
 8. Run `bin/rails db:migrate`.
-9. Re-seed so `RecordingStudioUser.record_profile!` creates Avery Admin's Profile when `profile_for` is nil.
+9. Re-seed so `RecordingStudioUser.record_profile!` creates Avery Admin's Profile when `profile_for` is nil, and so the public **WordPress Plugin Demo** Oauth client exists with the exact wp-admin admin-post redirect URIs.
 
-Leave `omniauth_providers = {}`. Leave OTP off. Do not add People to the root switcher. Do not bootstrap People as an owned access root. WordPress Connect and PKCE stay Phase 2.
+Leave `omniauth_providers = {}`. Leave OTP off. Do not add People to the root switcher. Do not bootstrap People as an owned access root.
+
+WordPress Settings: host URL + public client id, then Connect to Recording Studio. Sign in through Users chrome and pick a workspace. Print Connect fields with `WpPluginDemo::Seed.print_connect_client!`. Keep `print_runbook_connection!` for Advanced API keys.
+
+Any WordPress origin other than `localhost:8888` / `127.0.0.1:8888` must be added as an exact redirect URI on that public client in Oauth Admin Registered apps.
+
+Pinned Oauth `v0.2.0` and API `v0.5.5` cannot issue `authorization_code` tokens at `/recording_studio_api/oauth/token` for a `wp_plugin_demo` client. See `CONNECT_BLOCKER.md`. Do not invent a second ACL or token URL in this host.
 
 ## 0.4.10
 
