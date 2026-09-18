@@ -35,7 +35,7 @@ From `test/dummy/`:
 3. Run `bin/rails generate recording_studio_user:install`.
 4. Run `bin/rails generate recording_studio_user:migrations`.
 5. Register `"RecordingStudioUser::People"` and `"RecordingStudioUser::Profile"` in `config/initializers/recording_studio.rb`.
-6. Skip Devise sessions, registrations, and passwords. Point confirmations and OmniAuth callbacks at the Users controllers. Add `recording_studio_user_auth_for :users`.
+6. Skip Devise sessions, registrations, and passwords. Point confirmations and OmniAuth callbacks at the Users controllers. Add `recording_studio_user_auth_for :users`. Keep `:omniauthable` on host `User` so that `devise_for` mapping boots while `omniauth_providers` stays empty.
 7. Enable `section :users` on `AdminRoot`.
 8. Run `bin/rails db:migrate`.
 9. Re-seed so `RecordingStudioUser.record_profile!` creates Avery Admin's Profile when `profile_for` is nil.
