@@ -55,6 +55,7 @@ After sign-in, use sidebar **API Keys** to open API clients (`/recording_studio_
 - WordPress Plugin Demo named API (not the public `/recording_studio_api/api/v1` surface):
   - `GET /recording_studio_oauth/oauth/authorize` (Connect; signed-out visitors use Users chrome)
   - `POST /recording_studio_api/apis/wp_plugin_demo/oauth/token` (Connect authorization_code + refresh_token, and Advanced client_credentials)
+  - `GET /recording_studio_api/apis/wp_plugin_demo/v1/pages` (Page index for the WordPress picker)
   - `GET /recording_studio_api/apis/wp_plugin_demo/v1/pages/:id/actions/embed`
   - short alias `GET .../pages/:id/embed`
 
@@ -84,7 +85,7 @@ Isolated tree (new workspace and page each run):
 bin/rails runner 'c = WpPluginDemo::Provision.isolated_client!; puts [c.oauth_client_id, c.oauth_client_secret, c.page_recording_id].join("\n")'
 ```
 
-Use `print_connect_client!` for Settings → Connect. Use the Advanced print for API keys. Paste the page id into the block.
+Use `print_connect_client!` for Settings → Connect. Use the Advanced print for API keys. In the block, pick a page from the host list or paste a page id.
 
 After `db:reset`, the Getting Started `page_recording_id` changes. Look it up again with:
 

@@ -14,11 +14,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Dummy Gemfile pins `recording_studio_user` `v0.11.0`. Seed records Avery Admin's Profile under the shared People root with Accessible owner access.
 - Dummy seeds a public Oauth client named **WordPress Plugin Demo** (`confidential: false`, `api_key: wp_plugin_demo`) with exact wp-admin admin-post redirect URIs for `localhost:8888` and `127.0.0.1:8888`. `WpPluginDemo::Seed.print_connect_client!` prints host, public client id, authorize URL, named token URL, callback, and page id. No client secret.
 - WordPress Plugin Demo Settings → Connect starts PKCE S256 authorize, stores Connect tokens on the server, and uses them for embed. Advanced keeps API keys and `print_runbook_connection!` as the client_credentials fallback.
+- Connected Settings show **This site is connected.**, **Disconnect**, and **Connect again**. Connect again starts PKCE and leaves the current tokens in place until finish succeeds.
+- Host token and authorize errors (`invalid_client`, `redirect_uri_mismatch`, `invalid_redirect_uri`, `invalid_grant`, `access_denied`) map to short Settings notices.
+- The block editor lists pages from `GET /recording_studio_api/apis/wp_plugin_demo/v1/pages` so you can pick a title or paste a UUID. Dummy named API Page operations include `index`.
 
 ### Upgrade notes
 - Dummy-only Users install is unchanged: run `bin/rails generate recording_studio_user:install` and `bin/rails generate recording_studio_user:migrations` from `test/dummy`. Register `RecordingStudioUser::People` and `RecordingStudioUser::Profile`. Skip Devise sessions, registrations, and passwords. Add `recording_studio_user_auth_for :users`. Re-seed so the admin Profile and the public WordPress Plugin Demo Oauth client exist.
-- WordPress Settings now prefer Connect (host URL + public client id, then **Connect to Recording Studio**). Add any other WordPress origin as an exact redirect URI on the public client in Oauth Admin Registered apps. Keep API keys under Advanced.
+- WordPress Settings now prefer Connect (host URL + public client id, then **Connect to Recording Studio**). When the site is already connected, use **Connect again** without disconnecting first. A failed reconnect keeps the previous tokens. Add any other WordPress origin as an exact redirect URI on the public client in Oauth Admin Registered apps. Keep API keys under Advanced.
 - Connect and Advanced both POST `/recording_studio_api/apis/wp_plugin_demo/oauth/token`. Grant type is `authorization_code` (PKCE) or `client_credentials`. The discovery route `/recording_studio_api/oauth/token` stays unused for this named client.
+- Rebuild plugin assets (`npm run build` in `wordpress/recording-studio-widgets`) so the block shows the page picker. Page index is `GET /recording_studio_api/apis/wp_plugin_demo/v1/pages`.
 
 ## [0.4.10] - 2026-09-16
 

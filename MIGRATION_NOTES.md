@@ -44,11 +44,13 @@ From `test/dummy/`:
 
 Leave `omniauth_providers = {}`. Leave OTP off. Do not add People to the root switcher. Do not bootstrap People as an owned access root.
 
-WordPress Settings: host URL + public client id, then Connect to Recording Studio. Sign in through Users chrome and pick a workspace. Print Connect fields with `WpPluginDemo::Seed.print_connect_client!`. Keep `print_runbook_connection!` for Advanced API keys.
+WordPress Settings: host URL + public client id, then Connect to Recording Studio. When the site is already connected, Settings shows Disconnect and Connect again. Connect again starts PKCE and does not clear tokens first. A failed reconnect keeps the previous tokens. Sign in through Users chrome and pick a workspace. Print Connect fields with `WpPluginDemo::Seed.print_connect_client!`. Keep `print_runbook_connection!` for Advanced API keys.
 
 Any WordPress origin other than `localhost:8888` / `127.0.0.1:8888` must be added as an exact redirect URI on that public client in Oauth Admin Registered apps.
 
 Connect and Advanced both POST `{host}/recording_studio_api/apis/wp_plugin_demo/oauth/token`. Do not invent a second ACL. The discovery route `/recording_studio_api/oauth/token` is the public-API default and is not used for this named client.
+
+The dummy named API lists pages at `GET /recording_studio_api/apis/wp_plugin_demo/v1/pages`. The WordPress block picker uses that index. Rebuild plugin assets after upgrade (`npm run build` in `wordpress/recording-studio-widgets`). Paste a UUID if the list is empty.
 
 ## 0.4.10
 

@@ -30,6 +30,7 @@ Named API paths the plugin uses (do not change these unless the host is broken):
 
 - Authorize: `GET http://localhost:3000/recording_studio_oauth/oauth/authorize`
 - Token + refresh (Connect `authorization_code` and Advanced `client_credentials`): `POST http://localhost:3000/recording_studio_api/apis/wp_plugin_demo/oauth/token`
+- Pages index (block picker): `GET http://localhost:3000/recording_studio_api/apis/wp_plugin_demo/v1/pages`
 - Embed: `GET http://localhost:3000/recording_studio_api/apis/wp_plugin_demo/v1/pages/{page_id}/actions/embed`
 
 ## 2. Print the public Connect client
@@ -110,7 +111,7 @@ If that WordPress is not `localhost:8888` or `127.0.0.1:8888`, add its exact `ad
 4. Sign in on the host with Users chrome (`admin@admin.com` / `Password` on the dummy).
 5. Pick the Studio workspace when the host asks which workspace to connect.
 
-A success notice means Connect tokens are stored on the WordPress server. Use **Disconnect** to clear them. The host is not called with a revoke URL.
+A success notice means Connect tokens are stored on the WordPress server. Settings then shows **This site is connected.**, **Disconnect**, and **Connect again**. Disconnect clears the stored tokens only. Connect again starts PKCE and leaves the current tokens in place until finish succeeds. The host is not called with a revoke URL.
 
 ### Advanced (API keys fallback)
 
@@ -154,7 +155,7 @@ Save settings. Use **Test connection**. A success notice means the host accepted
 
 1. Edit a page or post.
 2. Insert the **WordPress Plugin Demo** block.
-3. Set **page recording id** to the printed `page_recording_id` (Getting Started UUID from step 2).
+3. Pick **Getting Started** from the page list, or paste the printed page id if the list is empty.
 4. Preview or publish.
 
 ## 5. What “good” looks like
