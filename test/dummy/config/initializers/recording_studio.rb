@@ -7,6 +7,8 @@ RecordingStudio.configure do |config|
     "Folder",
     "Page",
     "AdminRoot",
+    "RecordingStudioUser::People",
+    "RecordingStudioUser::Profile",
     "RecordingStudioEmbeddable::Embed",
     # Publishable + Attachable gem types must be listed for boot even though this
     # host never enables those mixins on Page (Embeddable depends on Publishable;

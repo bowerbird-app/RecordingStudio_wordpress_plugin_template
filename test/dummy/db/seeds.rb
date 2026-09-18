@@ -38,9 +38,21 @@ grant_or_find_access = lambda do |recording, actor, role|
   bootstrap.value
 end
 
-user = User.find_or_create_by!(email: "admin@admin.com") do |u|
-  u.password = "Password"
-  u.password_confirmation = "Password"
+user = User.find_or_initialize_by(email: "admin@admin.com")
+if user.new_record?
+  user.password = "Password"
+  user.password_confirmation = "Password"
+end
+user.save! if user.new_record? || user.changed?
+
+if RecordingStudioUser.profile_for(user).nil?
+  RecordingStudioUser.record_profile!(
+    user,
+    first_name: "Avery",
+    last_name: "Admin",
+    time_zone: "UTC",
+    actor: user
+  )
 end
 
 workspace = Workspace.find_or_create_by!(name: "Studio Workspace")
@@ -82,6 +94,7 @@ end
 WpPluginDemo::Seed.ensure_studio_embed!
 
 puts "Seeded: admin@admin.com / Password"
+puts "Seeded: Avery Admin profile under the shared People root"
 puts "Seeded: Workspace '#{workspace.name}' with root recording ##{root_recording.id}"
 puts "Seeded: Workspace '#{accessible_workspace.name}' with root recording ##{accessible_root_recording.id}"
 puts "Seeded: Workspace '#{private_workspace.name}' with root recording ##{private_root_recording.id}"
