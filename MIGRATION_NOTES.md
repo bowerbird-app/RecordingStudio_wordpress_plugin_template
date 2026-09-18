@@ -26,9 +26,9 @@ bin/rails tailwindcss:build
 
 ## 0.4.15
 
-Dummy host pins Recording Studio Oauth `v0.2.2`. Connect consent stays a full-page submit (`data-turbo="false"`). A handmade public Registered App can finish Connect token exchange on the named `wp_plugin_demo` token URL.
+Dummy host pins Recording Studio Oauth `v0.2.2` and API `v0.5.6`. Connect consent stays a full-page submit. A handmade public Registered App can finish Connect token exchange and call named `wp_plugin_demo` resources with that bearer.
 
-From `test/dummy`, run `bundle update recording_studio_oauth`. Restart the dummy host. Keep the seeded WordPress Plugin Demo client. Do not create new Oauth clients. Named-resource embed with a `public` bearer stays later work.
+From `test/dummy`, run `bundle update recording_studio_oauth recording_studio_api`. Restart the dummy host. Keep the seeded WordPress Plugin Demo client. Do not create new Oauth clients.
 
 ## 0.4.14
 
