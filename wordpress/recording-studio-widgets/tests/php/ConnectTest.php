@@ -17,6 +17,8 @@ use RecordingStudio\PluginSettings;
 use RecordingStudio\SettingsPage;
 use RecordingStudio\StudioClient;
 
+require_once dirname( __DIR__, 2 ) . '/includes/settings-page.php';
+
 function rs_seed_connect_settings_without_secret(): void {
 	ConnectTokens::clear();
 	ConnectSession::clear();
@@ -45,6 +47,43 @@ function test_pkce_challenge_is_s256_of_verifier(): void {
 	}
 	if ( $generated->challenge !== Pkce::s256_challenge( $generated->verifier ) ) {
 		throw new RuntimeException( 'generated PKCE challenge did not match verifier' );
+	}
+}
+
+function test_connect_start_redirects_to_external_host_authorize_url(): void {
+	$GLOBALS['rs_test_filters'] = array();
+	$_POST                      = array(
+		'rs_host_base_url'      => 'https://abc.trycloudflare.com',
+		'rs_client_id'          => 'wp-public-client',
+		'rs_client_secret'      => '',
+		'rs_token_url_override' => '',
+	);
+
+	try {
+		recording_studio_plugin_demo_connect_start();
+		throw new RuntimeException( 'connect start did not redirect' );
+	} catch ( RsTestRedirectException $redirect ) {
+		$location = $redirect->getMessage();
+	}
+
+	$parts = parse_url( $location );
+	if ( 'https' !== ( $parts['scheme'] ?? '' ) || 'abc.trycloudflare.com' !== ( $parts['host'] ?? '' ) ) {
+		throw new RuntimeException( 'Location was not the configured host authorize URL: ' . $location );
+	}
+	if ( '/recording_studio_oauth/oauth/authorize' !== ( $parts['path'] ?? '' ) ) {
+		throw new RuntimeException( 'Location path was not authorize: ' . $location );
+	}
+	if ( 'http://localhost:8888/wp-admin/' === $location ) {
+		throw new RuntimeException( 'connect start fell back to admin' );
+	}
+
+	try {
+		wp_safe_redirect( 'https://evil.example/phish' );
+		throw new RuntimeException( 'unrelated host redirect did not run' );
+	} catch ( RsTestRedirectException $denied ) {
+		if ( 'http://localhost:8888/wp-admin/' !== $denied->getMessage() ) {
+			throw new RuntimeException( 'unrelated host was allowed: ' . $denied->getMessage() );
+		}
 	}
 }
 
