@@ -17,6 +17,12 @@ $GLOBALS['rs_test_options'] = array();
 /** @var array<string, mixed> */
 $GLOBALS['rs_test_transients'] = array();
 
+/** @var array<string, list<callable>> */
+$GLOBALS['rs_test_filters'] = array();
+
+class RsTestRedirectException extends RuntimeException {
+}
+
 if ( ! function_exists( '__' ) ) {
 	/**
 	 * @param string $text Text.
@@ -227,10 +233,112 @@ if ( ! function_exists( 'add_query_arg' ) ) {
 if ( ! function_exists( 'wp_parse_url' ) ) {
 	/**
 	 * @param string $url URL.
-	 * @return array<string, mixed>|false
+	 * @param int    $component Component.
+	 * @return array<string, mixed>|string|int|null|false
 	 */
-	function wp_parse_url( string $url ) {
-		return parse_url( $url );
+	function wp_parse_url( string $url, int $component = -1 ) {
+		return parse_url( $url, $component );
+	}
+}
+
+if ( ! function_exists( 'home_url' ) ) {
+	function home_url( string $path = '' ): string {
+		return 'http://localhost:8888' . $path;
+	}
+}
+
+if ( ! function_exists( 'add_filter' ) ) {
+	/**
+	 * @param callable $callback Callback.
+	 */
+	function add_filter( string $hook, $callback, int $priority = 10, int $accepted_args = 1 ): bool {
+		if ( ! isset( $GLOBALS['rs_test_filters'] ) || ! is_array( $GLOBALS['rs_test_filters'] ) ) {
+			$GLOBALS['rs_test_filters'] = array();
+		}
+		$GLOBALS['rs_test_filters'][ $hook ][] = $callback;
+		return true;
+	}
+}
+
+if ( ! function_exists( 'apply_filters' ) ) {
+	/**
+	 * @param mixed $value Value.
+	 * @return mixed
+	 */
+	function apply_filters( string $hook, $value, ...$args ) {
+		$callbacks = $GLOBALS['rs_test_filters'][ $hook ] ?? array();
+		foreach ( $callbacks as $callback ) {
+			$value = $callback( $value, ...$args );
+		}
+		return $value;
+	}
+}
+
+if ( ! function_exists( 'wp_validate_redirect' ) ) {
+	/**
+	 * @param string $location Location.
+	 * @param string $fallback_url Fallback.
+	 */
+	function wp_validate_redirect( $location, $fallback_url = '' ): string {
+		$location = trim( (string) $location );
+		$parsed   = wp_parse_url( $location );
+		if ( ! is_array( $parsed ) ) {
+			return (string) $fallback_url;
+		}
+
+		$scheme = isset( $parsed['scheme'] ) ? strtolower( (string) $parsed['scheme'] ) : '';
+		if ( '' !== $scheme && ! in_array( $scheme, array( 'http', 'https' ), true ) ) {
+			return (string) $fallback_url;
+		}
+
+		$home    = wp_parse_url( home_url() );
+		$allowed = array();
+		if ( is_array( $home ) && ! empty( $home['host'] ) ) {
+			$allowed[] = (string) $home['host'];
+		}
+
+		$destination = isset( $parsed['host'] ) ? (string) $parsed['host'] : '';
+		$allowed     = (array) apply_filters( 'allowed_redirect_hosts', $allowed, $destination );
+		if ( '' !== $destination && ! in_array( $destination, $allowed, true ) ) {
+			return (string) $fallback_url;
+		}
+
+		return $location;
+	}
+}
+
+if ( ! function_exists( 'wp_safe_redirect' ) ) {
+	/**
+	 * @param string $location Location.
+	 */
+	function wp_safe_redirect( $location, int $status = 302 ): void {
+		$validated = wp_validate_redirect( $location, admin_url() );
+		$GLOBALS['rs_test_redirect'] = $validated;
+		throw new RsTestRedirectException( $validated );
+	}
+}
+
+if ( ! function_exists( 'current_user_can' ) ) {
+	function current_user_can( string $capability ): bool {
+		return true;
+	}
+}
+
+if ( ! function_exists( 'check_admin_referer' ) ) {
+	/**
+	 * @param mixed $action Action.
+	 */
+	function check_admin_referer( $action = -1, string $query_arg = '_wpnonce' ): bool {
+		return true;
+	}
+}
+
+if ( ! function_exists( 'wp_die' ) ) {
+	/**
+	 * @param string $message Message.
+	 */
+	function wp_die( $message = '' ): void {
+		throw new RuntimeException( (string) $message );
 	}
 }
 

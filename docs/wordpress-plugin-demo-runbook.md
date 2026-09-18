@@ -105,9 +105,9 @@ If that WordPress is not `localhost:8888` or `127.0.0.1:8888`, add its exact `ad
 
 ### Settings → WordPress Plugin Demo
 
-1. Set **Host base URL** to `http://localhost:3000` (or the printed `host_base_url`).
+1. Set **Host base URL** to `http://localhost:3000` (or the printed `host_base_url`). A Cloudflare tunnel origin is fine.
 2. Set **OAuth client id** to the printed `connect_client_id`.
-3. Click **Connect to Recording Studio**.
+3. Click **Connect to Recording Studio**. WordPress redirects to that host's authorize URL. It does not bounce to `/wp-admin/`.
 4. Sign in on the host with Users chrome (`admin@admin.com` / `Password` on the dummy).
 5. Pick the Studio workspace when the host asks which workspace to connect.
 

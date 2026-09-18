@@ -24,6 +24,12 @@ bin/rails tailwindcss:build
 - Users dummy tag `v0.11.0`
 - Public RubyGems and GitHub access for dependency installation
 
+## 0.4.13
+
+Connect to Recording Studio allowlists the hostname from the saved host base URL, then uses `wp_safe_redirect`. WordPress no longer rejects a Cloudflare tunnel or other external host and no longer sends the browser to `/wp-admin/`.
+
+Rebuild and reinstall the plugin ZIP. Add the WordPress callback URL on the public client when the origin is not already registered. No dummy host or named API changes.
+
 ## 0.4.12
 
 Dummy sidebar **Registered Apps** opens Oauth Admin at `/admin/screens/oauth_clients`. Use it to find the Connect public client id. Switch the root switcher to **Admin** if the screen returns 403. API Keys and Pages stay in the sidebar.

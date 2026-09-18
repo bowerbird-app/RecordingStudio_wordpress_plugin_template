@@ -88,7 +88,17 @@ function recording_studio_plugin_demo_connect_start(): void {
 		exit;
 	}
 
-	$url = ConnectFlow::start( $settings, new HostUrls( $settings ) );
+	$url  = ConnectFlow::start( $settings, new HostUrls( $settings ) );
+	$host = wp_parse_url( $settings->host_base_url, PHP_URL_HOST );
+	if ( is_string( $host ) && '' !== $host ) {
+		add_filter(
+			'allowed_redirect_hosts',
+			static function ( array $hosts ) use ( $host ): array {
+				$hosts[] = $host;
+				return $hosts;
+			}
+		);
+	}
 	wp_safe_redirect( $url );
 	exit;
 }
