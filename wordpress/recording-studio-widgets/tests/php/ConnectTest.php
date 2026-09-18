@@ -115,7 +115,7 @@ function test_connect_callback_stores_tokens_and_embed_uses_connect_bearer(): vo
 	StudioClient::set_test_http_handlers(
 		function ( string $token_url, array $fields ) use ( &$token_posts, $session ) {
 			$token_posts[] = array( $token_url, $fields );
-			if ( false === strpos( $token_url, ContractPaths::connect_token_path() ) ) {
+			if ( false === strpos( $token_url, '/recording_studio_api/apis/wp_plugin_demo/oauth/token' ) ) {
 				throw new RuntimeException( 'connect exchange used the wrong token URL: ' . $token_url );
 			}
 			if ( ContractPaths::CONNECT_GRANT !== ( $fields['grant_type'] ?? '' ) ) {
@@ -242,13 +242,8 @@ function test_api_key_fallback_hits_named_token_path(): void {
 	if ( $result->is_error() ) {
 		throw new RuntimeException( 'api key embed failed: ' . $result->error_code() );
 	}
-	if ( false === strpos( $token_url_seen, ContractPaths::token_path() ) ) {
+	if ( false === strpos( $token_url_seen, '/recording_studio_api/apis/wp_plugin_demo/oauth/token' ) ) {
 		throw new RuntimeException( 'fallback used the wrong token path: ' . $token_url_seen );
-	}
-	if ( false !== strpos( $token_url_seen, ContractPaths::connect_token_path() ) && ContractPaths::token_path() !== ContractPaths::connect_token_path() ) {
-		if ( substr( $token_url_seen, -strlen( ContractPaths::connect_token_path() ) ) === ContractPaths::connect_token_path() ) {
-			throw new RuntimeException( 'fallback posted to the Connect token path' );
-		}
 	}
 
 	StudioClient::set_test_http_handlers( null, null );

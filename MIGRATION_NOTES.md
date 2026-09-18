@@ -48,7 +48,7 @@ WordPress Settings: host URL + public client id, then Connect to Recording Studi
 
 Any WordPress origin other than `localhost:8888` / `127.0.0.1:8888` must be added as an exact redirect URI on that public client in Oauth Admin Registered apps.
 
-Pinned Oauth `v0.2.0` and API `v0.5.5` cannot issue `authorization_code` tokens at `/recording_studio_api/oauth/token` for a `wp_plugin_demo` client. See `CONNECT_BLOCKER.md`. Do not invent a second ACL or token URL in this host.
+Connect and Advanced both POST `{host}/recording_studio_api/apis/wp_plugin_demo/oauth/token`. Do not invent a second ACL. The discovery route `/recording_studio_api/oauth/token` is the public-API default and is not used for this named client.
 
 ## 0.4.10
 

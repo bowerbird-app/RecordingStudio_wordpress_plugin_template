@@ -17,7 +17,7 @@ module WpPluginDemo
     NAMED_RESOURCE_PREFIX = "#{NAMED_PREFIX}/#{API_VERSION}".freeze
     TOKEN_PATH = "#{NAMED_PREFIX}/oauth/token".freeze
     AUTHORIZE_PATH = "/recording_studio_oauth/oauth/authorize"
-    CONNECT_TOKEN_PATH = "#{ENGINE_MOUNT}/oauth/token".freeze
+    CONNECT_TOKEN_PATH = TOKEN_PATH
 
     SCHEMA_VERSION = 1
     REQUIRED_TOP_KEYS = %w[schema_version html configuration sdk].freeze

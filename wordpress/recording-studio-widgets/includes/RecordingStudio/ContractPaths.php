@@ -13,7 +13,6 @@ final class ContractPaths {
 	public const CONNECT_GRANT      = 'authorization_code';
 	public const REFRESH_GRANT      = 'refresh_token';
 	public const AUTHORIZE_PATH     = '/recording_studio_oauth/oauth/authorize';
-	public const CONNECT_TOKEN_PATH = self::ENGINE_MOUNT . '/oauth/token';
 
 	public static function token_path(): string {
 		return self::NAMED_PREFIX . '/oauth/token';
@@ -24,7 +23,7 @@ final class ContractPaths {
 	}
 
 	public static function connect_token_path(): string {
-		return self::CONNECT_TOKEN_PATH;
+		return self::token_path();
 	}
 
 	public static function embed_path( string $page_recording_uuid ): string {

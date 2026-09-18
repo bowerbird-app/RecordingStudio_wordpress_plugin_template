@@ -65,7 +65,7 @@ class WpPluginDemoSeedTest < ActiveSupport::TestCase
 
     assert_includes output, "connect_client_id="
     assert_includes output, "authorize_url="
-    assert_includes output, "token_url=http://localhost:3000/recording_studio_api/oauth/token"
+    assert_includes output, "token_url=http://localhost:3000/recording_studio_api/apis/wp_plugin_demo/oauth/token"
     refute_includes output, "client_secret"
     refute_includes output, "oauth_client_secret"
   end

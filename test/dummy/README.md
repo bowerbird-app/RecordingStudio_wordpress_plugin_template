@@ -54,8 +54,7 @@ After sign-in, use sidebar **API Keys** to open API clients (`/recording_studio_
 - `/up` is the Rails health check
 - WordPress Plugin Demo named API (not the public `/recording_studio_api/api/v1` surface):
   - `GET /recording_studio_oauth/oauth/authorize` (Connect; signed-out visitors use Users chrome)
-  - `POST /recording_studio_api/oauth/token` (Connect authorization_code + refresh_token)
-  - `POST /recording_studio_api/apis/wp_plugin_demo/oauth/token` (Advanced client_credentials)
+  - `POST /recording_studio_api/apis/wp_plugin_demo/oauth/token` (Connect authorization_code + refresh_token, and Advanced client_credentials)
   - `GET /recording_studio_api/apis/wp_plugin_demo/v1/pages/:id/actions/embed`
   - short alias `GET .../pages/:id/embed`
 
@@ -67,7 +66,7 @@ Connect is the primary path. The plugin starts PKCE authorize against the public
 bin/rails runner 'WpPluginDemo::Seed.print_connect_client!'
 ```
 
-That prints the public client id (no secret), authorize URL, discovery token URL, wp-admin callback, and Getting Started page id.
+That prints the public client id (no secret), authorize URL, named token URL, wp-admin callback, and Getting Started page id.
 
 Seeded exact redirect URIs are `http://localhost:8888/wp-admin/admin-post.php?action=recording_studio_oauth_callback` and the `127.0.0.1` twin. Add any other WordPress origin as an exact URI in Oauth Admin Registered apps (`/admin/screens/oauth_clients`).
 

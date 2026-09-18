@@ -52,7 +52,7 @@ Sign-in is email first, then password. The form is not prefilled.
 - `/` is the dummy app home page
 - `/users/sign_in` is Recording Studio Users auth chrome (email first, then password)
 - `/recording_studio_oauth/oauth/authorize` is the Connect authorize screen (signed-out visitors land on Users chrome)
-- `/recording_studio_api/oauth/token` is the Connect token + refresh endpoint
+- `/recording_studio_api/apis/wp_plugin_demo/oauth/token` is the Connect and Advanced token + refresh endpoint
 - `/recording_studio` redirects to `/` while the mounted Recording Studio engine remains data and API focused
 - `/` home, `/docs/recordings_tree`, `/recording_studio_api/api_clients` (**API Keys**, signed-in), and `/pages` (**Pages**, signed-in) are the dummy sidebar destinations
 - `/admin/screens/oauth_clients` remains for Oauth Admin registered apps (signed-in, Admin root) but is not a sidebar item

@@ -29,8 +29,7 @@ Open http://localhost:3000 and sign in at `/users/sign_in` with `admin@admin.com
 Named API paths the plugin uses (do not change these unless the host is broken):
 
 - Authorize: `GET http://localhost:3000/recording_studio_oauth/oauth/authorize`
-- Connect token + refresh: `POST http://localhost:3000/recording_studio_api/oauth/token`
-- API keys token (Advanced): `POST http://localhost:3000/recording_studio_api/apis/wp_plugin_demo/oauth/token`
+- Token + refresh (Connect `authorization_code` and Advanced `client_credentials`): `POST http://localhost:3000/recording_studio_api/apis/wp_plugin_demo/oauth/token`
 - Embed: `GET http://localhost:3000/recording_studio_api/apis/wp_plugin_demo/v1/pages/{page_id}/actions/embed`
 
 ## 2. Print the public Connect client
@@ -47,7 +46,7 @@ Example output shape:
 host_base_url=http://localhost:3000
 connect_client_id=...
 authorize_url=http://localhost:3000/recording_studio_oauth/oauth/authorize
-token_url=http://localhost:3000/recording_studio_api/oauth/token
+token_url=http://localhost:3000/recording_studio_api/apis/wp_plugin_demo/oauth/token
 redirect_uri=http://localhost:8888/wp-admin/admin-post.php?action=recording_studio_oauth_callback
 page_recording_id=<uuid of Getting Started>
 ```
@@ -182,5 +181,4 @@ Confirm these against your local network and WordPress setup:
 
 - WordPress must reach the Rails host URL you enter (from `wp-env` containers, `localhost:3000` may need `host.docker.internal` or another reachable hostname).
 - CORS is not required for the happy path. PHP fetches the host. The visitor browser does not call the named API.
-- The named API remains `wp_plugin_demo` with soft GET `:embed`. Connect uses authorization_code + PKCE S256. Advanced uses client_credentials.
-- Discovery token issue for this public `wp_plugin_demo` client is blocked on the pinned Oauth/API gems. See [CONNECT_BLOCKER.md](../CONNECT_BLOCKER.md).
+- The named API remains `wp_plugin_demo` with soft GET `:embed`. Connect uses authorization_code + PKCE S256. Advanced uses client_credentials. Both POST the named API token path. The discovery route `POST /recording_studio_api/oauth/token` is the public-API default and is not used for this client.
