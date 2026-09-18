@@ -19,7 +19,7 @@ class OauthAdminSidebarTest < ActionDispatch::IntegrationTest
     Current.actor = nil if defined?(Current)
   end
 
-  test "signed-in sidebar links API Keys and Pages and hides Registered apps" do
+  test "signed-in sidebar links API Keys, Pages, and Registered Apps" do
     api_clients_path = recording_studio_api.api_clients_path
 
     get root_path
@@ -31,7 +31,8 @@ class OauthAdminSidebarTest < ActionDispatch::IntegrationTest
     assert_select "a[href=?]", api_clients_path
     assert_includes response.body, "Pages"
     assert_select "a[href=?]", pages_path
-    refute_includes response.body, "Registered apps"
+    assert_includes response.body, "Registered Apps"
+    assert_select "a[href=?]", REGISTERED_APPS_PATH
     refute_includes response.body, "Plugin credentials"
     refute_includes response.body, "/plugin_credentials"
   end
