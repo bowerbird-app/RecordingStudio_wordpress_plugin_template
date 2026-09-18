@@ -7,14 +7,19 @@ namespace RecordingStudio;
 final class PluginSettings {
 	public const OPTION_KEY = 'recording_studio_plugin_demo_settings';
 
+	/** @var string */
 	public string $host_base_url;
 
+	/** @var string */
 	public string $client_id;
 
+	/** @var string */
 	public string $api_key;
 
+	/** @var string */
 	public string $client_secret;
 
+	/** @var string|null */
 	public ?string $token_url_override;
 
 	public function __construct(
