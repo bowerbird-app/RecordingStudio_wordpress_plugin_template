@@ -107,9 +107,7 @@ function recording_studio_plugin_demo_connect_start(): void {
 		recording_studio_plugin_demo_halt();
 	}
 
-	// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- ConnectHandoff::markup escapes the authorize URL.
-	echo ConnectHandoff::markup( $validated );
-	// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
+	ConnectHandoff::print( $validated );
 	recording_studio_plugin_demo_halt();
 }
 
