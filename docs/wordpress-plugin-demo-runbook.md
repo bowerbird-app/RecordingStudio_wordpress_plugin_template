@@ -117,7 +117,7 @@ A success notice means Connect tokens are stored on the WordPress server. Settin
 
 Use this only when you want client credentials instead of Connect.
 
-Preferred for minting API keys in the host UI: sign in and open sidebar **API Keys** (`/recording_studio_api/api_clients`). Preferred for browsing page ids and the host embed preview: sidebar **Pages** (`/pages`). Staff Oauth apps stay at `/admin/screens/oauth_clients`.
+Preferred for minting API keys in the host UI: sign in and open sidebar **API Keys** (`/recording_studio_api/api_clients`). Preferred for browsing page ids and the host embed preview: sidebar **Pages** (`/pages`). Preferred for the Connect client id: sidebar **Registered Apps** (`/admin/screens/oauth_clients`). Switch the root switcher to **Admin** if that screen returns 403.
 
 From `test/dummy/`:
 

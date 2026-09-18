@@ -18,6 +18,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Follow-up
 - Clearing and prefilling the Advanced client secret stays later work.
 
+## [0.4.12] - 2026-09-18
+
+### Added
+- Dummy sidebar **Registered Apps** item linking to Oauth Admin registered apps (`/admin/screens/oauth_clients`) so the Connect client id is findable without a Rails runner.
+
+### Upgrade notes
+- Dummy-only. Sign in and open sidebar **Registered Apps** for Oauth clients. The screen still requires the Admin root. Switch the root switcher to **Admin** if the link returns 403. API Keys and Pages stay in the sidebar. No WordPress plugin, Connect, PKCE, or named API changes.
+
 ## [0.4.11] - 2026-09-18
 
 ### Added

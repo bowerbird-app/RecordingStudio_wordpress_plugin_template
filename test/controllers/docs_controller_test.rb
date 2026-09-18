@@ -124,7 +124,7 @@ class DocsControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "Recordings tree"
     assert_includes response.body, "API Keys"
     assert_includes response.body, "Pages"
-    refute_includes response.body, "Registered apps"
+    assert_includes response.body, "Registered Apps"
     refute_includes response.body, "Plugin credentials"
   end
 

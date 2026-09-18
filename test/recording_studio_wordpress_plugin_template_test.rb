@@ -153,7 +153,7 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     assert_includes helper_source, "Recordings tree"
     assert_includes helper_source, "API Keys"
     assert_includes helper_source, "Pages"
-    refute_includes helper_source, "Registered apps"
+    assert_includes helper_source, "Registered Apps"
   end
 
   def test_dummy_login_layout_keeps_flatpack_assets_without_tight_main_offset
@@ -314,7 +314,7 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     assert_includes view_source, 'title: "WordPress widgets host"'
     assert_includes view_source, "API Keys"
     assert_includes view_source, "Pages"
-    refute_includes view_source, "Registered apps"
+    assert_includes view_source, "Registered Apps"
     refute_includes view_source, "Nothing talks to WordPress yet"
     assert_includes view_source, "FlatPack::Card::Component"
     assert_includes view_source, "dummy_page_nav"
