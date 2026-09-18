@@ -50,32 +50,63 @@ function test_pkce_challenge_is_s256_of_verifier(): void {
 	}
 }
 
-function test_connect_start_redirects_to_external_host_authorize_url(): void {
+function rs_post_connect_start( array $posted ): string {
 	$GLOBALS['rs_test_filters'] = array();
-	$_POST                      = array(
-		'rs_host_base_url'      => 'https://abc.trycloudflare.com',
-		'rs_client_id'          => 'wp-public-client',
-		'rs_client_secret'      => '',
-		'rs_token_url_override' => '',
-	);
-
+	$_POST                      = $posted;
+	ob_start();
 	try {
 		recording_studio_plugin_demo_connect_start();
-		throw new RuntimeException( 'connect start did not redirect' );
+		ob_end_clean();
+		throw new RuntimeException( 'connect start did not halt after the leaving page' );
+	} catch ( RsTestHaltException $halt ) {
+		return (string) ob_get_clean();
 	} catch ( RsTestRedirectException $redirect ) {
-		$location = $redirect->getMessage();
+		ob_end_clean();
+		throw new RuntimeException( 'connect start redirected instead of showing the leaving page: ' . $redirect->getMessage() );
+	}
+}
+
+function rs_assert_handoff_to_host( string $html, string $host, string $scheme = 'https' ): void {
+	if ( false === strpos( $html, 'Taking you to Recording Studio to connect…' ) ) {
+		throw new RuntimeException( 'leaving page missing heading: ' . $html );
+	}
+	if ( false === strpos( $html, 'Continue to Recording Studio' ) ) {
+		throw new RuntimeException( 'leaving page missing noscript continue link' );
+	}
+	if ( false === strpos( $html, 'http-equiv="refresh"' ) || false === strpos( $html, 'content="1;url=' ) ) {
+		throw new RuntimeException( 'leaving page missing delayed meta refresh' );
+	}
+	if ( false === strpos( $html, 'location.replace(' ) ) {
+		throw new RuntimeException( 'leaving page missing script redirect' );
 	}
 
-	$parts = parse_url( $location );
-	if ( 'https' !== ( $parts['scheme'] ?? '' ) || 'abc.trycloudflare.com' !== ( $parts['host'] ?? '' ) ) {
-		throw new RuntimeException( 'Location was not the configured host authorize URL: ' . $location );
+	if ( ! preg_match( '/<a href="([^"]+)"/', $html, $match ) ) {
+		throw new RuntimeException( 'leaving page missing continue href' );
+	}
+
+	$location = html_entity_decode( $match[1], ENT_QUOTES, 'UTF-8' );
+	$parts    = parse_url( $location );
+	if ( $scheme !== ( $parts['scheme'] ?? '' ) || $host !== ( $parts['host'] ?? '' ) ) {
+		throw new RuntimeException( 'leaving page did not point at the configured host: ' . $location );
 	}
 	if ( '/recording_studio_oauth/oauth/authorize' !== ( $parts['path'] ?? '' ) ) {
-		throw new RuntimeException( 'Location path was not authorize: ' . $location );
+		throw new RuntimeException( 'leaving page path was not authorize: ' . $location );
 	}
 	if ( 'http://localhost:8888/wp-admin/' === $location ) {
 		throw new RuntimeException( 'connect start fell back to admin' );
 	}
+}
+
+function test_connect_start_shows_leaving_page_for_configured_host(): void {
+	$html = rs_post_connect_start(
+		array(
+			'rs_host_base_url'      => 'https://abc.trycloudflare.com',
+			'rs_client_id'          => 'wp-public-client',
+			'rs_client_secret'      => '',
+			'rs_token_url_override' => '',
+		)
+	);
+	rs_assert_handoff_to_host( $html, 'abc.trycloudflare.com' );
 
 	try {
 		wp_safe_redirect( 'https://evil.example/phish' );
@@ -456,6 +487,53 @@ function test_settings_markup_when_disconnected_shows_primary_connect(): void {
 	}
 	if ( false !== strpos( $html, 'This site is connected.' ) ) {
 		throw new RuntimeException( 'disconnected settings should not claim the site is connected' );
+	}
+}
+
+function test_connect_again_shows_leaving_page_while_already_connected(): void {
+	rs_seed_connect_settings_without_secret();
+	$tokens = new ConnectTokens( 'rsoauth_at_keep', 'rsoauth_rt_keep', time() + 3600 );
+	$tokens->save();
+	if ( ! ConnectStatus::current()->connected ) {
+		throw new RuntimeException( 'expected connected status from stored tokens' );
+	}
+
+	$html = rs_post_connect_start(
+		array(
+			'rs_host_base_url'      => 'http://localhost:3000',
+			'rs_client_id'          => 'wp-public-client',
+			'rs_client_secret'      => '',
+			'rs_token_url_override' => '',
+		)
+	);
+	rs_assert_handoff_to_host( $html, 'localhost', 'http' );
+
+	$stored = ConnectTokens::load();
+	if ( null === $stored || 'rsoauth_at_keep' !== $stored->access_token ) {
+		throw new RuntimeException( 'Connect again cleared tokens before PKCE finished' );
+	}
+}
+
+function test_connected_status_banner_is_visible_without_return_notice(): void {
+	$html = rs_settings_markup( true, '' );
+	if ( 1 !== substr_count( $html, 'This site is connected.' ) ) {
+		throw new RuntimeException( 'connected settings should show the status banner once without a return notice' );
+	}
+	if ( false === strpos( $html, 'notice notice-success' ) ) {
+		throw new RuntimeException( 'connected status should use a success banner' );
+	}
+	if ( false !== strpos( $html, 'is-dismissible' ) ) {
+		throw new RuntimeException( 'status banner should remain after refresh, so it is not dismissible' );
+	}
+}
+
+function test_connected_return_notice_keeps_connected_code_and_status_banner(): void {
+	$html = rs_settings_markup( true, 'connected' );
+	if ( 2 !== substr_count( $html, 'This site is connected.' ) ) {
+		throw new RuntimeException( 'return notice plus status banner should both say the site is connected' );
+	}
+	if ( false === strpos( $html, 'notice notice-success is-dismissible' ) ) {
+		throw new RuntimeException( 'ConnectNotice::CONNECTED should still render the return notice' );
 	}
 }
 

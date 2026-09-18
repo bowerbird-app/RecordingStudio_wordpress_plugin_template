@@ -24,6 +24,12 @@ bin/rails tailwindcss:build
 - Users dummy tag `v0.11.0`
 - Public RubyGems and GitHub access for dependency installation
 
+## 0.4.14
+
+Connect start prints a short leaving-WordPress page, then sends the browser to the same allowlisted authorize URL. Settings still accept `rs_notice=connected` and always show **This site is connected.** from stored Connect tokens.
+
+Rebuild and reinstall the plugin ZIP. No dummy host, named API, or Oauth seed changes.
+
 ## 0.4.13
 
 Connect to Recording Studio allowlists the hostname from the saved host base URL, then uses `wp_safe_redirect`. WordPress no longer rejects a Cloudflare tunnel or other external host and no longer sends the browser to `/wp-admin/`.
