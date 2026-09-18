@@ -24,6 +24,14 @@ bin/rails tailwindcss:build
 - Users dummy tag `v0.11.0`
 - Public RubyGems and GitHub access for dependency installation
 
+## 0.4.16
+
+WordPress Settings splits Connect from Advanced. Connect uses host plus **OAuth client id**. Advanced stores `api_key` plus `client_secret` (Secret key). Test connection still probes Advanced keys.
+
+If `api_key` is empty and a secret is stored, the plugin reads the existing `client_id` as the Advanced API key. Save Settings to persist that value in `api_key`. An empty Secret key still clears the stored secret.
+
+Rebuild and reinstall the plugin ZIP. No dummy host, named API, or Oauth seed changes.
+
 ## 0.4.15
 
 Dummy host pins Recording Studio Oauth `v0.2.2` and API `v0.5.6`. Connect consent stays a full-page submit. A handmade public Registered App can finish Connect token exchange and call named `wp_plugin_demo` resources with that bearer.

@@ -18,7 +18,7 @@ The Rails dummy host is a separate app on another origin. This plugin does not s
 
 1. Upload the plugin folder to `/wp-content/plugins/recording-studio-widgets`.
 1. Activate **WordPress Plugin Demo** on the Plugins screen.
-1. Under **Settings → WordPress Plugin Demo**, set the host base URL (for example `http://localhost:3000`), OAuth client id, and client secret.
+1. Under **Settings → WordPress Plugin Demo**, set the host base URL (for example `http://localhost:3000`). For Connect, set OAuth client id and click **Connect to Recording Studio**. For API keys, open Advanced and set API key plus Secret key.
 1. Insert the **WordPress Plugin Demo** block and enter the page recording UUID to embed.
 
 == Connecting to the dummy host ==
@@ -28,7 +28,7 @@ The Rails dummy host is a separate app on another origin. This plugin does not s
 
 `bin/rails runner 'WpPluginDemo::Seed.print_runbook_connection!'`
 
-1. Copy host base URL, client id, client secret into **Settings → WordPress Plugin Demo**, and the page recording id into the block.
+1. Copy host base URL into Settings. For Connect, copy the public client id. For Advanced, copy API key and Secret key. Paste the page recording id into the block.
 1. Full cold-start steps live in the repo at `docs/wordpress-plugin-demo-runbook.md`.
 
 Token URL defaults to `{host}/recording_studio_api/apis/wp_plugin_demo/oauth/token`. Override only when your host uses a different token endpoint.

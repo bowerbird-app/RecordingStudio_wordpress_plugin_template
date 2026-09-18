@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.16] - 2026-09-18
+
+### Changed
+- WordPress Plugin Demo Settings splits Connect from Advanced. Connect uses host plus the top **OAuth client id**. Advanced is a dropdown labeled **Connect via API key** with its own **API key**, **Secret key**, and optional token URL override. **Save settings** and **Test connection** come after that dropdown. Test connection still probes Advanced client credentials.
+- StudioClient Advanced token requests send the Advanced API key, not the Connect OAuth client id. A blank top OAuth client id is valid for Advanced-only. A blank Advanced API key is valid for Connect-only.
+- Existing Advanced installs that stored only `client_id` and `client_secret` still work. If `api_key` is empty and a secret is stored, reads treat `client_id` as the Advanced API key. An empty Secret key on save still clears the stored secret.
+
+### Upgrade notes
+- Rebuild and reinstall the plugin ZIP (`bin/build-plugin-zip` or `npm run build` under `wordpress/recording-studio-widgets`).
+- Connect still needs host plus the public Registered App id. Advanced now has its own `api_key` option. You do not have to re-enter keys. The next Settings save writes the fallback value into `api_key` if the field shows it.
+- Dummy host, Oauth seeds, and named API paths are unchanged.
+
 ## [0.4.15] - 2026-09-18
 
 ### Changed

@@ -14,7 +14,7 @@ The plugin in `wordpress/recording-studio-widgets/` is a dynamic block named **W
 
 ### Phase 4 (WordPress Plugin Demo client)
 
-- **Settings → WordPress Plugin Demo**: host base URL, public OAuth client id, **Connect to Recording Studio** (PKCE), connected state + **Disconnect**. Advanced keeps client secret, token URL override, Save, and **Test connection**.
+- **Settings → WordPress Plugin Demo**: host base URL, public OAuth client id, **Connect to Recording Studio** (PKCE), connected state + **Disconnect**. Advanced is a dropdown for **Connect via API key** (API key, Secret key, optional token URL override). **Save settings** and **Test connection** come after that dropdown.
 - **Block**: `pageRecordingId` attribute (UUID). Editor preview uses `GET /wp-json/recording-studio/v1/preview/{uuid}` (`edit_posts`).
 - **Front**: SSR `data-rs-payload` plus `viewScript` (`front.js`) calling `window.RecordingStudioPluginSdk.mount` — no secrets in the page.
 - **SDK**: committed under `assets/sdk/`, copied to `build/sdk/` on `npm run build`.

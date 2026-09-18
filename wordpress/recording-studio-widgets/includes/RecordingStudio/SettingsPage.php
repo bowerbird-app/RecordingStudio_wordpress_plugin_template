@@ -16,10 +16,12 @@ final class SettingsPage {
 		string $disconnect_action_url,
 		string $nonce_html = ''
 	): string {
-		$host      = (string) ( $stored['host_base_url'] ?? '' );
-		$client_id = (string) ( $stored['client_id'] ?? '' );
-		$secret    = (string) ( $stored['client_secret'] ?? '' );
-		$token_url = (string) ( $stored['token_url_override'] ?? '' );
+		$settings  = PluginSettings::from_storage_array( $stored );
+		$host      = $settings->host_base_url;
+		$client_id = $settings->client_id;
+		$api_key   = $settings->advanced_api_key();
+		$secret    = $settings->client_secret;
+		$token_url = (string) ( $settings->token_url_override ?? '' );
 
 		$html  = '<div class="wrap">';
 		$html .= '<h1>' . esc_html( self::title() ) . '</h1>';
@@ -33,15 +35,17 @@ final class SettingsPage {
 		$html .= self::connect_buttons( $status->connected, $connect_action_url, $disconnect_action_url );
 		$html .= '<details>';
 		$html .= '<summary>' . esc_html( 'Advanced' ) . '</summary>';
+		$html .= '<p><strong>' . esc_html( 'Connect via API key' ) . '</strong></p>';
 		$html .= '<table class="form-table" role="presentation">';
-		$html .= self::text_row( 'rs_client_secret', 'OAuth client secret', 'password', $secret, '' );
+		$html .= self::text_row( 'rs_api_key', 'API key', 'text', $api_key, '' );
+		$html .= self::text_row( 'rs_client_secret', 'Secret key', 'password', $secret, '' );
 		$html .= self::text_row( 'rs_token_url_override', 'Token URL override (optional)', 'url', $token_url, '' );
 		$html .= '</table>';
+		$html .= '</details>';
 		$html .= '<p class="submit">';
 		$html .= '<button type="submit" name="rs_save_settings" class="button button-primary">' . esc_html( 'Save settings' ) . '</button> ';
 		$html .= '<button type="submit" name="rs_test_connection" class="button">' . esc_html( 'Test connection' ) . '</button>';
 		$html .= '</p>';
-		$html .= '</details>';
 		$html .= '</form>';
 		$html .= '</div>';
 

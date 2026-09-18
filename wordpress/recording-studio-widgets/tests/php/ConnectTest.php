@@ -102,6 +102,7 @@ function test_connect_start_shows_leaving_page_for_configured_host(): void {
 		array(
 			'rs_host_base_url'      => 'https://abc.trycloudflare.com',
 			'rs_client_id'          => 'wp-public-client',
+			'rs_api_key'            => '',
 			'rs_client_secret'      => '',
 			'rs_token_url_override' => '',
 		)
@@ -282,9 +283,11 @@ function test_connect_denied_clears_session_without_tokens(): void {
 function test_api_key_fallback_hits_named_token_path(): void {
 	rs_seed_settings();
 	$token_url_seen = '';
+	$posted_client  = '';
 	StudioClient::set_test_http_handlers(
-		function ( string $url, array $fields ) use ( &$token_url_seen ) {
+		function ( string $url, array $fields ) use ( &$token_url_seen, &$posted_client ) {
 			$token_url_seen = $url;
+			$posted_client  = (string) ( $fields['client_id'] ?? '' );
 			if ( ContractPaths::TOKEN_GRANT !== ( $fields['grant_type'] ?? '' ) ) {
 				throw new RuntimeException( 'expected client_credentials grant' );
 			}
@@ -318,8 +321,66 @@ function test_api_key_fallback_hits_named_token_path(): void {
 	if ( false === strpos( $token_url_seen, '/recording_studio_api/apis/wp_plugin_demo/oauth/token' ) ) {
 		throw new RuntimeException( 'fallback used the wrong token path: ' . $token_url_seen );
 	}
+	if ( 'demo-client' !== $posted_client ) {
+		throw new RuntimeException( 'legacy shared client_id should be the Advanced token client_id, got ' . $posted_client );
+	}
 
 	StudioClient::set_test_http_handlers( null, null );
+}
+
+function test_advanced_token_uses_api_key_not_oauth_client_id(): void {
+	ConnectTokens::clear();
+	ConnectSession::clear();
+	update_option(
+		PluginSettings::OPTION_KEY,
+		array(
+			'host_base_url' => 'http://localhost:3000',
+			'client_id'     => 'wp-public-client',
+			'api_key'       => 'advanced-api-key',
+			'client_secret' => 'advanced-secret',
+		)
+	);
+	StudioClient::from_wp_options()->flush_token_cache();
+
+	$posted = array();
+	StudioClient::set_test_http_handlers(
+		function ( string $url, array $fields ) use ( &$posted ) {
+			$posted = $fields;
+			return array(
+				'status' => 200,
+				'body'   => array(
+					'access_token' => 'split-api-token',
+					'expires_in'   => 3600,
+				),
+			);
+		},
+		static function () {
+			return array(
+				'status' => 200,
+				'body'   => array_merge(
+					rs_sample_browser_payload(),
+					array( 'html' => '<div>split</div>' )
+				),
+			);
+		}
+	);
+
+	$page   = PageRecordingId::parse( RS_TEST_PAGE_UUID );
+	$result = StudioClient::from_wp_options()->embed_payload_for_page( $page, EmbedRequest::for_server_render( $page ) );
+	StudioClient::set_test_http_handlers( null, null );
+
+	if ( $result->is_error() ) {
+		throw new RuntimeException( 'split Advanced embed failed: ' . $result->error_code() );
+	}
+	if ( 'advanced-api-key' !== ( $posted['client_id'] ?? '' ) ) {
+		throw new RuntimeException( 'Advanced token must use api_key, got ' . ( $posted['client_id'] ?? '' ) );
+	}
+	if ( 'advanced-secret' !== ( $posted['client_secret'] ?? '' ) ) {
+		throw new RuntimeException( 'Advanced token must use the secret key' );
+	}
+	if ( ContractPaths::TOKEN_GRANT !== ( $posted['grant_type'] ?? '' ) ) {
+		throw new RuntimeException( 'expected client_credentials for Advanced' );
+	}
 }
 
 function test_disconnect_clears_connect_tokens_then_uses_api_keys(): void {
@@ -425,12 +486,13 @@ function test_plugin_settings_complete_with_api_keys_without_connect_tokens(): v
 	$settings = PluginSettings::validate_and_merge(
 		array(
 			'host_base_url' => 'http://localhost:3000',
-			'client_id'     => 'client',
+			'client_id'     => '',
+			'api_key'       => 'api-key',
 			'client_secret' => 'secret',
 		)
 	);
 	if ( ! $settings->is_complete() ) {
-		throw new RuntimeException( 'host+id+secret should still be complete' );
+		throw new RuntimeException( 'host+api_key+secret should still be complete' );
 	}
 }
 
@@ -490,6 +552,70 @@ function test_settings_markup_when_disconnected_shows_primary_connect(): void {
 	}
 }
 
+function test_settings_markup_separates_connect_from_advanced_api_key(): void {
+	$html = SettingsPage::markup(
+		array(
+			'host_base_url' => 'http://localhost:3000',
+			'client_id'     => 'wp-public-client',
+			'api_key'       => '',
+			'client_secret' => 'super-secret',
+		),
+		'',
+		new ConnectStatus( false ),
+		'http://localhost:8888/wp-admin/admin-post.php?action=recording_studio_oauth_start',
+		'http://localhost:8888/wp-admin/admin-post.php?action=recording_studio_oauth_disconnect'
+	);
+
+	$host_pos     = strpos( $html, 'Host base URL' );
+	$oauth_pos    = strpos( $html, 'OAuth client id' );
+	$connect_pos  = strpos( $html, 'Connect to Recording Studio' );
+	$advanced_pos = strpos( $html, '<summary>Advanced</summary>' );
+	$intro_pos    = strpos( $html, 'Connect via API key' );
+	$api_pos      = strpos( $html, '>API key<' );
+	$secret_pos   = strpos( $html, '>Secret key<' );
+	$token_pos    = strpos( $html, 'Token URL override (optional)' );
+	$details_end  = strpos( $html, '</details>' );
+	$save_pos     = strpos( $html, 'Save settings' );
+	$test_pos     = strpos( $html, 'Test connection' );
+
+	if ( false === $host_pos || false === $oauth_pos || $host_pos > $oauth_pos ) {
+		throw new RuntimeException( 'Host base URL must come before OAuth client id' );
+	}
+	if ( false === $connect_pos || $oauth_pos > $connect_pos ) {
+		throw new RuntimeException( 'Connect must come after OAuth client id' );
+	}
+	if ( false === $advanced_pos || $connect_pos > $advanced_pos ) {
+		throw new RuntimeException( 'Advanced must come after Connect' );
+	}
+	if ( false === $intro_pos || $advanced_pos > $intro_pos ) {
+		throw new RuntimeException( 'Advanced must introduce Connect via API key' );
+	}
+	if ( false === $api_pos || $intro_pos > $api_pos ) {
+		throw new RuntimeException( 'API key must follow the Advanced intro' );
+	}
+	if ( false === $secret_pos || $api_pos > $secret_pos ) {
+		throw new RuntimeException( 'Secret key must follow API key' );
+	}
+	if ( false === $token_pos || $secret_pos > $token_pos ) {
+		throw new RuntimeException( 'Token URL override must follow Secret key' );
+	}
+	if ( false === $details_end || $token_pos > $details_end ) {
+		throw new RuntimeException( 'Advanced fields must stay inside the dropdown' );
+	}
+	if ( false === $save_pos || $details_end > $save_pos ) {
+		throw new RuntimeException( 'Save settings must sit after Advanced' );
+	}
+	if ( false === $test_pos || $save_pos > $test_pos ) {
+		throw new RuntimeException( 'Test connection must follow Save settings' );
+	}
+	if ( false !== strpos( $html, 'OAuth client secret' ) ) {
+		throw new RuntimeException( 'Advanced must not say OAuth client secret' );
+	}
+	if ( ! preg_match( '/name="rs_api_key"[^>]*value="wp-public-client"/', $html ) ) {
+		throw new RuntimeException( 'legacy secret should show the shared client_id in the API key field' );
+	}
+}
+
 function test_connect_again_shows_leaving_page_while_already_connected(): void {
 	rs_seed_connect_settings_without_secret();
 	$tokens = new ConnectTokens( 'rsoauth_at_keep', 'rsoauth_rt_keep', time() + 3600 );
@@ -502,6 +628,7 @@ function test_connect_again_shows_leaving_page_while_already_connected(): void {
 		array(
 			'rs_host_base_url'      => 'http://localhost:3000',
 			'rs_client_id'          => 'wp-public-client',
+			'rs_api_key'            => '',
 			'rs_client_secret'      => '',
 			'rs_token_url_override' => '',
 		)
@@ -709,7 +836,7 @@ function test_failed_connect_refresh_does_not_use_leftover_api_keys(): void {
 	if ( 'This site needs to connect again.' !== $result->error_message() ) {
 		throw new RuntimeException( 'expected reconnect copy, got ' . $result->error_message() );
 	}
-	if ( false !== strpos( $result->error_message(), 'Host rejected the OAuth client credentials. Check client id and secret.' ) ) {
+	if ( false !== strpos( $result->error_message(), 'Host rejected the API key. Check API key and secret key.' ) ) {
 		throw new RuntimeException( 'leftover Advanced secret produced the API-keys rejection message' );
 	}
 	if ( array( 'refresh_token' ) !== $grants ) {

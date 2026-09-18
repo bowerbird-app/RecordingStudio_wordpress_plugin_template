@@ -31,7 +31,7 @@ final class StudioClient {
 	public static function from_wp_options(): self {
 		$settings = PluginSettings::load();
 		if ( null === $settings ) {
-			$settings = new PluginSettings( '', '', '' );
+			$settings = new PluginSettings( '', '', '', '' );
 		}
 
 		return new self( $settings, new HostUrls( $settings ) );
@@ -288,7 +288,7 @@ final class StudioClient {
 			$this->urls->token_post_url(),
 			array(
 				'grant_type'    => ContractPaths::TOKEN_GRANT,
-				'client_id'     => $this->settings->client_id,
+				'client_id'     => $this->settings->advanced_api_key(),
 				'client_secret' => $this->settings->client_secret,
 			)
 		);
@@ -304,7 +304,7 @@ final class StudioClient {
 		if ( 200 !== $status ) {
 			return EmbedResult::err(
 				'token_denied',
-				__( 'Host rejected the OAuth client credentials. Check client id and secret.', 'recording-studio-widget' ),
+				__( 'Host rejected the API key. Check API key and secret key.', 'recording-studio-widget' ),
 				$status
 			);
 		}
