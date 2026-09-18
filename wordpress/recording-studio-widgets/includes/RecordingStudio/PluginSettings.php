@@ -14,6 +14,9 @@ final class PluginSettings {
 	public $client_id;
 
 	/** @var string */
+	public $api_key;
+
+	/** @var string */
 	public $client_secret;
 
 	/** @var string|null */
@@ -22,11 +25,13 @@ final class PluginSettings {
 	public function __construct(
 		string $host_base_url,
 		string $client_id,
+		string $api_key,
 		string $client_secret,
 		?string $token_url_override = null
 	) {
 		$this->host_base_url      = $host_base_url;
 		$this->client_id          = $client_id;
+		$this->api_key            = $api_key;
 		$this->client_secret      = $client_secret;
 		$this->token_url_override = $token_url_override;
 	}
@@ -38,6 +43,7 @@ final class PluginSettings {
 		return new self(
 			self::normalize_base_url( (string) ( $stored['host_base_url'] ?? '' ) ),
 			trim( (string) ( $stored['client_id'] ?? '' ) ),
+			trim( (string) ( $stored['api_key'] ?? '' ) ),
 			(string) ( $stored['client_secret'] ?? '' ),
 			self::optional_url( $stored['token_url_override'] ?? null )
 		);
@@ -50,6 +56,7 @@ final class PluginSettings {
 		return array(
 			'host_base_url'      => $this->host_base_url,
 			'client_id'          => $this->client_id,
+			'api_key'            => $this->api_key,
 			'client_secret'      => $this->client_secret,
 			'token_url_override' => $this->token_url_override,
 		);
@@ -81,6 +88,10 @@ final class PluginSettings {
 			? trim( (string) $incoming['client_id'] )
 			: trim( (string) ( $existing['client_id'] ?? '' ) );
 
+		$api_key = array_key_exists( 'api_key', $incoming )
+			? trim( (string) $incoming['api_key'] )
+			: trim( (string) ( $existing['api_key'] ?? '' ) );
+
 		if ( array_key_exists( 'client_secret', $incoming ) ) {
 			$client_secret = trim( (string) $incoming['client_secret'] );
 		} else {
@@ -94,12 +105,24 @@ final class PluginSettings {
 			$token_override = self::optional_url( $existing['token_url_override'] );
 		}
 
-		return new self( $host, $client_id, $client_secret, $token_override );
+		return new self( $host, $client_id, $api_key, $client_secret, $token_override );
+	}
+
+	public function advanced_api_key(): string {
+		if ( '' !== $this->api_key ) {
+			return $this->api_key;
+		}
+
+		if ( '' !== $this->client_secret ) {
+			return $this->client_id;
+		}
+
+		return '';
 	}
 
 	public function has_api_keys(): bool {
 		return '' !== $this->host_base_url
-			&& '' !== $this->client_id
+			&& '' !== $this->advanced_api_key()
 			&& '' !== $this->client_secret;
 	}
 
@@ -112,7 +135,7 @@ final class PluginSettings {
 	}
 
 	public function fingerprint(): string {
-		return hash( 'sha256', $this->host_base_url . '|' . $this->client_id );
+		return hash( 'sha256', $this->host_base_url . '|' . $this->advanced_api_key() );
 	}
 
 	private static function normalize_base_url( string $url ): string {

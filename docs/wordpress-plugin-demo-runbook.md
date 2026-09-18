@@ -115,7 +115,7 @@ A success notice means Connect tokens are stored on the WordPress server. Settin
 
 ### Advanced (API keys fallback)
 
-Use this only when you want client credentials instead of Connect.
+Use this only when you want client credentials instead of Connect. Open **Advanced** and use **Connect via API key**. Leave **OAuth client id** blank if you are not using Connect.
 
 Preferred for minting API keys in the host UI: sign in and open sidebar **API Keys** (`/recording_studio_api/api_clients`). Preferred for browsing page ids and the host embed preview: sidebar **Pages** (`/pages`). Preferred for the Connect client id: sidebar **Registered Apps** (`/admin/screens/oauth_clients`). Switch the root switcher to **Admin** if that screen returns 403.
 
@@ -146,10 +146,11 @@ bin/rails runner 'c = WpPluginDemo::Provision.isolated_client!; puts [c.oauth_cl
 
 | Field | Value |
 | --- | --- |
-| OAuth client secret | printed `oauth_client_secret` |
+| API key | printed `oauth_client_id` |
+| Secret key | printed `oauth_client_secret` |
 | Token URL override | leave blank unless your host differs; default is `{host}/recording_studio_api/apis/wp_plugin_demo/oauth/token` |
 
-Save settings. Use **Test connection**. A success notice means the host accepted client credentials. Leave **OAuth client secret** empty and save to clear a stored secret. A failed Connect refresh does not use this secret as a fallback.
+Save settings. Use **Test connection**. A success notice means the host accepted client credentials. Leave **Secret key** empty and save to clear a stored secret. A failed Connect refresh does not use this secret as a fallback. An older install that only stored `client_id` plus `client_secret` still uses that `client_id` as the Advanced API key until you save a value in **API key**.
 
 ### Insert the block
 

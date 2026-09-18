@@ -13,6 +13,7 @@ final class SettingsForm {
 		return array(
 			'host_base_url'      => isset( $_POST['rs_host_base_url'] ) ? sanitize_text_field( wp_unslash( (string) $_POST['rs_host_base_url'] ) ) : '',
 			'client_id'          => isset( $_POST['rs_client_id'] ) ? sanitize_text_field( wp_unslash( (string) $_POST['rs_client_id'] ) ) : '',
+			'api_key'            => isset( $_POST['rs_api_key'] ) ? sanitize_text_field( wp_unslash( (string) $_POST['rs_api_key'] ) ) : '',
 			'client_secret'      => isset( $_POST['rs_client_secret'] ) ? sanitize_text_field( wp_unslash( (string) $_POST['rs_client_secret'] ) ) : '',
 			'token_url_override' => isset( $_POST['rs_token_url_override'] ) ? esc_url_raw( wp_unslash( (string) $_POST['rs_token_url_override'] ) ) : '',
 		);
