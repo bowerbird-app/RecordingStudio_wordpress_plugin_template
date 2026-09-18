@@ -7,7 +7,7 @@ namespace RecordingStudio;
 final class Placeholder {
 	public static function front_message(): string {
 		return '<p ' . get_block_wrapper_attributes() . '>' . esc_html__(
-			'Add a page recording id in the block settings to show the WordPress Plugin Demo embed.',
+			'Pick a page in the block settings to show the WordPress Plugin Demo embed.',
 			'recording-studio-widget'
 		) . '</p>';
 	}
@@ -23,20 +23,23 @@ final class Placeholder {
 	public static function embed_error_message( string $code, ?EmbedRequest $request = null ): string {
 		$editor = null !== $request && $request->is_editor_preview();
 
+		if ( $editor ) {
+			$shared = ConnectNotice::message( $code );
+			if ( '' !== $shared ) {
+				return $shared;
+			}
+		}
+
 		switch ( $code ) {
-			case 'invalid_page_recording_id':
-				return __( 'Enter a valid page recording id (UUID).', 'recording-studio-widget' );
+			case ConnectNotice::INVALID_PAGE_RECORDING_ID:
+				return ConnectNotice::message( ConnectNotice::INVALID_PAGE_RECORDING_ID );
 			case 'settings_incomplete':
 				return self::settings_incomplete_message();
-			case 'embed_not_found':
-				if ( $editor ) {
-					return __( 'No embed found for that recording id. Check the id or OAuth client scope.', 'recording-studio-widget' );
-				}
+			case ConnectNotice::EMBED_NOT_FOUND:
+			case ConnectNotice::EMBED_UNAUTHORIZED:
 				return __( 'This embed is not available right now.', 'recording-studio-widget' );
-			case 'embed_unauthorized':
-				return __( 'Host rejected the embed request. Check OAuth client credentials.', 'recording-studio-widget' );
 			case 'payload_invalid':
-				return __( 'Host returned an embed response this site could not use.', 'recording-studio-widget' );
+				return __( 'Host returned an embed this site could not use.', 'recording-studio-widget' );
 			case 'embed_http_error':
 			case 'embed_failed':
 				if ( $editor ) {

@@ -21,8 +21,8 @@ final class PageRecordingId {
 		$trimmed = strtolower( trim( $raw ) );
 		if ( '' === $trimmed || 1 !== preg_match( self::UUID_PATTERN, $trimmed ) ) {
 			return EmbedResult::err(
-				'invalid_page_recording_id',
-				__( 'Enter a valid page recording id (UUID).', 'recording-studio-widget' )
+				ConnectNotice::INVALID_PAGE_RECORDING_ID,
+				ConnectNotice::message( ConnectNotice::INVALID_PAGE_RECORDING_ID )
 			);
 		}
 

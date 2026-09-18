@@ -36,40 +36,44 @@ final class ConnectFlow {
 	 * @param array<string, mixed> $query Callback query.
 	 */
 	public static function finish( array $query, StudioClient $client ): string {
-		if ( isset( $query['error'] ) && 'access_denied' === (string) $query['error'] ) {
+		$query_error = HostError::parse( $query );
+		if ( null !== $query_error ) {
 			ConnectSession::clear();
-			return 'connect_denied';
+			return $query_error->notice_code();
 		}
 
 		$session = ConnectSession::load();
 		if ( null === $session ) {
-			return 'connect_failed';
+			return ConnectNotice::CONNECT_FAILED;
 		}
 
 		$state = isset( $query['state'] ) ? (string) $query['state'] : '';
 		if ( '' === $state || ! hash_equals( $session->state, $state ) ) {
 			ConnectSession::clear();
-			return 'connect_failed';
+			return ConnectNotice::CONNECT_FAILED;
 		}
 
 		$code = isset( $query['code'] ) ? (string) $query['code'] : '';
 		if ( '' === $code ) {
 			ConnectSession::clear();
-			return 'connect_failed';
+			return ConnectNotice::CONNECT_FAILED;
 		}
 
 		$tokens = $client->exchange_connect_code( $code, $session->redirect_uri, $session->verifier );
 		ConnectSession::clear();
+		if ( $tokens instanceof HostError ) {
+			return $tokens->notice_code();
+		}
 		if ( $tokens instanceof EmbedResult ) {
-			return 'connect_failed';
+			return ConnectNotice::CONNECT_FAILED;
 		}
 
 		$tokens->save();
-		return 'connected';
+		return ConnectNotice::CONNECTED;
 	}
 
 	public static function disconnect(): string {
 		ConnectTokens::clear();
-		return 'disconnected';
+		return ConnectNotice::DISCONNECTED;
 	}
 }

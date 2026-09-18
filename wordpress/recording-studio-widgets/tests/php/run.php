@@ -33,6 +33,7 @@ foreach (
 		'PluginSettingsTest.php',
 		'StudioClientTest.php',
 		'ConnectTest.php',
+		'PageListTest.php',
 	) as $file
 ) {
 	require $plugin_root . '/tests/php/' . $file;

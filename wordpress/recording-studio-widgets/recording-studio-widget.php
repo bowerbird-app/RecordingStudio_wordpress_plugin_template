@@ -35,6 +35,7 @@ spl_autoload_register( 'recording_studio_widget_autoload' );
 
 require_once __DIR__ . '/includes/settings-page.php';
 require_once __DIR__ . '/includes/rest-editor-preview.php';
+require_once __DIR__ . '/includes/rest-pages.php';
 
 function recording_studio_recording_studio_widget_block_init(): void {
 	$manifest = __DIR__ . '/build/blocks-manifest.php';
@@ -64,3 +65,4 @@ add_action( 'admin_post_recording_studio_oauth_callback', 'recording_studio_plug
 add_action( 'admin_post_recording_studio_oauth_disconnect', 'recording_studio_plugin_demo_disconnect' );
 
 add_action( 'rest_api_init', 'recording_studio_register_editor_preview_route' );
+add_action( 'rest_api_init', 'recording_studio_register_pages_route' );

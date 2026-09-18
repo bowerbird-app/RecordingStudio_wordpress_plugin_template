@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use RecordingStudio\ConnectFlow;
-use RecordingStudio\ConnectTokens;
+use RecordingStudio\ConnectStatus;
 use RecordingStudio\HostUrls;
 use RecordingStudio\PluginSettings;
 use RecordingStudio\SettingsForm;
@@ -48,7 +48,7 @@ function recording_studio_plugin_demo_render_settings_page(): void {
 	echo SettingsPage::markup(
 		$stored,
 		$notice,
-		ConnectTokens::connected(),
+		ConnectStatus::current(),
 		admin_url( 'admin-post.php?action=' . ConnectFlow::START_ACTION ),
 		admin_url( 'admin-post.php?action=' . ConnectFlow::DISCONNECT_ACTION ),
 		$nonce_html

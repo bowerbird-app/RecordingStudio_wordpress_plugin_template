@@ -26,7 +26,11 @@ final class ContractPaths {
 		return self::token_path();
 	}
 
+	public static function pages_path(): string {
+		return self::NAMED_PREFIX . '/' . self::API_VERSION . '/pages';
+	}
+
 	public static function embed_path( string $page_recording_uuid ): string {
-		return self::NAMED_PREFIX . '/' . self::API_VERSION . '/pages/' . $page_recording_uuid . '/actions/embed';
+		return self::pages_path() . '/' . $page_recording_uuid . '/actions/embed';
 	}
 }

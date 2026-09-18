@@ -11,7 +11,7 @@ final class SettingsPage {
 	public static function markup(
 		array $stored,
 		string $notice,
-		bool $connected,
+		ConnectStatus $status,
 		string $connect_action_url,
 		string $disconnect_action_url,
 		string $nonce_html = ''
@@ -30,7 +30,7 @@ final class SettingsPage {
 		$html .= self::text_row( 'rs_host_base_url', 'Host base URL', 'url', $host, 'http://localhost:3000' );
 		$html .= self::text_row( 'rs_client_id', 'OAuth client id', 'text', $client_id, '' );
 		$html .= '</table>';
-		$html .= self::connect_buttons( $connected, $connect_action_url, $disconnect_action_url );
+		$html .= self::connect_buttons( $status->connected, $connect_action_url, $disconnect_action_url );
 		$html .= '<details>';
 		$html .= '<summary>' . esc_html( 'Advanced' ) . '</summary>';
 		$html .= '<table class="form-table" role="presentation">';
@@ -54,8 +54,11 @@ final class SettingsPage {
 
 	private static function connect_buttons( bool $connected, string $connect_action_url, string $disconnect_action_url ): string {
 		if ( $connected ) {
-			return '<p>' . esc_html( 'Connected to Recording Studio.' ) . '</p>'
-				. '<p class="submit"><button type="submit" class="button" formaction="' . esc_attr( $disconnect_action_url ) . '">' . esc_html( 'Disconnect' ) . '</button></p>';
+			return '<p>' . esc_html( 'This site is connected.' ) . '</p>'
+				. '<p class="submit">'
+				. '<button type="submit" class="button" formaction="' . esc_attr( $disconnect_action_url ) . '">' . esc_html( 'Disconnect' ) . '</button> '
+				. '<button type="submit" class="button" formaction="' . esc_attr( $connect_action_url ) . '">' . esc_html( 'Connect again' ) . '</button>'
+				. '</p>';
 		}
 
 		return '<p class="submit"><button type="submit" class="button button-primary" formaction="' . esc_attr( $connect_action_url ) . '">' . esc_html( 'Connect to Recording Studio' ) . '</button></p>';
@@ -69,20 +72,11 @@ final class SettingsPage {
 	}
 
 	private static function notice_markup( string $notice ): string {
-		$messages = array(
-			'saved'          => array( 'success', 'Settings saved.' ),
-			'probe_ok'       => array( 'success', 'Connection test succeeded. The host accepted the API keys.' ),
-			'probe_failed'   => array( 'error', 'Connection test failed. Check the host URL and API keys.' ),
-			'connected'      => array( 'success', 'Connected. This site can load embeds from Recording Studio.' ),
-			'connect_denied' => array( 'error', 'Connection cancelled. You can try again when you are ready.' ),
-			'connect_failed' => array( 'error', 'Could not connect. Check the host URL and client id.' ),
-			'disconnected'   => array( 'success', 'Disconnected. Embeds will use API keys if you saved them.' ),
-		);
-		if ( ! isset( $messages[ $notice ] ) ) {
+		$entry = ConnectNotice::lookup( $notice );
+		if ( null === $entry ) {
 			return '';
 		}
 
-		list( $kind, $text ) = $messages[ $notice ];
-		return '<div class="notice notice-' . esc_attr( $kind ) . ' is-dismissible"><p>' . esc_html( $text ) . '</p></div>';
+		return '<div class="notice notice-' . esc_attr( $entry['kind'] ) . ' is-dismissible"><p>' . esc_html( $entry['message'] ) . '</p></div>';
 	}
 }

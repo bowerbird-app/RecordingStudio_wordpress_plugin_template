@@ -82,7 +82,7 @@ final class StudioClient {
 	}
 
 	/**
-	 * @return EmbedResult|ConnectTokens
+	 * @return EmbedResult|ConnectTokens|HostError
 	 */
 	public function exchange_connect_code( string $code, string $redirect_uri, string $code_verifier ) {
 		$response = $this->http_post(
@@ -97,6 +97,55 @@ final class StudioClient {
 		);
 
 		return $this->connect_tokens_from_response( $response );
+	}
+
+	public function list_pages(): PageListResult {
+		if ( ! $this->settings->is_complete( ConnectTokens::load() ) ) {
+			return PageListResult::err(
+				'settings_incomplete',
+				Placeholder::settings_incomplete_message()
+			);
+		}
+
+		$token_result = $this->ensure_access_token();
+		if ( $token_result instanceof EmbedResult ) {
+			return PageListResult::from_embed_error( $token_result );
+		}
+
+		$response = $this->http_get(
+			$this->urls->pages_get_url(),
+			array(
+				'Authorization' => 'Bearer ' . $token_result,
+				'Accept'        => 'application/json',
+			)
+		);
+
+		if ( ! empty( $response['error'] ) ) {
+			return PageListResult::err(
+				'embed_http_error',
+				Placeholder::embed_error_message( 'embed_http_error' )
+			);
+		}
+
+		$status = (int) $response['status'];
+		if ( 401 === $status ) {
+			$this->flush_token_cache();
+			return PageListResult::err(
+				ConnectNotice::EMBED_UNAUTHORIZED,
+				ConnectNotice::message( ConnectNotice::EMBED_UNAUTHORIZED ),
+				401
+			);
+		}
+
+		if ( 200 !== $status ) {
+			return PageListResult::err(
+				'embed_failed',
+				Placeholder::embed_error_message( 'embed_failed' ),
+				$status
+			);
+		}
+
+		return PageListResult::ok( PageChoice::list_from_index_body( $response['body'] ) );
 	}
 
 	public function flush_token_cache(): void {
@@ -152,8 +201,8 @@ final class StudioClient {
 	private function refresh_connect_tokens( ConnectTokens $tokens ) {
 		if ( '' === $tokens->refresh_token ) {
 			return EmbedResult::err(
-				'token_denied',
-				__( 'Host rejected the connected session. Connect again or add API keys under Advanced.', 'recording-studio-widget' ),
+				ConnectNotice::RECONNECT_NEEDED,
+				ConnectNotice::message( ConnectNotice::RECONNECT_NEEDED )
 			);
 		}
 
@@ -167,6 +216,11 @@ final class StudioClient {
 		);
 
 		$refreshed = $this->connect_tokens_from_response( $response );
+		if ( $refreshed instanceof HostError ) {
+			$code = $refreshed->notice_code();
+			$code = ConnectNotice::EXPIRED_OR_USED_CODE === $code ? ConnectNotice::RECONNECT_NEEDED : $code;
+			return EmbedResult::err( $code, ConnectNotice::message( $code ) );
+		}
 		if ( $refreshed instanceof EmbedResult ) {
 			return $refreshed;
 		}
@@ -177,9 +231,14 @@ final class StudioClient {
 
 	/**
 	 * @param array{status: int, body: mixed, error?: string} $response
-	 * @return EmbedResult|ConnectTokens
+	 * @return EmbedResult|ConnectTokens|HostError
 	 */
 	private function connect_tokens_from_response( array $response ) {
+		$host_error = HostError::parse( $response['body'] ?? null );
+		if ( null !== $host_error ) {
+			return $host_error;
+		}
+
 		if ( ! empty( $response['error'] ) ) {
 			return EmbedResult::err(
 				'token_http_error',
