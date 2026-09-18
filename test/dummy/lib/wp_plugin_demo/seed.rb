@@ -6,15 +6,20 @@ module WpPluginDemo
     GETTING_STARTED_TITLE = "Getting Started"
     ADMIN_EMAIL = "admin@admin.com"
     RUNBOOK_CLIENT_NAME = "WordPress Plugin Demo runbook"
+    CONNECT_CLIENT_NAME = "WordPress Plugin Demo"
+    CONNECT_REDIRECT_URIS = [
+      "http://localhost:8888/wp-admin/admin-post.php?action=recording_studio_oauth_callback",
+      "http://127.0.0.1:8888/wp-admin/admin-post.php?action=recording_studio_oauth_callback"
+    ].freeze
 
     GETTING_STARTED_LEAD =
-      "Connect the WordPress Plugin Demo block to this host and paste this page's recording id."
+      "Connect the WordPress Plugin Demo block to this host and paste this page's id."
     GETTING_STARTED_BODY_HTML = <<~HTML.squish
       <p>#{GETTING_STARTED_LEAD}</p>
-      <p>OAuth client credentials stay on the WordPress server. The published block mounts BrowserPayload schema version 1 from the named API <code>wp_plugin_demo</code>.</p>
+      <p>Connect under Settings → WordPress Plugin Demo. The published block mounts BrowserPayload schema version 1 from this host.</p>
       <ul>
-        <li>Settings → WordPress Plugin Demo for host URL and OAuth fields</li>
-        <li>Block attribute <code>pageRecordingId</code> for this Getting Started page</li>
+        <li>Settings → WordPress Plugin Demo, then Connect to Recording Studio</li>
+        <li>Block page id for this Getting Started page</li>
       </ul>
     HTML
 
@@ -29,6 +34,15 @@ module WpPluginDemo
       :page_recording_id,
       :token_path,
       :embed_path
+    )
+
+    ConnectClient = Data.define(
+      :host_base_url,
+      :connect_client_id,
+      :authorize_url,
+      :token_url,
+      :redirect_uri,
+      :page_recording_id
     )
 
     module_function
@@ -100,6 +114,40 @@ module WpPluginDemo
       puts "page_recording_id=#{connection.page_recording_id}"
       puts "token_url=#{connection.host_base_url}#{connection.token_path}"
       puts "embed_url=#{connection.host_base_url}#{connection.embed_path}"
+      connection
+    end
+
+    def ensure_connect_client!
+      client = RecordingStudioOauth::OauthClient.find_or_initialize_by(name: CONNECT_CLIENT_NAME)
+      client.redirect_uris = CONNECT_REDIRECT_URIS
+      client.confidential = false
+      client.api_key = Contract::API_KEY.to_s
+      client.save!
+      client
+    end
+
+    def present_connect_client(host_base_url: "http://localhost:3000")
+      page_recording = ensure_studio_embed!
+      client = ensure_connect_client!
+      host = host_base_url.to_s.strip.chomp("/")
+      ConnectClient.new(
+        host_base_url: host,
+        connect_client_id: client.client_id,
+        authorize_url: "#{host}#{Contract::AUTHORIZE_PATH}",
+        token_url: "#{host}#{Contract::CONNECT_TOKEN_PATH}",
+        redirect_uri: CONNECT_REDIRECT_URIS.fetch(0),
+        page_recording_id: page_recording.id
+      )
+    end
+
+    def print_connect_client!(host_base_url: "http://localhost:3000")
+      connection = present_connect_client(host_base_url: host_base_url)
+      puts "host_base_url=#{connection.host_base_url}"
+      puts "connect_client_id=#{connection.connect_client_id}"
+      puts "authorize_url=#{connection.authorize_url}"
+      puts "token_url=#{connection.token_url}"
+      puts "redirect_uri=#{connection.redirect_uri}"
+      puts "page_recording_id=#{connection.page_recording_id}"
       connection
     end
 
