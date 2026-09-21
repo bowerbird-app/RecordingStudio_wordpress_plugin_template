@@ -7,7 +7,7 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     "Site owners do not enter a client id, open Registered Apps, or edit wp-config for normal use."
 
   def test_version_matches_release
-    assert_equal "0.4.19", ::RecordingStudioWordpressPluginTemplate::VERSION
+    assert_equal "0.4.20", ::RecordingStudioWordpressPluginTemplate::VERSION
   end
 
   def test_engine_exists
@@ -88,7 +88,7 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio", tag: "v4.2.0"'
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_accessible", tag: "v0.9.1"'
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_root_switchable", tag: "v0.5.0"'
-    assert_includes gemfile, 'github: "bowerbird-app/flatpack", tag: "v0.1.177"'
+    assert_includes gemfile, 'github: "bowerbird-app/flatpack", tag: "v0.1.190"'
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_api", tag: "v0.5.6"'
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_Embeddable", tag: "v0.2.1"'
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_admin", tag: "v2.0.2"'
@@ -173,6 +173,26 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     refute_includes application_layout, "flat_pack_sidebar"
   end
 
+  def test_dummy_users_auth_layout_links_flatpack_application
+    auth_layout = File.read(File.expand_path("dummy/app/views/layouts/recording_studio_user/auth.html.erb", __dir__))
+
+    assert_includes auth_layout, 'stylesheet_link_tag "flat_pack/variables"'
+    assert_includes auth_layout, 'stylesheet_link_tag "flat_pack/application"'
+    assert_includes auth_layout, 'stylesheet_link_tag "flat_pack/rich_text"'
+    assert_includes auth_layout, 'stylesheet_link_tag "users_auth_primary_buttons"'
+    refute_includes auth_layout, "data-wp-plugin-demo-flatpack-assets"
+
+    paint = File.read(File.expand_path("dummy/app/assets/stylesheets/users_auth_primary_buttons.css", __dir__))
+    assert_includes paint, '.fp-button[data-fp-style="primary"]'
+    assert_includes paint, "oklch(0.3211 0 0)"
+
+    initializer = File.read(
+      File.expand_path("dummy/config/initializers/users_auth_primary_buttons.rb", __dir__)
+    )
+    assert_includes initializer, "RecordingStudioUser::Auth::BaseController"
+    assert_includes initializer, "users_auth_primary_buttons"
+  end
+
   def test_dummy_tailwind_keeps_flatpack_theme_selection_in_flatpack
     tailwind_source = File.read(File.expand_path("dummy/app/assets/tailwind/application.css", __dir__))
 
@@ -187,6 +207,9 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     refute_includes tailwind_source, "@theme"
     refute_includes tailwind_source, ":root {"
     refute_includes tailwind_source, "--color-fp-primary"
+    assert_includes tailwind_source, '.fp-button[data-fp-style="primary"]'
+    assert_includes tailwind_source, "background-color: oklch(0.3211 0 0)"
+    assert_includes tailwind_source, "background-color: var(--button-primary-background-color, oklch(0.3211 0 0))"
   end
 
   def test_dummy_tailwind_sources_resolve_via_vendor_symlinks
@@ -284,7 +307,7 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     assert_includes readme, "npm run env start"
     assert_includes readme, "4.98.0"
     assert_includes readme, "v4.2.0"
-    assert_includes readme, "v0.1.177"
+    assert_includes readme, "v0.1.190"
     assert_includes readme, "v0.9.1"
     assert_includes readme, "dummy GitHub tag `v0.3.0`"
     assert_includes readme, "WordPress Connect relay"
@@ -392,6 +415,30 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     assert_includes recording_tree_partial, "parent_builder.node"
     refute_includes recordings_tree_view, "Current structure"
     refute_includes recordings_tree_view, "This tree is generated from RecordingStudio::Recording records"
+  end
+
+  def test_getting_started_embed_renders_flatpack_demo_components
+    view_source = File.read(File.expand_path("dummy/app/views/pages/embed.html.erb", __dir__))
+    styles = File.read(File.expand_path("dummy/lib/wp_plugin_demo/embed_styles.rb", __dir__))
+
+    assert_includes view_source, "FlatPack::Badge::Component"
+    assert_includes view_source, "FlatPack::Card::Component"
+    assert_includes view_source, "FlatPack::Button::Pill::Component"
+    assert_includes view_source, "FlatPack::Modal::Component"
+    assert_includes view_source, "WpPluginDemo::EmbedStyles.style_tag"
+    assert_includes view_source, 'data-wp-plugin-demo-flatpack-part="badge"'
+    assert_includes view_source, 'data-wp-plugin-demo-flatpack-part="card"'
+    assert_includes view_source, 'data-wp-plugin-demo-flatpack-part="pill"'
+    assert_includes view_source, 'data-wp-plugin-demo-flatpack-part="popup"'
+    refute_includes view_source, "GETTING_STARTED_BODY_HTML"
+    assert_includes styles, "flat_pack/variables.css"
+    assert_includes styles, "flat_pack/application.css"
+    assert_includes styles, "tailwind.css"
+    assert_includes styles, "strip_imports"
+    assert_includes styles, "TYPOGRAPHY_CSS"
+    assert_includes styles, "font-family: var(--font-sans)"
+    assert_includes styles, ".font-medium"
+    assert_includes styles, ".font-bold"
   end
 
   def test_engine_does_not_ship_a_home_view

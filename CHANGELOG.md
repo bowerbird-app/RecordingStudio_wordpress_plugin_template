@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.20] - 2026-09-21
+
+### Changed
+- Dummy Getting Started embed now renders FlatPack `Badge`, `Card`, `Button::Pill`, and `Modal` (the closest public popup). FlatPack CSS is packed into a `<style>` tag in the BrowserPayload HTML so WordPress can show those components. Embeddable still strips `link` and `script`.
+- Dummy host pins FlatPack `v0.1.190`.
+- Getting Started embed CSS now pins FlatPack `system-ui` and `font-weight` utilities on the embed root. WordPress theme rules no longer replace family or weight. FlatPack ships no webfont files, so the payload does not add `@font-face`.
+- Dummy Users auth layout now links `flat_pack/application` so primary Sign in buttons keep the charcoal fill. Packed embed CSS stays off `/users/sign_in`.
+- Dummy Tailwind now carries unlayered `.fp-button[data-fp-style]` paint. Users auth chrome loads that sheet even when it omits `flat_pack/application`. Tailwind preflight plus the `border` class can no longer turn Sign in into a white outline.
+- Dummy ships `users_auth_primary_buttons.css` with a charcoal `oklch(0.3211 0 0)` fallback on `.fp-button[data-fp-style="primary"]`. The Users gem auth layout gets that sheet through `yield :head`, so Continue with email and Sign in paint without `flat_pack/application` and without waiting on a Tailwind rebuild.
+
+### Upgrade notes
+- From `test/dummy` run `bundle update flat_pack` and `bin/rails tailwindcss:build`. Restart the dummy. Re-seed is not required. The Getting Started page id stays the same.
+- WordPress shows the new components after the next embed fetch. No plugin ZIP rebuild. Oauth, Connect, and seed stay unchanged.
+- Refresh the WordPress block after the dummy restarts so the block picks up the pinned type. The preview at `/pages/:id/embed_preview` already used the same stack. The WordPress page no longer keeps its theme font inside the block.
+- Restart the dummy after deploy so `/users/sign_in` and `/users/sign_in/password` load `users_auth_primary_buttons`. No seed or plugin ZIP change.
+
 ## [0.4.19] - 2026-09-21
 
 ### Changed

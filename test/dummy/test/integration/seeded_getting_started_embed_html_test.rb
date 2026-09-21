@@ -39,6 +39,25 @@ class SeededGettingStartedEmbedHtmlTest < ActionDispatch::IntegrationTest
     assert_includes html, DEMO_MARKER
     assert_includes html, "Getting Started"
     assert_includes html, "Connect the WordPress Plugin Demo block to this host"
+    assert_includes html, 'data-wp-plugin-demo-flatpack="1"'
+    assert_includes html, 'data-wp-plugin-demo-flatpack-assets="1"'
+    assert_includes html, 'data-wp-plugin-demo-flatpack-part="badge"'
+    assert_includes html, 'data-wp-plugin-demo-flatpack-part="card"'
+    assert_includes html, 'data-wp-plugin-demo-flatpack-part="pill"'
+    assert_includes html, 'data-wp-plugin-demo-flatpack-part="popup"'
+    assert_includes html, "--badge-success-background-color"
+    assert_includes html, "--card-background-color"
+    assert_includes html, "--tabs-pill-active-background-color"
+    assert_includes html, "font-family: var(--font-sans)"
+    assert_includes html, ".font-medium"
+    assert_includes html, ".font-bold"
+    refute_includes html, "@font-face"
+    assert_includes html, 'data-controller="flat-pack--modal"'
+    assert_includes html, "Host is live"
+    assert_includes html, "Connect the block"
+    assert_includes html, "This is FlatPack"
+    refute_includes html, "<link"
+    refute_includes html, "<script"
   end
 
   test "renderer resolves to host pages/embed for Getting Started" do

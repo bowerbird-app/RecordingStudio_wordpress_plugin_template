@@ -41,3 +41,74 @@
 @source "../../../../../../usr/local/lib/ruby/gems/*/bundler/gems/flatpack-*/app/components/**/*.{rb,erb}";
 @source "../../../../../../usr/local/lib/ruby/gems/*/bundler/gems/flat_pack-*/app/components/**/*.{rb,erb}";
 @source "../../../../../../usr/local/lib/ruby/gems/*/bundler/gems/RecordingStudio-*/app/views/**/*.erb";
+
+/*
+  FlatPack v0.1.190 paints .fp-button with data-fp-style tokens, not bg-* utilities.
+  Users auth chrome loads this Tailwind sheet (and may omit flat_pack/application).
+  Preflight sets button { background-color: transparent } and the component adds
+  `border`, so Sign in looks like a ghost outline unless these rules stay unlayered.
+*/
+.fp-button {
+  background-color: var(--fp-button-background);
+  color: var(--fp-button-text);
+  border-color: var(--fp-button-border);
+}
+
+.fp-button:hover:not(:disabled) {
+  background-color: var(--fp-button-hover-background);
+}
+
+.fp-button[data-fp-style="default"] {
+  --fp-button-background: var(--button-default-background-color);
+  --fp-button-hover-background: var(--button-default-hover-background-color);
+  --fp-button-text: var(--button-default-text-color);
+  --fp-button-border: var(--button-default-border-color);
+}
+
+.fp-button[data-fp-style="primary"] {
+  --fp-button-background: var(--button-primary-background-color, oklch(0.3211 0 0));
+  --fp-button-hover-background: var(--button-primary-hover-background-color);
+  --fp-button-text: var(--button-primary-text-color, #fff);
+  --fp-button-border: var(--button-primary-border-color, oklch(0.3211 0 0));
+  background-color: oklch(0.3211 0 0);
+  color: #fff;
+  border-color: oklch(0.3211 0 0);
+  background-color: var(--button-primary-background-color, oklch(0.3211 0 0));
+  color: var(--button-primary-text-color, #fff);
+  border-color: var(--button-primary-border-color, oklch(0.3211 0 0));
+}
+
+.fp-button[data-fp-style="secondary"] {
+  --fp-button-background: var(--button-secondary-background-color);
+  --fp-button-hover-background: var(--button-secondary-hover-background-color);
+  --fp-button-text: var(--button-secondary-text-color);
+  --fp-button-border: var(--button-secondary-border-color);
+}
+
+.fp-button[data-fp-style="ghost"] {
+  --fp-button-background: var(--button-ghost-background-color);
+  --fp-button-hover-background: var(--button-ghost-hover-background-color);
+  --fp-button-text: var(--button-ghost-text-color);
+  --fp-button-border: var(--button-ghost-border-color);
+}
+
+.fp-button[data-fp-style="success"] {
+  --fp-button-background: var(--button-success-background-color);
+  --fp-button-hover-background: var(--button-success-hover-background-color);
+  --fp-button-text: var(--button-success-text-color);
+  --fp-button-border: var(--button-success-border-color);
+}
+
+.fp-button[data-fp-style="warning"] {
+  --fp-button-background: var(--button-warning-background-color);
+  --fp-button-hover-background: var(--button-warning-hover-background-color);
+  --fp-button-text: var(--button-warning-text-color);
+  --fp-button-border: var(--button-warning-border-color);
+}
+
+.fp-button[data-fp-style="danger"] {
+  --fp-button-background: var(--button-danger-background-color);
+  --fp-button-hover-background: var(--button-danger-hover-background-color);
+  --fp-button-text: var(--button-danger-text-color);
+  --fp-button-border: var(--button-danger-border-color);
+}

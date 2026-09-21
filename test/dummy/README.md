@@ -4,7 +4,7 @@ This Rails app is the host for RecordingStudio WordPress widgets. It boots on it
 
 ## What it covers
 
-- Recording Studio Users auth chrome with a seeded admin user (`admin@admin.com` / `Password`)
+- Recording Studio Users auth chrome with a seeded admin user (`admin@admin.com` / `Password`). Dummy `users_auth_primary_buttons.css` paints `.fp-button[data-fp-style="primary"]` charcoal on the email step and the password step, including when the Users gem layout omits `flat_pack/application`.
 - `Current.actor` wiring for Recording Studio events
 - Root workspace plus seeded folder and page recordables
 - Recording Studio host shell with FlatPack sidebar (Home, Recordings tree, API Keys, Pages, Registered Apps), FlatPack kit CSS (`variables`, `application`, `rich_text`), and Tailwind source scanning
@@ -15,7 +15,7 @@ This Rails app is the host for RecordingStudio WordPress widgets. It boots on it
 - Dummy-only `/docs/*` pages for host-app onboarding
 - Named API `wp_plugin_demo` with soft GET `:embed` (BrowserPayload schema v1)
 - **Seed Demo App** Oauth client for dummy Oauth tests. Staff create the public **WordPress** Connect client once (relay redirect). Seed does not write that app.
-- Host Page embed renderer (`pages/embed`) with seeded Getting Started HTML for the WordPress Plugin Demo block
+- Host Page embed renderer (`pages/embed`) with seeded Getting Started FlatPack (`Badge`, `Card`, `Button::Pill`, `Modal`) for the WordPress Plugin Demo block. CSS is packed into the payload `<style>` tag so WordPress can paint those components. The packed sheet pins `system-ui` and font weights on the embed root. There is no `@font-face`.
 - CI eager-load workarounds: ignore Embeddable `lib/` on host Zeitwerk
 - Env-only connectivity placeholders. No widget models or WordPress render routes in Rails
 

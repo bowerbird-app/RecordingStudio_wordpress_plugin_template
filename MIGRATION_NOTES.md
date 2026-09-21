@@ -20,10 +20,23 @@ bin/rails tailwindcss:build
 - Rails 8.1 or newer
 - Recording Studio 4.x (`~> 4.2` in the gemspec; dummy GitHub tag `v4.2.0`)
 - Accessible dummy tag `v0.9.1` and Root Switchable dummy tag `v0.5.0`
-- FlatPack dummy tag `v0.1.177`
+- FlatPack dummy tag `v0.1.190`
 - Users dummy tag `v0.11.0`
 - Oauth dummy tag `v0.3.0`
 - Public RubyGems and GitHub access for dependency installation
+
+## 0.4.20
+
+The Getting Started embed is a FlatPack demo for the WordPress block. `pages/embed` renders `FlatPack::Badge::Component`, `FlatPack::Card::Component`, `FlatPack::Button::Pill::Component`, and `FlatPack::Modal::Component` (used as the popup). FlatPack has no `Popup` class on `v0.1.190`.
+
+Embeddable `HtmlSanitizer` removes `link` and `script` from BrowserPayload HTML. The dummy packs `flat_pack/variables`, `flat_pack/application` (imports stripped), and the dummy Tailwind build into a `<style data-wp-plugin-demo-flatpack-assets="1">` tag. Unlayered rules on `[data-wordpress-plugin-demo-embed]` pin `--font-sans` to FlatPack `system-ui` and restate `.font-medium`, `.font-semibold`, and `.font-bold` so a WordPress theme cannot replace family or weight. FlatPack `v0.1.190` has no `@font-face` files, so the payload does not load remote fonts. A short containment rule keeps the modal in the block instead of covering the WordPress page. Dummy Pages `/pages/:id/embed_preview` uses the same fragment, so you can eyeball it without WordPress.
+
+1. From `test/dummy`, point FlatPack at GitHub tag `v0.1.190`.
+2. Run `bundle update flat_pack`.
+3. Run `bin/rails tailwindcss:build`.
+4. Restart the dummy. Do not re-seed. Oauth and Connect stay as they were.
+
+The dummy overrides `layouts/recording_studio_user/auth` so it also links `flat_pack/application`. FlatPack `v0.1.190` paints `.fp-button[data-fp-style="primary"]` in that sheet. The Users gem layout still omits it and only loads dummy Tailwind plus `yield :head`. Dummy `users_auth_primary_buttons.css` paints primary buttons with charcoal `oklch(0.3211 0 0)` and is injected on `RecordingStudioUser::Auth::BaseController` so Continue with email and Sign in stay solid when the gem layout is the one that loads. Packed embed CSS stays in the Getting Started payload only.
 
 ## 0.4.19
 
