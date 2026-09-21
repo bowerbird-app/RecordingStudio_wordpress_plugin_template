@@ -3,6 +3,9 @@
 require "test_helper"
 
 class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
+  SITE_OWNER_COPY =
+    "Site owners do not enter a client id, open Registered Apps, or edit wp-config for normal use."
+
   def test_version_matches_release
     assert_equal "0.4.19", ::RecordingStudioWordpressPluginTemplate::VERSION
   end
@@ -288,7 +291,7 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     assert_includes readme, "Ship the plugin"
     assert_includes readme, "wordpress/recording-studio-widgets/includes/RecordingStudio/CloudHost.php"
     assert_includes readme, "bin/build-plugin-zip"
-    assert_includes readme, "Site owners do not enter a client id, open Registered Apps, or edit wp-config for normal use."
+    assert_includes readme, SITE_OWNER_COPY
     assert_includes readme, "That stopped in 0.4.18."
     assert_includes readme, "local and tunnel testing only"
     refute_includes readme, "Internal template"
@@ -316,7 +319,7 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     assert_includes runbook, "Ship a ZIP from a cloud host"
     assert_includes runbook, "wordpress/recording-studio-widgets/includes/RecordingStudio/CloudHost.php"
     assert_includes runbook, "bin/build-plugin-zip"
-    assert_includes runbook, "Site owners do not enter a client id, open Registered Apps, or edit wp-config for normal use."
+    assert_includes runbook, SITE_OWNER_COPY
     assert_includes runbook, "That stopped in 0.4.18."
     assert_includes runbook, "Do not use those defines for a shipped ZIP."
     assert_includes runbook, "Dummy cold start"
