@@ -1,10 +1,44 @@
 # WordPress Plugin Demo runbook
 
-Cold start from this repo to a working **WordPress Plugin Demo** block against the Rails dummy host.
+How to ship a plugin ZIP from a Recording Studio cloud host, and how to cold-start the dummy host.
 
 Product UI name is **WordPress Plugin Demo**. The feature is the WordPress plugin feature. Do not call it Featured In.
 
-## What you need
+## Ship a ZIP from a cloud host
+
+One staff setup. Every download of that ZIP then works.
+
+`db:seed` does not create the WordPress Connect client. That stopped in 0.4.18.
+
+### Staff setup
+
+Do this once per Recording Studio cloud host.
+
+1. Open **Registered Apps**.
+2. Create a public app named **WordPress**.
+3. Set the redirect to `{host}/recording_studio_oauth/wordpress/callback`.
+4. Copy the client id.
+5. Put the host URL and that client id in `CloudHost` (`wordpress/recording-studio-widgets/includes/RecordingStudio/CloudHost.php`). This is a source change, not a customer env setting.
+6. Run `bin/build-plugin-zip` from the repository root.
+7. Distribute `pkg/recording-studio-widgets.zip`.
+
+### WordPress site owners
+
+1. Install and activate the plugin ZIP.
+2. Open **Settings → WordPress Plugin Demo**.
+3. Click **Connect to Recording Studio**, then log in and approve.
+
+Site owners do not enter a client id, open Registered Apps, or edit wp-config for normal use.
+
+### Local and tunnel testing
+
+To point a ZIP at a local dummy or a tunnel without baking `CloudHost`, define `RECORDING_STUDIO_HOST_BASE_URL` and `RECORDING_STUDIO_CLIENT_ID` in `wp-config.php` or an mu-plugin. Or add the `recording_studio_host_base_url` and `recording_studio_client_id` filters. Do not use those defines for a shipped ZIP.
+
+## Dummy cold start
+
+Use these steps to prove the plugin against the Rails dummy host in this repo.
+
+### What you need
 
 - Ruby 3.3+, Bundler, PostgreSQL 16, Node 22
 - Docker only if you use `wp-env` (optional). Without Docker you can still build the ZIP and upload it to any WordPress that can reach the dummy host.
@@ -38,15 +72,15 @@ Named API paths the plugin uses (do not change these unless the host is broken):
 
 ## 2. Create the WordPress Registered App
 
-Create this app once after a fresh `db:setup` or `db:reset`. Seed does not write it.
+Create this app once after a fresh `db:setup` or `db:reset`. Seed does not write it. This dummy step matches the staff setup on a cloud host. A shipped ZIP uses the values baked in `CloudHost`, not this local client. Override those values only for a tunnel.
 
 1. Sign in at `/users/sign_in` with `admin@admin.com` / `Password`.
 2. Open sidebar **Registered Apps** (`/admin/screens/oauth_clients`). Switch the root switcher to **Admin** if the screen returns 403.
 3. Create a public app named **WordPress**.
 4. Set the redirect to `{host}/recording_studio_oauth/wordpress/callback`. On the dummy that is `http://localhost:3000/recording_studio_oauth/wordpress/callback`.
-5. Use client id `rsoauth_id_wordpress` if you want the plugin ZIP default. Otherwise define `RECORDING_STUDIO_CLIENT_ID` in `wp-config.php` or an mu-plugin.
+5. Use client id `rsoauth_id_wordpress` so it matches the plugin ZIP default.
 
-The plugin ZIP bakes `http://localhost:3000` and `rsoauth_id_wordpress`. To point at a tunnel or another host, define `RECORDING_STUDIO_HOST_BASE_URL` and `RECORDING_STUDIO_CLIENT_ID` in `wp-config.php` or an mu-plugin, or add filters `recording_studio_host_base_url` and `recording_studio_client_id`.
+The dummy ZIP bakes `http://localhost:3000` and `rsoauth_id_wordpress`. For local or tunnel testing only, define `RECORDING_STUDIO_HOST_BASE_URL` and `RECORDING_STUDIO_CLIENT_ID` in `wp-config.php` or an mu-plugin, or add the `recording_studio_host_base_url` and `recording_studio_client_id` filters.
 
 ## 3. Print the public Connect client
 

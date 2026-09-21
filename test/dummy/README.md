@@ -97,4 +97,4 @@ After `db:reset`, the Getting Started `page_recording_id` changes. Look it up ag
 bin/rails runner 'puts WpPluginDemo::Seed.getting_started_page_recording_id'
 ```
 
-Full cold-start steps: [../../docs/wordpress-plugin-demo-runbook.md](../../docs/wordpress-plugin-demo-runbook.md).
+Staff ZIP shipping and dummy cold start: [../../docs/wordpress-plugin-demo-runbook.md](../../docs/wordpress-plugin-demo-runbook.md).

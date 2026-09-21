@@ -25,6 +25,18 @@ bin/rails tailwindcss:build
 - Oauth dummy tag `v0.3.0`
 - Public RubyGems and GitHub access for dependency installation
 
+## 0.4.19
+
+Staff bake one ZIP against a Recording Studio cloud host. Site owners install that ZIP and click **Connect to Recording Studio**.
+
+1. On the cloud host, open **Registered Apps**.
+2. Create a public app named **WordPress** with redirect `{host}/recording_studio_oauth/wordpress/callback`.
+3. Copy the client id.
+4. Put the host URL and that client id in `CloudHost` (`wordpress/recording-studio-widgets/includes/RecordingStudio/CloudHost.php`).
+5. Run `bin/build-plugin-zip` and distribute `pkg/recording-studio-widgets.zip`.
+
+Site owners do not enter a client id, open Registered Apps, or edit wp-config for normal use. `RECORDING_STUDIO_HOST_BASE_URL` and `RECORDING_STUDIO_CLIENT_ID` stay for local and tunnel testing only. `db:seed` still does not create the WordPress Connect client.
+
 ## 0.4.18
 
 `db:seed` no longer creates the public **WordPress** Oauth Connect client. Staff create that Registered App once.

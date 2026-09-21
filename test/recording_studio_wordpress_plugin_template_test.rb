@@ -4,7 +4,7 @@ require "test_helper"
 
 class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
   def test_version_matches_release
-    assert_equal "0.4.18", ::RecordingStudioWordpressPluginTemplate::VERSION
+    assert_equal "0.4.19", ::RecordingStudioWordpressPluginTemplate::VERSION
   end
 
   def test_engine_exists
@@ -285,6 +285,12 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     assert_includes readme, "v0.9.1"
     assert_includes readme, "dummy GitHub tag `v0.3.0`"
     assert_includes readme, "WordPress Connect relay"
+    assert_includes readme, "Ship the plugin"
+    assert_includes readme, "wordpress/recording-studio-widgets/includes/RecordingStudio/CloudHost.php"
+    assert_includes readme, "bin/build-plugin-zip"
+    assert_includes readme, "Site owners do not enter a client id, open Registered Apps, or edit wp-config for normal use."
+    assert_includes readme, "That stopped in 0.4.18."
+    assert_includes readme, "local and tunnel testing only"
     refute_includes readme, "Internal template"
     refute_includes readme, "internal template"
     refute_includes readme, "v0.1.133"
@@ -300,7 +306,20 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     assert_includes doc, "bin/check-package-boundaries"
     assert_includes doc, "test/dummy"
     assert_includes doc, "recording-studio-widget.php"
+    assert_includes doc, "Staff ZIP shipping"
     refute_includes doc, "Internal template"
+  end
+
+  def test_runbook_splits_staff_shipping_from_site_owner_connect
+    runbook = File.read(File.expand_path("../docs/wordpress-plugin-demo-runbook.md", __dir__))
+
+    assert_includes runbook, "Ship a ZIP from a cloud host"
+    assert_includes runbook, "wordpress/recording-studio-widgets/includes/RecordingStudio/CloudHost.php"
+    assert_includes runbook, "bin/build-plugin-zip"
+    assert_includes runbook, "Site owners do not enter a client id, open Registered Apps, or edit wp-config for normal use."
+    assert_includes runbook, "That stopped in 0.4.18."
+    assert_includes runbook, "Do not use those defines for a shipped ZIP."
+    assert_includes runbook, "Dummy cold start"
   end
 
   def test_gemspec_uses_wordpress_product_homepage
