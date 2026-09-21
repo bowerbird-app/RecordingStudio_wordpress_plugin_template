@@ -12,14 +12,6 @@ module WpPluginDemo
 
     GETTING_STARTED_LEAD =
       "Connect the WordPress Plugin Demo block to this host and paste this page's id."
-    GETTING_STARTED_BODY_HTML = <<~HTML.squish
-      <p>#{GETTING_STARTED_LEAD}</p>
-      <p>Connect under Settings → WordPress Plugin Demo. The published block mounts BrowserPayload schema version 1 from this host.</p>
-      <ul>
-        <li>Settings → WordPress Plugin Demo, then Connect to Recording Studio</li>
-        <li>Block page id for this Getting Started page</li>
-      </ul>
-    HTML
 
     GENERIC_PAGE_BODY_HTML = <<~HTML.squish
       <p>This page is part of the WordPress Plugin Demo host. Use a seeded Getting Started page recording id for the runbook block.</p>
@@ -55,10 +47,7 @@ module WpPluginDemo
       "http://localhost:8888/wp-admin/admin-post.php?action=recording_studio_oauth_callback"
     end
 
-    def embed_body_html_for(page)
-      title = page.respond_to?(:title) ? page.title.to_s : ""
-      return GETTING_STARTED_BODY_HTML if title == GETTING_STARTED_TITLE
-
+    def embed_body_html_for(_page)
       GENERIC_PAGE_BODY_HTML
     end
 

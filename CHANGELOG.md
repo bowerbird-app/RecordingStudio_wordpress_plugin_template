@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.20] - 2026-09-21
+
+### Changed
+- Dummy Getting Started embed now renders FlatPack `Badge`, `Card`, `Button::Pill`, and `Modal` (the closest public popup). FlatPack CSS is packed into a `<style>` tag in the BrowserPayload HTML so WordPress can show those components. Embeddable still strips `link` and `script`.
+- Dummy host pins FlatPack `v0.1.190`.
+
+### Upgrade notes
+- From `test/dummy` run `bundle update flat_pack` and `bin/rails tailwindcss:build`. Restart the dummy. Re-seed is not required. The Getting Started page id stays the same.
+- WordPress shows the new components after the next embed fetch. No plugin ZIP rebuild. Oauth, Connect, and seed stay unchanged.
+
 ## [0.4.19] - 2026-09-21
 
 ### Changed

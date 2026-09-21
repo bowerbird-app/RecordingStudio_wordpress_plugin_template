@@ -1,5 +1,54 @@
 <% page = @page || @parent_recordable %>
-<article data-wordpress-plugin-demo-embed="page">
+<% getting_started = page.respond_to?(:title) && page.title.to_s == WpPluginDemo::Seed::GETTING_STARTED_TITLE %>
+<article data-wordpress-plugin-demo-embed="page" data-theme="rounded">
   <h1><%= ERB::Util.html_escape(page&.title.presence || "Page") %></h1>
-  <%= raw WpPluginDemo::Seed.embed_body_html_for(page) %>
+  <% if getting_started %>
+    <%= WpPluginDemo::EmbedStyles.style_tag %>
+    <div data-wp-plugin-demo-flatpack="1" class="flex flex-col gap-4">
+      <p><%= WpPluginDemo::Seed::GETTING_STARTED_LEAD %></p>
+      <div data-wp-plugin-demo-flatpack-part="badge">
+        <%= render FlatPack::Badge::Component.new(text: "Host is live", style: :success, size: :sm) %>
+      </div>
+      <div data-wp-plugin-demo-flatpack-part="card">
+        <%= render FlatPack::Card::Component.new(style: :outlined) do |card| %>
+          <% card.header do %>
+            <%= render FlatPack::PageTitle::Component.new(
+              title: "Connect the block",
+              subtitle: "Settings first. Then paste this page's id.",
+              variant: :h3,
+              class: "mb-0 pb-0"
+            ) %>
+          <% end %>
+          <% card.body do %>
+            <p class="text-sm leading-6">
+              Open Settings, click Connect to Recording Studio, and drop this page into the block.
+            </p>
+          <% end %>
+        <% end %>
+      </div>
+      <div data-wp-plugin-demo-flatpack-part="pill">
+        <%= render FlatPack::Button::Pill::Component.new(
+          items: [
+            { text: "Connect", href: "#getting-started-connect", active: true },
+            { text: "Page id", href: "#getting-started-page-id" }
+          ]
+        ) %>
+      </div>
+      <div data-wp-plugin-demo-flatpack-part="popup">
+        <%= render FlatPack::Modal::Component.new(
+          id: "getting-started-flatpack-popup",
+          title: "This is FlatPack",
+          size: :sm
+        ) do |modal| %>
+          <% modal.body do %>
+            <p class="text-sm leading-6">
+              Badge, card, pill, and this popup. Same kit the dummy host uses.
+            </p>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  <% else %>
+    <%= raw WpPluginDemo::Seed.embed_body_html_for(page) %>
+  <% end %>
 </article>

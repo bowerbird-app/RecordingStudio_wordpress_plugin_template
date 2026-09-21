@@ -122,7 +122,7 @@ These versions come from the gemspec, the dummy Gemfile, `@wordpress/create-bloc
 | Root Switchable | dummy GitHub tag `v0.5.0` |
 | Users | dummy GitHub tag `v0.11.0` |
 | Oauth | dummy GitHub tag `v0.3.0` (WordPress Connect relay; one public WordPress app; consent is a full page) |
-| FlatPack | dummy GitHub tag `v0.1.177` |
+| FlatPack | dummy GitHub tag `v0.1.190` |
 | Devise | latest |
 | `@wordpress/create-block` | 4.98.0 |
 | `@wordpress/scripts` | 35.0.0 |

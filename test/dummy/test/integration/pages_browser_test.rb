@@ -48,6 +48,14 @@ class PagesBrowserTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_includes response.body, "Getting Started"
     assert_select "article[data-wordpress-plugin-demo-embed='page']", count: 1
+    assert_select "[data-wp-plugin-demo-flatpack='1']", count: 1
+    assert_select "[data-wp-plugin-demo-flatpack-part='badge']", count: 1
+    assert_select "[data-wp-plugin-demo-flatpack-part='card']", count: 1
+    assert_select "[data-wp-plugin-demo-flatpack-part='pill']", count: 1
+    assert_select "[data-wp-plugin-demo-flatpack-part='popup'] [data-controller='flat-pack--modal']", count: 1
+    assert_select "style[data-wp-plugin-demo-flatpack-assets='1']", count: 1
+    assert_includes response.body, "Host is live"
+    assert_includes response.body, "--badge-success-background-color"
     assert_select "body[data-dummy-host-layout='true']", count: 0
     refute_includes response.body, "flat-pack--sidebar-layout"
     refute_includes response.body, "flat_pack/application"
