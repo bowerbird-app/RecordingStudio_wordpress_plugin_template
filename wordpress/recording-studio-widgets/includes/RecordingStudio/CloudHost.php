@@ -48,7 +48,7 @@ final class CloudHost {
 		return rtrim( $url, '/' );
 	}
 
-	private static function constant_or_default( string $name, string $default ): string {
+	private static function constant_or_default( string $name, string $fallback ): string {
 		if ( defined( $name ) ) {
 			$value = trim( (string) constant( $name ) );
 			if ( '' !== $value ) {
@@ -56,6 +56,6 @@ final class CloudHost {
 			}
 		}
 
-		return $default;
+		return $fallback;
 	}
 }
