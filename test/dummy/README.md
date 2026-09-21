@@ -14,7 +14,7 @@ This Rails app is the host for RecordingStudio WordPress widgets. It boots on it
 - Mounted `RecordingStudio::Engine` route behavior inside a host app
 - Dummy-only `/docs/*` pages for host-app onboarding
 - Named API `wp_plugin_demo` with soft GET `:embed` (BrowserPayload schema v1)
-- Public **WordPress Plugin Demo** Oauth client for Connect (exact wp-admin admin-post redirect URIs) plus **Seed Demo App** for dummy Oauth tests
+- **Seed Demo App** Oauth client for dummy Oauth tests. Staff create the public **WordPress** Connect client once (relay redirect). Seed does not write that app.
 - Host Page embed renderer (`pages/embed`) with seeded Getting Started HTML for the WordPress Plugin Demo block
 - CI eager-load workarounds: ignore Embeddable `lib/` on host Zeitwerk
 - Env-only connectivity placeholders. No widget models or WordPress render routes in Rails
@@ -64,6 +64,8 @@ After sign-in, use sidebar **API Keys** to open API clients (`/recording_studio_
 ## OAuth client for the WordPress plugin
 
 Connect is the primary path. The plugin starts PKCE at the Oauth WordPress relay against the public **WordPress** client, then users sign in with Users chrome and pick a workspace.
+
+`db:seed` does not create that client. After a fresh setup, open sidebar **Registered Apps** and create a public app named **WordPress** with redirect `{host}/recording_studio_oauth/wordpress/callback`. Use client id `rsoauth_id_wordpress` to match the plugin ZIP default, or set `RECORDING_STUDIO_CLIENT_ID`.
 
 ```bash
 bin/rails runner 'WpPluginDemo::Seed.print_connect_client!'

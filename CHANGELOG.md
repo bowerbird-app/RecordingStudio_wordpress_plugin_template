@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.18] - 2026-09-21
+
+### Changed
+- Dummy `db:seed` no longer creates the public **WordPress** Oauth Connect client. Staff create that Registered App once. `WpPluginDemo::Seed.ensure_connect_client!` stays as a test and console helper. Advanced API key helpers are unchanged.
+
+### Upgrade notes
+- After `db:setup` or `db:seed`, Registered Apps has **Seed Demo App** and no **WordPress** Connect client.
+- Create the WordPress app in Oauth Admin (`/admin/screens/oauth_clients`). Name it **WordPress**. Make it public. Set the redirect to `{host}/recording_studio_oauth/wordpress/callback`. Use client id `rsoauth_id_wordpress` to match the plugin ZIP default, or set `RECORDING_STUDIO_CLIENT_ID`.
+- The plugin still bakes `http://localhost:3000` and `rsoauth_id_wordpress`. Override with `RECORDING_STUDIO_HOST_BASE_URL` / `RECORDING_STUDIO_CLIENT_ID` or the `recording_studio_host_base_url` / `recording_studio_client_id` filters.
+- Keep an app that 0.4.17 already seeded. Do not re-seed to recreate it.
+- Tests that need a Connect client call `ensure_connect_client!` in setup.
+
 ## [0.4.17] - 2026-09-21
 
 ### Changed

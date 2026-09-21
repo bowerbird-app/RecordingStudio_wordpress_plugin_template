@@ -68,8 +68,6 @@ oauth_client.confidential = false
 oauth_client.api_key = "wp_plugin_demo"
 oauth_client.save!
 
-wp_connect_client = WpPluginDemo::Seed.ensure_connect_client!
-
 previous_actor = Current.actor
 Current.actor = user
 
@@ -103,5 +101,4 @@ puts "Seeded: Workspace '#{private_workspace.name}' with root recording ##{priva
 puts "Seeded: Folder '#{folder.name}' and page '#{page.title}'"
 puts "Seeded: Admin root for Oauth Admin (Registered apps)"
 puts "Seeded: Seed Demo App client_id=#{oauth_client.client_id}"
-puts "Seeded: WordPress client_id=#{wp_connect_client.client_id} redirect=#{wp_connect_client.redirect_uris.first}"
 puts "Seeded: Getting Started embed ready for the WordPress plugin demo"
