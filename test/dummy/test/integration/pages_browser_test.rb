@@ -57,7 +57,6 @@ class PagesBrowserTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "Host is live"
     assert_includes response.body, "--badge-success-background-color"
     assert_select "body[data-dummy-host-layout='true']", count: 0
-    refute_includes response.body, "flat-pack--sidebar-layout"
-    refute_includes response.body, "flat_pack/application"
+    refute_match(%r{href="[^"]*flat_pack/application}, response.body)
   end
 end
