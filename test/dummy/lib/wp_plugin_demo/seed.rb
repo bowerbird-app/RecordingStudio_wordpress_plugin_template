@@ -6,11 +6,9 @@ module WpPluginDemo
     GETTING_STARTED_TITLE = "Getting Started"
     ADMIN_EMAIL = "admin@admin.com"
     RUNBOOK_CLIENT_NAME = "WordPress Plugin Demo runbook"
-    CONNECT_CLIENT_NAME = "WordPress Plugin Demo"
-    CONNECT_REDIRECT_URIS = [
-      "http://localhost:8888/wp-admin/admin-post.php?action=recording_studio_oauth_callback",
-      "http://127.0.0.1:8888/wp-admin/admin-post.php?action=recording_studio_oauth_callback"
-    ].freeze
+    CONNECT_CLIENT_NAME = "WordPress"
+    LEGACY_CONNECT_CLIENT_NAME = "WordPress Plugin Demo"
+    CONNECT_CLIENT_ID = "rsoauth_id_wordpress"
 
     GETTING_STARTED_LEAD =
       "Connect the WordPress Plugin Demo block to this host and paste this page's id."
@@ -39,13 +37,23 @@ module WpPluginDemo
     ConnectClient = Data.define(
       :host_base_url,
       :connect_client_id,
-      :authorize_url,
+      :connect_url,
       :token_url,
-      :redirect_uri,
+      :relay_redirect_uri,
+      :return_to,
       :page_recording_id
     )
 
     module_function
+
+    def connect_redirect_uris(host_base_url: "http://localhost:3000")
+      hosts = [host_base_url, host_base_url.to_s.sub("localhost", "127.0.0.1")].uniq
+      hosts.map { |host| RecordingStudioOauth.wordpress_relay_callback_url(base_url: host) }
+    end
+
+    def example_return_to
+      "http://localhost:8888/wp-admin/admin-post.php?action=recording_studio_oauth_callback"
+    end
 
     def embed_body_html_for(page)
       title = page.respond_to?(:title) ? page.title.to_s : ""
@@ -116,10 +124,14 @@ module WpPluginDemo
     end
 
     def ensure_connect_client!
-      client = RecordingStudioOauth::OauthClient.find_or_initialize_by(name: CONNECT_CLIENT_NAME)
-      client.redirect_uris = CONNECT_REDIRECT_URIS
+      client = RecordingStudioOauth::OauthClient.find_by(name: CONNECT_CLIENT_NAME)
+      client ||= RecordingStudioOauth::OauthClient.find_by(name: LEGACY_CONNECT_CLIENT_NAME)
+      client ||= RecordingStudioOauth::OauthClient.new(name: CONNECT_CLIENT_NAME)
+      client.name = CONNECT_CLIENT_NAME
+      client.redirect_uris = connect_redirect_uris
       client.confidential = false
       client.api_key = Contract::API_KEY.to_s
+      client.client_id = CONNECT_CLIENT_ID if client.client_id.blank?
       client.save!
       client
     end
@@ -131,9 +143,10 @@ module WpPluginDemo
       ConnectClient.new(
         host_base_url: host,
         connect_client_id: client.client_id,
-        authorize_url: "#{host}#{Contract::AUTHORIZE_PATH}",
+        connect_url: "#{host}#{Contract::CONNECT_PATH}",
         token_url: "#{host}#{Contract::CONNECT_TOKEN_PATH}",
-        redirect_uri: CONNECT_REDIRECT_URIS.fetch(0),
+        relay_redirect_uri: RecordingStudioOauth.wordpress_relay_callback_url(base_url: host),
+        return_to: example_return_to,
         page_recording_id: page_recording.id
       )
     end
@@ -142,9 +155,10 @@ module WpPluginDemo
       connection = present_connect_client(host_base_url: host_base_url)
       puts "host_base_url=#{connection.host_base_url}"
       puts "connect_client_id=#{connection.connect_client_id}"
-      puts "authorize_url=#{connection.authorize_url}"
+      puts "connect_url=#{connection.connect_url}"
       puts "token_url=#{connection.token_url}"
-      puts "redirect_uri=#{connection.redirect_uri}"
+      puts "relay_redirect_uri=#{connection.relay_redirect_uri}"
+      puts "return_to=#{connection.return_to}"
       puts "page_recording_id=#{connection.page_recording_id}"
       connection
     end

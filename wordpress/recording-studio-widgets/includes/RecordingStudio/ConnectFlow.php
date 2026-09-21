@@ -14,17 +14,17 @@ final class ConnectFlow {
 	}
 
 	public static function start( PluginSettings $settings, HostUrls $urls ): string {
-		$pkce         = Pkce::generate();
-		$state        = wp_generate_password( 32, false, false );
-		$redirect_uri = self::callback_uri();
-		$session      = new ConnectSession( $pkce->verifier, $state, $redirect_uri );
+		$pkce           = Pkce::generate();
+		$state          = wp_generate_password( 32, false, false );
+		$return_to      = self::callback_uri();
+		$token_redirect = $urls->relay_callback_url();
+		$session        = new ConnectSession( $pkce->verifier, $state, $token_redirect );
 		$session->persist();
 
-		return $urls->authorize_url(
+		return $urls->wordpress_connect_url(
 			array(
-				'response_type'         => 'code',
 				'client_id'             => $settings->client_id,
-				'redirect_uri'          => $redirect_uri,
+				'return_to'             => $return_to,
 				'state'                 => $state,
 				'code_challenge'        => $pkce->challenge,
 				'code_challenge_method' => 'S256',

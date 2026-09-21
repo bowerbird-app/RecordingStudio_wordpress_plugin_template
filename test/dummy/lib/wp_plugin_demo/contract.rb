@@ -16,6 +16,8 @@ module WpPluginDemo
     NAMED_RESOURCE_PREFIX = "#{NAMED_PREFIX}/#{API_VERSION}".freeze
     TOKEN_PATH = "#{NAMED_PREFIX}/oauth/token".freeze
     AUTHORIZE_PATH = "/recording_studio_oauth/oauth/authorize"
+    CONNECT_PATH = "/recording_studio_oauth/wordpress/connect"
+    RELAY_CALLBACK_PATH = "/recording_studio_oauth/wordpress/callback"
     CONNECT_TOKEN_PATH = TOKEN_PATH
 
     SCHEMA_VERSION = 1

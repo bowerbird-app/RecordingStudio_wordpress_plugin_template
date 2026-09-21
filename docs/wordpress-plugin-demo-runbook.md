@@ -24,11 +24,13 @@ Open http://localhost:3000 and sign in at `/users/sign_in` with `admin@admin.com
 `db:setup` seeds Studio Workspace, the Getting Started page, enables embed on that page (`WpPluginDemo::Seed.ensure_studio_embed!`), registers the host Page renderer (`pages/embed`), and seeds two public Oauth clients:
 
 - **Seed Demo App** with redirect `http://127.0.0.1:3000/callback` (dummy Oauth tests)
-- **WordPress Plugin Demo** with the exact wp-admin callbacks below (Connect)
+- **WordPress** with relay redirects `http://localhost:3000/recording_studio_oauth/wordpress/callback` and the `127.0.0.1` twin (Connect). Client id is `rsoauth_id_wordpress`.
 
 Named API paths the plugin uses (do not change these unless the host is broken):
 
-- Authorize: `GET http://localhost:3000/recording_studio_oauth/oauth/authorize`
+- Connect start: `GET http://localhost:3000/recording_studio_oauth/wordpress/connect`
+- Relay callback: `GET http://localhost:3000/recording_studio_oauth/wordpress/callback`
+- Authorize (after the relay): `GET http://localhost:3000/recording_studio_oauth/oauth/authorize`
 - Token + refresh (Connect `authorization_code` and Advanced `client_credentials`): `POST http://localhost:3000/recording_studio_api/apis/wp_plugin_demo/oauth/token`
 - Pages index (block picker): `GET http://localhost:3000/recording_studio_api/apis/wp_plugin_demo/v1/pages`
 - Embed: `GET http://localhost:3000/recording_studio_api/apis/wp_plugin_demo/v1/pages/{page_id}/actions/embed`
@@ -45,19 +47,17 @@ Example output shape:
 
 ```text
 host_base_url=http://localhost:3000
-connect_client_id=...
-authorize_url=http://localhost:3000/recording_studio_oauth/oauth/authorize
+connect_client_id=rsoauth_id_wordpress
+connect_url=http://localhost:3000/recording_studio_oauth/wordpress/connect
 token_url=http://localhost:3000/recording_studio_api/apis/wp_plugin_demo/oauth/token
-redirect_uri=http://localhost:8888/wp-admin/admin-post.php?action=recording_studio_oauth_callback
+relay_redirect_uri=http://localhost:3000/recording_studio_oauth/wordpress/callback
+return_to=http://localhost:8888/wp-admin/admin-post.php?action=recording_studio_oauth_callback
 page_recording_id=<uuid of Getting Started>
 ```
 
-This public client has no secret. Seeded exact redirect URIs:
+This public client has no secret. The Registered App redirect is the relay callback, not each WordPress admin-post URL. WordPress sends `return_to` as `admin_url('admin-post.php?action=recording_studio_oauth_callback')`. The Oauth 0.3.0 relay allowlists that shape. Do not add each WordPress origin as a Registered App redirect.
 
-- `http://localhost:8888/wp-admin/admin-post.php?action=recording_studio_oauth_callback`
-- `http://127.0.0.1:8888/wp-admin/admin-post.php?action=recording_studio_oauth_callback`
-
-WordPress builds that callback with `admin_url('admin-post.php?action=recording_studio_oauth_callback')`. Any other WordPress origin must be added as an exact URI on this client in Oauth Admin Registered apps (`/admin/screens/oauth_clients`). No wildcards. No dynamic client registration.
+The plugin ZIP bakes `http://localhost:3000` and `rsoauth_id_wordpress`. To point at a tunnel or another host, define `RECORDING_STUDIO_HOST_BASE_URL` and `RECORDING_STUDIO_CLIENT_ID` in `wp-config.php` or an mu-plugin, or add filters `recording_studio_host_base_url` and `recording_studio_client_id`.
 
 To look up only the seeded Getting Started id after seed:
 
@@ -101,23 +101,22 @@ Stop with `npm run env stop`.
 
 Upload `pkg/recording-studio-widgets.zip` in wp-admin and activate **WordPress Plugin Demo**.
 
-If that WordPress is not `localhost:8888` or `127.0.0.1:8888`, add its exact `admin-post.php?action=recording_studio_oauth_callback` URL on the public client first.
+If that WordPress origin is not the usual `localhost:8888` shape, the relay still accepts `…/wp-admin/admin-post.php?action=recording_studio_oauth_callback`. You do not add that URL on the Registered App.
 
 ### Settings → WordPress Plugin Demo
 
-1. Set **Host base URL** to `http://localhost:3000` (or the printed `host_base_url`). A Cloudflare tunnel origin is fine.
-2. Set **OAuth client id** to the printed `connect_client_id`.
-3. Click **Connect to Recording Studio**. WordPress shows **Taking you to Recording Studio to connect…**, then opens that host's authorize URL. It does not bounce to `/wp-admin/`.
-4. Sign in on the host with Users chrome (`admin@admin.com` / `Password` on the dummy).
-5. Pick the Studio workspace when the host asks which workspace to connect.
+1. Click **Connect to Recording Studio**. There is no host URL field and no client id field.
+2. WordPress shows **Taking you to Recording Studio to connect…**, then opens `{host}/recording_studio_oauth/wordpress/connect`. It does not bounce to `/wp-admin/`.
+3. Sign in on the host with Users chrome (`admin@admin.com` / `Password` on the dummy).
+4. Pick the Studio workspace when the host asks which workspace to connect.
 
 A success notice means Connect tokens are stored on the WordPress server. Settings then shows **This site is connected.** as both the return notice and a success banner, plus **Disconnect** and **Connect again**. The banner stays after you refresh. Disconnect clears the stored tokens only. Connect again shows the same leaving page, starts PKCE, and leaves the current tokens in place until finish succeeds. The host is not called with a revoke URL.
 
 ### Advanced (API keys fallback)
 
-Use this only when you want client credentials instead of Connect. Open **Advanced** and use **Connect via API key**. Leave **OAuth client id** blank if you are not using Connect.
+Use this only when you want client credentials instead of Connect. Open **Advanced** and use **Connect via API key**. Advanced has **API key** and **Secret key** only. The host is the same baked cloud host.
 
-Preferred for minting API keys in the host UI: sign in and open sidebar **API Keys** (`/recording_studio_api/api_clients`). Preferred for browsing page ids and the host embed preview: sidebar **Pages** (`/pages`). Preferred for the Connect client id: sidebar **Registered Apps** (`/admin/screens/oauth_clients`). Switch the root switcher to **Admin** if that screen returns 403.
+Preferred for minting API keys in the host UI: sign in and open sidebar **API Keys** (`/recording_studio_api/api_clients`). Preferred for browsing page ids and the host embed preview: sidebar **Pages** (`/pages`). Preferred for the shared WordPress app: sidebar **Registered Apps** (`/admin/screens/oauth_clients`). Switch the root switcher to **Admin** if that screen returns 403.
 
 From `test/dummy/`:
 
@@ -148,7 +147,7 @@ bin/rails runner 'c = WpPluginDemo::Provision.isolated_client!; puts [c.oauth_cl
 | --- | --- |
 | API key | printed `oauth_client_id` |
 | Secret key | printed `oauth_client_secret` |
-| Token URL override | leave blank unless your host differs; default is `{host}/recording_studio_api/apis/wp_plugin_demo/oauth/token` |
+| Token URL | baked as `{host}/recording_studio_api/apis/wp_plugin_demo/oauth/token`. There is no override field. |
 
 Save settings. Use **Test connection**. A success notice means the host accepted client credentials. Leave **Secret key** empty and save to clear a stored secret. A failed Connect refresh does not use this secret as a fallback. An older install that only stored `client_id` plus `client_secret` still uses that `client_id` as the Advanced API key until you save a value in **API key**.
 
@@ -181,6 +180,6 @@ Use this when Docker or a full WordPress UI is available. It is not mandatory in
 
 Confirm these against your local network and WordPress setup:
 
-- WordPress must reach the Rails host URL you enter (from `wp-env` containers, `localhost:3000` may need `host.docker.internal` or another reachable hostname).
+- WordPress must reach the baked host (`http://localhost:3000` unless you override `CloudHost`). From `wp-env` containers, `localhost:3000` may need `host.docker.internal` or another reachable hostname.
 - CORS is not required for the happy path. PHP fetches the host. The visitor browser does not call the named API.
 - The named API remains `wp_plugin_demo` with soft GET `:embed`. Connect uses authorization_code + PKCE S256. Advanced uses client_credentials. Both POST the named API token path. The discovery route `POST /recording_studio_api/oauth/token` is the public-API default and is not used for this client.

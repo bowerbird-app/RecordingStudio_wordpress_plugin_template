@@ -22,11 +22,11 @@ require_once dirname( __DIR__, 2 ) . '/includes/settings-page.php';
 function rs_seed_connect_settings_without_secret(): void {
 	ConnectTokens::clear();
 	ConnectSession::clear();
+	$GLOBALS['rs_test_filters'] = array();
 	update_option(
 		PluginSettings::OPTION_KEY,
 		array(
-			'host_base_url' => 'http://localhost:3000',
-			'client_id'     => 'wp-public-client',
+			'api_key'       => '',
 			'client_secret' => '',
 		)
 	);
@@ -51,8 +51,8 @@ function test_pkce_challenge_is_s256_of_verifier(): void {
 }
 
 function rs_post_connect_start( array $posted ): string {
-	$GLOBALS['rs_test_filters'] = array();
-	$_POST                      = $posted;
+	unset( $GLOBALS['rs_test_filters']['allowed_redirect_hosts'] );
+	$_POST = $posted;
 	ob_start();
 	try {
 		recording_studio_plugin_demo_connect_start();
@@ -89,8 +89,8 @@ function rs_assert_handoff_to_host( string $html, string $host, string $scheme =
 	if ( $scheme !== ( $parts['scheme'] ?? '' ) || $host !== ( $parts['host'] ?? '' ) ) {
 		throw new RuntimeException( 'leaving page did not point at the configured host: ' . $location );
 	}
-	if ( '/recording_studio_oauth/oauth/authorize' !== ( $parts['path'] ?? '' ) ) {
-		throw new RuntimeException( 'leaving page path was not authorize: ' . $location );
+	if ( '/recording_studio_oauth/wordpress/connect' !== ( $parts['path'] ?? '' ) ) {
+		throw new RuntimeException( 'leaving page path was not wordpress/connect: ' . $location );
 	}
 	if ( 'http://localhost:8888/wp-admin/' === $location ) {
 		throw new RuntimeException( 'connect start fell back to admin' );
@@ -98,16 +98,21 @@ function rs_assert_handoff_to_host( string $html, string $host, string $scheme =
 }
 
 function test_connect_start_shows_leaving_page_for_configured_host(): void {
+	$GLOBALS['rs_test_filters'] = array();
+	add_filter(
+		\RecordingStudio\CloudHost::HOST_FILTER,
+		static function () {
+			return 'https://abc.trycloudflare.com';
+		}
+	);
 	$html = rs_post_connect_start(
 		array(
-			'rs_host_base_url'      => 'https://abc.trycloudflare.com',
-			'rs_client_id'          => 'wp-public-client',
-			'rs_api_key'            => '',
-			'rs_client_secret'      => '',
-			'rs_token_url_override' => '',
+			'rs_api_key'       => '',
+			'rs_client_secret' => '',
 		)
 	);
 	rs_assert_handoff_to_host( $html, 'abc.trycloudflare.com' );
+	$GLOBALS['rs_test_filters'] = array();
 
 	try {
 		wp_safe_redirect( 'https://evil.example/phish' );
@@ -119,39 +124,39 @@ function test_connect_start_shows_leaving_page_for_configured_host(): void {
 	}
 }
 
-function test_connect_start_builds_authorize_url_and_keeps_verifier_in_transient(): void {
+function test_connect_start_builds_relay_url_and_keeps_verifier_in_transient(): void {
 	rs_seed_connect_settings_without_secret();
 	$settings = PluginSettings::load();
-	if ( null === $settings ) {
-		throw new RuntimeException( 'expected stored settings' );
-	}
 
 	$url   = ConnectFlow::start( $settings, new HostUrls( $settings ) );
 	$parts = parse_url( $url );
 	$query = array();
 	parse_str( (string) ( $parts['query'] ?? '' ), $query );
 
-	if ( ( $parts['path'] ?? '' ) !== ContractPaths::authorize_path() ) {
-		throw new RuntimeException( 'authorize path mismatch: ' . ( $parts['path'] ?? '' ) );
+	if ( ( $parts['path'] ?? '' ) !== ContractPaths::wordpress_connect_path() ) {
+		throw new RuntimeException( 'connect path mismatch: ' . ( $parts['path'] ?? '' ) );
 	}
-	if ( 'code' !== ( $query['response_type'] ?? '' ) ) {
-		throw new RuntimeException( 'missing response_type=code' );
+	if ( isset( $query['redirect_uri'] ) ) {
+		throw new RuntimeException( 'start must not send redirect_uri' );
 	}
-	if ( 'wp-public-client' !== ( $query['client_id'] ?? '' ) ) {
-		throw new RuntimeException( 'missing client_id' );
+	if ( isset( $query['response_type'] ) ) {
+		throw new RuntimeException( 'start should omit response_type' );
+	}
+	if ( \RecordingStudio\CloudHost::DEFAULT_CLIENT_ID !== ( $query['client_id'] ?? '' ) ) {
+		throw new RuntimeException( 'missing baked client_id, got ' . ( $query['client_id'] ?? '' ) );
 	}
 	if ( 'S256' !== ( $query['code_challenge_method'] ?? '' ) ) {
 		throw new RuntimeException( 'missing S256 method' );
 	}
-	$redirect = ConnectFlow::callback_uri();
-	if ( $redirect !== ( $query['redirect_uri'] ?? '' ) ) {
-		throw new RuntimeException( 'redirect_uri mismatch' );
+	$return_to = ConnectFlow::callback_uri();
+	if ( $return_to !== ( $query['return_to'] ?? '' ) ) {
+		throw new RuntimeException( 'return_to mismatch: ' . ( $query['return_to'] ?? '' ) );
 	}
 	if ( empty( $query['state'] ) || empty( $query['code_challenge'] ) ) {
 		throw new RuntimeException( 'missing state or code_challenge' );
 	}
 	if ( false !== strpos( $url, 'code_verifier' ) || false !== strpos( $url, 'client_secret' ) ) {
-		throw new RuntimeException( 'verifier or secret leaked into authorize URL' );
+		throw new RuntimeException( 'verifier or secret leaked into connect URL' );
 	}
 
 	$session = ConnectSession::load();
@@ -162,13 +167,17 @@ function test_connect_start_builds_authorize_url_and_keeps_verifier_in_transient
 		throw new RuntimeException( 'verifier was used as the challenge' );
 	}
 	if ( $session->state !== $query['state'] ) {
-		throw new RuntimeException( 'stored state did not match authorize URL' );
+		throw new RuntimeException( 'stored state did not match connect URL' );
 	}
-	if ( $session->redirect_uri !== $redirect ) {
-		throw new RuntimeException( 'stored redirect_uri did not match callback' );
+	$relay = ( new HostUrls( $settings ) )->relay_callback_url();
+	if ( $session->redirect_uri !== $relay ) {
+		throw new RuntimeException( 'stored redirect_uri must be the relay callback, got ' . $session->redirect_uri );
+	}
+	if ( $session->redirect_uri === $return_to ) {
+		throw new RuntimeException( 'token redirect_uri must not be the WordPress admin-post URL' );
 	}
 	if ( $query['code_challenge'] !== Pkce::s256_challenge( $session->verifier ) ) {
-		throw new RuntimeException( 'authorize challenge was not S256 of stored verifier' );
+		throw new RuntimeException( 'connect challenge was not S256 of stored verifier' );
 	}
 }
 
@@ -197,6 +206,15 @@ function test_connect_callback_stores_tokens_and_embed_uses_connect_bearer(): vo
 			}
 			if ( $session->verifier !== ( $fields['code_verifier'] ?? '' ) ) {
 				throw new RuntimeException( 'code_verifier was not the stored verifier' );
+			}
+			if ( $session->redirect_uri !== ( $fields['redirect_uri'] ?? '' ) ) {
+				throw new RuntimeException( 'token redirect_uri must be the stored relay callback, got ' . ( $fields['redirect_uri'] ?? '' ) );
+			}
+			if ( false === strpos( (string) ( $fields['redirect_uri'] ?? '' ), '/recording_studio_oauth/wordpress/callback' ) ) {
+				throw new RuntimeException( 'token redirect_uri must be the relay callback' );
+			}
+			if ( false !== strpos( (string) ( $fields['redirect_uri'] ?? '' ), 'admin-post.php' ) ) {
+				throw new RuntimeException( 'token redirect_uri must not be the WordPress admin-post URL' );
 			}
 			if ( ! empty( $fields['client_secret'] ) ) {
 				throw new RuntimeException( 'connect exchange sent a client secret' );
@@ -334,8 +352,6 @@ function test_advanced_token_uses_api_key_not_oauth_client_id(): void {
 	update_option(
 		PluginSettings::OPTION_KEY,
 		array(
-			'host_base_url' => 'http://localhost:3000',
-			'client_id'     => 'wp-public-client',
 			'api_key'       => 'advanced-api-key',
 			'client_secret' => 'advanced-secret',
 		)
@@ -438,12 +454,10 @@ function test_disconnect_clears_connect_tokens_then_uses_api_keys(): void {
 
 function test_settings_markup_never_prints_connect_tokens(): void {
 	$stored = array(
-		'host_base_url'      => 'http://localhost:3000',
-		'client_id'          => 'wp-public-client',
-		'client_secret'      => 'super-secret',
-		'token_url_override' => '',
-		'access_token'       => 'rsoauth_at_should_never_render',
-		'refresh_token'      => 'rsoauth_rt_should_never_render',
+		'client_id'     => 'legacy-shared-id',
+		'client_secret' => 'super-secret',
+		'access_token'  => 'rsoauth_at_should_never_render',
+		'refresh_token' => 'rsoauth_rt_should_never_render',
 	);
 
 	$connect_url    = 'http://localhost:8888/wp-admin/admin-post.php?action=recording_studio_oauth_start';
@@ -485,8 +499,6 @@ function test_settings_markup_never_prints_connect_tokens(): void {
 function test_plugin_settings_complete_with_api_keys_without_connect_tokens(): void {
 	$settings = PluginSettings::validate_and_merge(
 		array(
-			'host_base_url' => 'http://localhost:3000',
-			'client_id'     => '',
 			'api_key'       => 'api-key',
 			'client_secret' => 'secret',
 		)
@@ -499,8 +511,7 @@ function test_plugin_settings_complete_with_api_keys_without_connect_tokens(): v
 function rs_settings_markup( bool $connected, string $notice = '' ): string {
 	return SettingsPage::markup(
 		array(
-			'host_base_url' => 'http://localhost:3000',
-			'client_id'     => 'wp-public-client',
+			'client_id'     => 'legacy-shared-id',
 			'client_secret' => 'super-secret',
 		),
 		$notice,
@@ -552,11 +563,10 @@ function test_settings_markup_when_disconnected_shows_primary_connect(): void {
 	}
 }
 
-function test_settings_markup_separates_connect_from_advanced_api_key(): void {
+function test_settings_markup_is_connect_button_then_advanced_keys(): void {
 	$html = SettingsPage::markup(
 		array(
-			'host_base_url' => 'http://localhost:3000',
-			'client_id'     => 'wp-public-client',
+			'client_id'     => 'legacy-shared-id',
 			'api_key'       => '',
 			'client_secret' => 'super-secret',
 		),
@@ -566,23 +576,23 @@ function test_settings_markup_separates_connect_from_advanced_api_key(): void {
 		'http://localhost:8888/wp-admin/admin-post.php?action=recording_studio_oauth_disconnect'
 	);
 
-	$host_pos     = strpos( $html, 'Host base URL' );
-	$oauth_pos    = strpos( $html, 'OAuth client id' );
 	$connect_pos  = strpos( $html, 'Connect to Recording Studio' );
 	$advanced_pos = strpos( $html, '<summary>Advanced</summary>' );
 	$intro_pos    = strpos( $html, 'Connect via API key' );
 	$api_pos      = strpos( $html, '>API key<' );
 	$secret_pos   = strpos( $html, '>Secret key<' );
-	$token_pos    = strpos( $html, 'Token URL override (optional)' );
 	$details_end  = strpos( $html, '</details>' );
 	$save_pos     = strpos( $html, 'Save settings' );
 	$test_pos     = strpos( $html, 'Test connection' );
 
-	if ( false === $host_pos || false === $oauth_pos || $host_pos > $oauth_pos ) {
-		throw new RuntimeException( 'Host base URL must come before OAuth client id' );
+	if ( false === $connect_pos ) {
+		throw new RuntimeException( 'happy path must show Connect' );
 	}
-	if ( false === $connect_pos || $oauth_pos > $connect_pos ) {
-		throw new RuntimeException( 'Connect must come after OAuth client id' );
+	if ( false !== strpos( $html, 'Host base URL' ) || false !== strpos( $html, 'OAuth client id' ) ) {
+		throw new RuntimeException( 'happy path must not show host or client id fields' );
+	}
+	if ( false !== strpos( $html, 'Token URL override' ) ) {
+		throw new RuntimeException( 'Advanced must not show a token URL override' );
 	}
 	if ( false === $advanced_pos || $connect_pos > $advanced_pos ) {
 		throw new RuntimeException( 'Advanced must come after Connect' );
@@ -596,10 +606,7 @@ function test_settings_markup_separates_connect_from_advanced_api_key(): void {
 	if ( false === $secret_pos || $api_pos > $secret_pos ) {
 		throw new RuntimeException( 'Secret key must follow API key' );
 	}
-	if ( false === $token_pos || $secret_pos > $token_pos ) {
-		throw new RuntimeException( 'Token URL override must follow Secret key' );
-	}
-	if ( false === $details_end || $token_pos > $details_end ) {
+	if ( false === $details_end || $secret_pos > $details_end ) {
 		throw new RuntimeException( 'Advanced fields must stay inside the dropdown' );
 	}
 	if ( false === $save_pos || $details_end > $save_pos ) {
@@ -611,8 +618,8 @@ function test_settings_markup_separates_connect_from_advanced_api_key(): void {
 	if ( false !== strpos( $html, 'OAuth client secret' ) ) {
 		throw new RuntimeException( 'Advanced must not say OAuth client secret' );
 	}
-	if ( ! preg_match( '/name="rs_api_key"[^>]*value="wp-public-client"/', $html ) ) {
-		throw new RuntimeException( 'legacy secret should show the shared client_id in the API key field' );
+	if ( ! preg_match( '/name="rs_api_key"[^>]*value="legacy-shared-id"/', $html ) ) {
+		throw new RuntimeException( 'legacy secret should show the stored client_id in the API key field' );
 	}
 }
 
@@ -626,11 +633,8 @@ function test_connect_again_shows_leaving_page_while_already_connected(): void {
 
 	$html = rs_post_connect_start(
 		array(
-			'rs_host_base_url'      => 'http://localhost:3000',
-			'rs_client_id'          => 'wp-public-client',
-			'rs_api_key'            => '',
-			'rs_client_secret'      => '',
-			'rs_token_url_override' => '',
+			'rs_api_key'       => '',
+			'rs_client_secret' => '',
 		)
 	);
 	rs_assert_handoff_to_host( $html, 'localhost', 'http' );
@@ -727,7 +731,7 @@ function test_token_error_body_maps_invalid_client_notice(): void {
 	}
 
 	$html = rs_settings_markup( false, $notice );
-	if ( false === strpos( $html, 'That client id is not for this host. Paste the public WordPress Plugin Demo id.' ) ) {
+	if ( false === strpos( $html, 'This site could not use the shared app. Try Connect again.' ) ) {
 		throw new RuntimeException( 'invalid_client notice copy missing' );
 	}
 }
@@ -739,7 +743,7 @@ function test_token_error_body_maps_redirect_mismatch_notice(): void {
 	}
 
 	$html = rs_settings_markup( false, $notice );
-	if ( false === strpos( $html, 'This WordPress address is not registered yet. Add the exact callback URL in Registered apps.' ) ) {
+	if ( false === strpos( $html, 'This WordPress address was not accepted. Try Connect again.' ) ) {
 		throw new RuntimeException( 'redirect mismatch notice copy missing' );
 	}
 }
@@ -774,8 +778,6 @@ function test_saved_connect_tokens_never_appear_in_settings_html(): void {
 
 	$html = SettingsPage::markup(
 		array(
-			'host_base_url' => 'http://localhost:3000',
-			'client_id'     => 'wp-public-client',
 			'client_secret' => 'super-secret',
 		),
 		'',
@@ -796,8 +798,7 @@ function test_failed_connect_refresh_does_not_use_leftover_api_keys(): void {
 	update_option(
 		PluginSettings::OPTION_KEY,
 		array(
-			'host_base_url' => 'http://localhost:3000',
-			'client_id'     => 'wp-public-client',
+			'client_id'     => 'legacy-shared-id',
 			'client_secret' => 'leftover-advanced-secret',
 		)
 	);

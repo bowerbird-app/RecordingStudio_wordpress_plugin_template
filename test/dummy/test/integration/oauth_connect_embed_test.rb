@@ -12,7 +12,7 @@ class OauthConnectEmbedTest < ActionDispatch::IntegrationTest
     @oauth_client = WpPluginDemo::Seed.ensure_connect_client!
     @access_recording = studio_workspace_access_recording!(@user)
     @page_recording_id = WpPluginDemo::Seed.getting_started_page_recording_id
-    @redirect_uri = WpPluginDemo::Seed::CONNECT_REDIRECT_URIS.fetch(0)
+    @redirect_uri = RecordingStudioOauth.wordpress_relay_callback_url(base_url: "http://localhost:3000")
   end
 
   teardown do

@@ -13,10 +13,6 @@ final class HostUrls {
 	}
 
 	public function token_post_url(): string {
-		if ( null !== $this->settings->token_url_override && '' !== $this->settings->token_url_override ) {
-			return $this->settings->token_url_override;
-		}
-
 		return $this->settings->host_base_url . ContractPaths::token_path();
 	}
 
@@ -24,11 +20,15 @@ final class HostUrls {
 		return $this->settings->host_base_url . ContractPaths::connect_token_path();
 	}
 
+	public function relay_callback_url(): string {
+		return $this->settings->host_base_url . ContractPaths::wordpress_callback_path();
+	}
+
 	/**
 	 * @param array<string, string> $query
 	 */
-	public function authorize_url( array $query ): string {
-		return $this->settings->host_base_url . ContractPaths::authorize_path() . '?' . http_build_query( $query );
+	public function wordpress_connect_url( array $query ): string {
+		return $this->settings->host_base_url . ContractPaths::wordpress_connect_path() . '?' . http_build_query( $query );
 	}
 
 	public function pages_get_url(): string {
