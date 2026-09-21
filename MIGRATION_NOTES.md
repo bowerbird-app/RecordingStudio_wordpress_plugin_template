@@ -36,6 +36,8 @@ Embeddable `HtmlSanitizer` removes `link` and `script` from BrowserPayload HTML.
 3. Run `bin/rails tailwindcss:build`.
 4. Restart the dummy. Do not re-seed. Oauth and Connect stay as they were.
 
+The dummy overrides `layouts/recording_studio_user/auth` so it also links `flat_pack/application`. FlatPack `v0.1.190` paints `.fp-button[data-fp-style="primary"]` in that sheet. The Users gem layout still omits it, which left Sign in transparent. Packed embed CSS stays in the Getting Started payload only.
+
 ## 0.4.19
 
 Staff bake one ZIP against a Recording Studio cloud host. Site owners install that ZIP and click **Connect to Recording Studio**.

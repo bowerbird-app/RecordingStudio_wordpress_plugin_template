@@ -173,6 +173,15 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     refute_includes application_layout, "flat_pack_sidebar"
   end
 
+  def test_dummy_users_auth_layout_links_flatpack_application
+    auth_layout = File.read(File.expand_path("dummy/app/views/layouts/recording_studio_user/auth.html.erb", __dir__))
+
+    assert_includes auth_layout, 'stylesheet_link_tag "flat_pack/variables"'
+    assert_includes auth_layout, 'stylesheet_link_tag "flat_pack/application"'
+    assert_includes auth_layout, 'stylesheet_link_tag "flat_pack/rich_text"'
+    refute_includes auth_layout, "data-wp-plugin-demo-flatpack-assets"
+  end
+
   def test_dummy_tailwind_keeps_flatpack_theme_selection_in_flatpack
     tailwind_source = File.read(File.expand_path("dummy/app/assets/tailwind/application.css", __dir__))
 
