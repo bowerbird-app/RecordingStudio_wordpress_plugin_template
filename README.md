@@ -20,9 +20,37 @@ The plugin in `wordpress/recording-studio-widgets/` is a dynamic block named **W
 - **SDK**: committed under `assets/sdk/`, copied to `build/sdk/` on `npm run build`.
 - Create the public **WordPress** Connect client once in Registered Apps (seed does not write it). Print it with `WpPluginDemo::Seed.print_connect_client!`. Keep `print_runbook_connection!` or `WpPluginDemo::Provision.isolated_client!` for Advanced API keys (see `test/dummy/README.md`).
 
-Cold start (clone → ZIP → working block): [docs/wordpress-plugin-demo-runbook.md](docs/wordpress-plugin-demo-runbook.md).
-
 `docs/gem_template/` stays as architectural reference for the engine conventions. `docs/wordpress-packaging.md` describes the gem and ZIP allowlists. This README is the product guide.
+
+## Ship the plugin
+
+Staff bake one ZIP against a Recording Studio cloud host. Every download of that ZIP can Connect. Site owners do not create a Registered App, paste a client id, or edit wp-config.
+
+`db:seed` does not create the WordPress Connect client. That stopped in 0.4.18.
+
+### Staff setup
+
+Do this once per cloud host.
+
+1. On the Recording Studio cloud host, open **Registered Apps**.
+2. Create a public app named **WordPress**. Set the redirect to `{host}/recording_studio_oauth/wordpress/callback`.
+3. Copy the client id.
+4. Put the host URL and that client id in the plugin baked defaults (`CloudHost` in `wordpress/recording-studio-widgets/includes/RecordingStudio/CloudHost.php`). This is a source change, not a customer env setting.
+5. Run `bin/build-plugin-zip` and distribute `pkg/recording-studio-widgets.zip`.
+
+### WordPress site owners
+
+1. Install and activate the plugin ZIP.
+2. Open **Settings → WordPress Plugin Demo**.
+3. Click **Connect to Recording Studio**, then log in and approve.
+
+Site owners do not enter a client id, open Registered Apps, or edit wp-config for normal use.
+
+### Local and tunnel testing
+
+`RECORDING_STUDIO_HOST_BASE_URL` and `RECORDING_STUDIO_CLIENT_ID` in `wp-config.php`, or the `recording_studio_host_base_url` and `recording_studio_client_id` filters, are for local and tunnel testing only.
+
+Dummy cold start: [docs/wordpress-plugin-demo-runbook.md](docs/wordpress-plugin-demo-runbook.md).
 
 ## Start the Rails dummy
 

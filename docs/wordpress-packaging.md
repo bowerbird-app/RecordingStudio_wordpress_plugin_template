@@ -57,7 +57,7 @@ bin/package-gem
 
 Outputs land in `pkg/`. That directory is gitignored.
 
-Cold-start install and WordPress Settings steps: [wordpress-plugin-demo-runbook.md](wordpress-plugin-demo-runbook.md).
+Staff ZIP shipping and WordPress Settings steps: [wordpress-plugin-demo-runbook.md](wordpress-plugin-demo-runbook.md).
 
 ## How the check fails
 

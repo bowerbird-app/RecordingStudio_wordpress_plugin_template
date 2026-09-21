@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.19] - 2026-09-21
+
+### Changed
+- README and the WordPress Plugin Demo runbook now split staff ZIP shipping from site-owner Connect. `db:seed` still does not create the WordPress Connect client.
+
+### Upgrade notes
+- Staff bake the host URL and client id in `CloudHost`, then run `bin/build-plugin-zip`. Site owners install that ZIP and click Connect. `wp-config.php` defines stay for local and tunnel testing only.
+
 ## [0.4.18] - 2026-09-21
 
 ### Changed
