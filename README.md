@@ -18,7 +18,7 @@ The plugin in `wordpress/recording-studio-widgets/` is a dynamic block named **W
 - **Block**: `pageRecordingId` attribute (UUID). Editor preview uses `GET /wp-json/recording-studio/v1/preview/{uuid}` (`edit_posts`).
 - **Front**: SSR `data-rs-payload` plus `viewScript` (`front.js`) calling `window.RecordingStudioPluginSdk.mount` — no secrets in the page.
 - **SDK**: committed under `assets/sdk/`, copied to `build/sdk/` on `npm run build`.
-- Print the public Connect client with `WpPluginDemo::Seed.print_connect_client!`. Keep `print_runbook_connection!` or `WpPluginDemo::Provision.isolated_client!` for Advanced API keys (see `test/dummy/README.md`).
+- Create the public **WordPress** Connect client once in Registered Apps (seed does not write it). Print it with `WpPluginDemo::Seed.print_connect_client!`. Keep `print_runbook_connection!` or `WpPluginDemo::Provision.isolated_client!` for Advanced API keys (see `test/dummy/README.md`).
 
 Cold start (clone → ZIP → working block): [docs/wordpress-plugin-demo-runbook.md](docs/wordpress-plugin-demo-runbook.md).
 

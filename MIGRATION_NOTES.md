@@ -25,6 +25,20 @@ bin/rails tailwindcss:build
 - Oauth dummy tag `v0.3.0`
 - Public RubyGems and GitHub access for dependency installation
 
+## 0.4.18
+
+`db:seed` no longer creates the public **WordPress** Oauth Connect client. Staff create that Registered App once.
+
+1. Sign in to the dummy host.
+2. Open sidebar **Registered Apps** (`/admin/screens/oauth_clients`). Switch the root switcher to **Admin** if the screen returns 403.
+3. Create a public app named **WordPress**.
+4. Set the redirect to `{host}/recording_studio_oauth/wordpress/callback`. On the dummy that is `http://localhost:3000/recording_studio_oauth/wordpress/callback`.
+5. Use client id `rsoauth_id_wordpress` if you want the plugin ZIP default. Otherwise set `RECORDING_STUDIO_CLIENT_ID` in `wp-config.php` or an mu-plugin.
+
+The plugin still bakes `http://localhost:3000` and `rsoauth_id_wordpress`. Advanced API key helpers (`print_runbook_connection!`, `Provision.isolated_client!`) are unchanged. Tests that need a Connect client call `WpPluginDemo::Seed.ensure_connect_client!` in setup. `print_connect_client!` still prints fields after the app exists.
+
+Keep an app that 0.4.17 already seeded. Do not re-seed to recreate it.
+
 ## 0.4.17
 
 Connect is one click against the Oauth 0.3.0 WordPress relay. Settings no longer ask for a host URL or client id.

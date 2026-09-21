@@ -52,7 +52,22 @@ class WpPluginDemoSeedTest < ActiveSupport::TestCase
     assert_equal "one-shot-secret", with_secret.oauth_client_secret
   end
 
+  test "ensure_connect_client! writes the public WordPress relay app" do
+    client = WpPluginDemo::Seed.ensure_connect_client!
+
+    assert_equal "WordPress", client.name
+    refute client.confidential?
+    assert_equal "wp_plugin_demo", client.api_key
+    assert_equal WpPluginDemo::Seed::CONNECT_CLIENT_ID, client.client_id
+    assert_equal WpPluginDemo::Seed.connect_redirect_uris, client.redirect_uris
+    assert_includes client.redirect_uris, RecordingStudioOauth.wordpress_relay_callback_url(base_url: "http://localhost:3000")
+    refute_includes client.redirect_uris, WpPluginDemo::Seed.example_return_to
+    assert_nil client.client_secret_digest
+  end
+
   test "print_connect_client! prints public relay fields and no secret" do
+    WpPluginDemo::Seed.ensure_connect_client!
+
     output = capture_io do
       connection = WpPluginDemo::Seed.print_connect_client!(host_base_url: "http://localhost:3000")
       assert_equal "http://localhost:3000", connection.host_base_url
