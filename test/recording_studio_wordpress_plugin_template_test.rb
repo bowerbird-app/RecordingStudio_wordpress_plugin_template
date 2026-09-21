@@ -179,7 +179,18 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     assert_includes auth_layout, 'stylesheet_link_tag "flat_pack/variables"'
     assert_includes auth_layout, 'stylesheet_link_tag "flat_pack/application"'
     assert_includes auth_layout, 'stylesheet_link_tag "flat_pack/rich_text"'
+    assert_includes auth_layout, 'stylesheet_link_tag "users_auth_primary_buttons"'
     refute_includes auth_layout, "data-wp-plugin-demo-flatpack-assets"
+
+    paint = File.read(File.expand_path("dummy/app/assets/stylesheets/users_auth_primary_buttons.css", __dir__))
+    assert_includes paint, '.fp-button[data-fp-style="primary"]'
+    assert_includes paint, "oklch(0.3211 0 0)"
+
+    initializer = File.read(
+      File.expand_path("dummy/config/initializers/users_auth_primary_buttons.rb", __dir__)
+    )
+    assert_includes initializer, "RecordingStudioUser::Auth::BaseController"
+    assert_includes initializer, "users_auth_primary_buttons"
   end
 
   def test_dummy_tailwind_keeps_flatpack_theme_selection_in_flatpack
@@ -197,8 +208,8 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     refute_includes tailwind_source, ":root {"
     refute_includes tailwind_source, "--color-fp-primary"
     assert_includes tailwind_source, '.fp-button[data-fp-style="primary"]'
-    assert_includes tailwind_source, "--fp-button-background: var(--button-primary-background-color)"
-    assert_includes tailwind_source, "background-color: var(--fp-button-background)"
+    assert_includes tailwind_source, "background-color: oklch(0.3211 0 0)"
+    assert_includes tailwind_source, "background-color: var(--button-primary-background-color, oklch(0.3211 0 0))"
   end
 
   def test_dummy_tailwind_sources_resolve_via_vendor_symlinks

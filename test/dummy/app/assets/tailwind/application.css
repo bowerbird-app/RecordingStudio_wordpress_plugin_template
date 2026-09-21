@@ -66,10 +66,16 @@
 }
 
 .fp-button[data-fp-style="primary"] {
-  --fp-button-background: var(--button-primary-background-color);
+  --fp-button-background: var(--button-primary-background-color, oklch(0.3211 0 0));
   --fp-button-hover-background: var(--button-primary-hover-background-color);
-  --fp-button-text: var(--button-primary-text-color);
-  --fp-button-border: var(--button-primary-border-color);
+  --fp-button-text: var(--button-primary-text-color, #fff);
+  --fp-button-border: var(--button-primary-border-color, oklch(0.3211 0 0));
+  background-color: oklch(0.3211 0 0);
+  color: #fff;
+  border-color: oklch(0.3211 0 0);
+  background-color: var(--button-primary-background-color, oklch(0.3211 0 0));
+  color: var(--button-primary-text-color, #fff);
+  border-color: var(--button-primary-border-color, oklch(0.3211 0 0));
 }
 
 .fp-button[data-fp-style="secondary"] {

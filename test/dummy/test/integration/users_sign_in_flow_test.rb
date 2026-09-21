@@ -11,34 +11,30 @@ class UsersSignInFlowTest < ActionDispatch::IntegrationTest
     Current.actor = nil if defined?(Current)
   end
 
-  test "auth chrome Tailwind sheet paints primary buttons outside layers" do
+  test "email and password auth screens load charcoal primary paint on the Users sheet path" do
+    users_layout = File.read(
+      RecordingStudioUser::Engine.root.join("app/views/layouts/recording_studio_user/auth.html.erb")
+    )
+    assert_includes users_layout, 'stylesheet_link_tag "tailwind"'
+    assert_includes users_layout, 'stylesheet_link_tag "flat_pack/variables"'
+    assert_includes users_layout, 'stylesheet_link_tag "flat_pack/rich_text"'
+    assert_includes users_layout, "yield :head"
+    refute_includes users_layout, 'stylesheet_link_tag "flat_pack/application"'
+
     get new_user_session_path
 
     assert_response :success
     assert_select "button.fp-button[data-fp-style=primary]", text: "Continue with email"
-    assert_match(%r{/assets/tailwind-[a-f0-9]+\.css}, response.body)
     refute_includes response.body, "data-wp-plugin-demo-flatpack-assets"
-
-    digest = response.body[/tailwind-([a-f0-9]+)\.css/, 1]
-    get "/assets/tailwind-#{digest}.css"
-
-    assert_response :success
-    unlayered = strip_at_layers(response.body)
-    assert_includes response.body, "background-color:#0000"
-    assert_match(/\.fp-button\[data-fp-style=["']?primary["']?\]/, unlayered)
-    assert_match(/--fp-button-background:\s*var\(--button-primary-background-color\)/, unlayered)
-    assert_match(
-      /\.fp-button\{[^}]*background-color:\s*var\(--fp-button-background\)/,
-      unlayered
-    )
+    assert_primary_paint_sheet response.body
 
     post new_user_session_path, params: { user: { email: "admin@admin.com" } }
     follow_redirect!
 
     assert_response :success
     assert_select "button.fp-button[data-fp-style=primary]", text: "Sign in"
-    assert_match(%r{/assets/tailwind-[a-f0-9]+\.css}, response.body)
     refute_includes response.body, "data-wp-plugin-demo-flatpack-assets"
+    assert_primary_paint_sheet response.body
   end
 
   test "seeded admin continues with email then signs in with password" do
@@ -64,31 +60,15 @@ class UsersSignInFlowTest < ActionDispatch::IntegrationTest
 
   private
 
-  def strip_at_layers(css)
-    out = +""
-    index = 0
-    while (start = css.index(/@layer\b/, index))
-      out << css[index...start]
-      open_at = css.index("{", start)
-      break unless open_at
+  def assert_primary_paint_sheet(html)
+    assert_match(%r{/assets/users_auth_primary_buttons-[a-f0-9]+\.css}, html)
 
-      depth = 0
-      cursor = open_at
-      while cursor < css.length
-        case css[cursor]
-        when "{"
-          depth += 1
-        when "}"
-          depth -= 1
-          if depth.zero?
-            cursor += 1
-            break
-          end
-        end
-        cursor += 1
-      end
-      index = cursor
-    end
-    out << css[index..]
+    digest = html[/users_auth_primary_buttons-([a-f0-9]+)\.css/, 1]
+    get "/assets/users_auth_primary_buttons-#{digest}.css"
+
+    assert_response :success
+    assert_includes response.body, '.fp-button[data-fp-style="primary"]'
+    assert_includes response.body, "oklch(0.3211 0 0)"
+    assert_includes response.body, "background-color: oklch(0.3211 0 0)"
   end
 end
