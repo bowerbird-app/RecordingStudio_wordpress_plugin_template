@@ -19,21 +19,21 @@ final class PluginSettings {
 	/** @var string */
 	public string $client_secret;
 
-	/** @var string|null */
-	public ?string $token_url_override;
+	/** @var string */
+	private string $legacy_stored_client_id;
 
 	public function __construct(
 		string $host_base_url,
 		string $client_id,
 		string $api_key,
 		string $client_secret,
-		?string $token_url_override = null
+		string $legacy_stored_client_id = ''
 	) {
-		$this->host_base_url      = $host_base_url;
-		$this->client_id          = $client_id;
-		$this->api_key            = $api_key;
-		$this->client_secret      = $client_secret;
-		$this->token_url_override = $token_url_override;
+		$this->host_base_url           = $host_base_url;
+		$this->client_id               = $client_id;
+		$this->api_key                 = $api_key;
+		$this->client_secret           = $client_secret;
+		$this->legacy_stored_client_id = $legacy_stored_client_id;
 	}
 
 	/**
@@ -41,31 +41,28 @@ final class PluginSettings {
 	 */
 	public static function from_storage_array( array $stored ): self {
 		return new self(
-			self::normalize_base_url( (string) ( $stored['host_base_url'] ?? '' ) ),
-			trim( (string) ( $stored['client_id'] ?? '' ) ),
+			CloudHost::host_base_url(),
+			CloudHost::client_id(),
 			trim( (string) ( $stored['api_key'] ?? '' ) ),
 			(string) ( $stored['client_secret'] ?? '' ),
-			self::optional_url( $stored['token_url_override'] ?? null )
+			trim( (string) ( $stored['client_id'] ?? '' ) )
 		);
 	}
 
 	/**
-	 * @return array<string, string|null>
+	 * @return array<string, string>
 	 */
 	public function to_storage_array(): array {
 		return array(
-			'host_base_url'      => $this->host_base_url,
-			'client_id'          => $this->client_id,
-			'api_key'            => $this->api_key,
-			'client_secret'      => $this->client_secret,
-			'token_url_override' => $this->token_url_override,
+			'api_key'       => $this->api_key,
+			'client_secret' => $this->client_secret,
 		);
 	}
 
-	public static function load(): ?self {
+	public static function load(): self {
 		$stored = get_option( self::OPTION_KEY, null );
-		if ( ! is_array( $stored ) || empty( $stored ) ) {
-			return null;
+		if ( ! is_array( $stored ) ) {
+			$stored = array();
 		}
 
 		return self::from_storage_array( $stored );
@@ -80,14 +77,6 @@ final class PluginSettings {
 			$existing = array();
 		}
 
-		$host = array_key_exists( 'host_base_url', $incoming )
-			? self::normalize_base_url( (string) $incoming['host_base_url'] )
-			: self::normalize_base_url( (string) ( $existing['host_base_url'] ?? '' ) );
-
-		$client_id = array_key_exists( 'client_id', $incoming )
-			? trim( (string) $incoming['client_id'] )
-			: trim( (string) ( $existing['client_id'] ?? '' ) );
-
 		$api_key = array_key_exists( 'api_key', $incoming )
 			? trim( (string) $incoming['api_key'] )
 			: trim( (string) ( $existing['api_key'] ?? '' ) );
@@ -98,14 +87,15 @@ final class PluginSettings {
 			$client_secret = (string) ( $existing['client_secret'] ?? '' );
 		}
 
-		$token_override = null;
-		if ( array_key_exists( 'token_url_override', $incoming ) ) {
-			$token_override = self::optional_url( $incoming['token_url_override'] );
-		} elseif ( array_key_exists( 'token_url_override', $existing ) ) {
-			$token_override = self::optional_url( $existing['token_url_override'] );
-		}
+		$legacy_client_id = trim( (string) ( $existing['client_id'] ?? '' ) );
 
-		return new self( $host, $client_id, $api_key, $client_secret, $token_override );
+		return new self(
+			CloudHost::host_base_url(),
+			CloudHost::client_id(),
+			$api_key,
+			$client_secret,
+			$legacy_client_id
+		);
 	}
 
 	public function advanced_api_key(): string {
@@ -114,7 +104,7 @@ final class PluginSettings {
 		}
 
 		if ( '' !== $this->client_secret ) {
-			return $this->client_id;
+			return $this->legacy_stored_client_id;
 		}
 
 		return '';
@@ -127,7 +117,7 @@ final class PluginSettings {
 	}
 
 	public function can_start_connect(): bool {
-		return '' !== $this->host_base_url && '' !== $this->client_id;
+		return CloudHost::ready();
 	}
 
 	public function is_complete( ?ConnectTokens $connect_tokens = null ): bool {
@@ -136,32 +126,5 @@ final class PluginSettings {
 
 	public function fingerprint(): string {
 		return hash( 'sha256', $this->host_base_url . '|' . $this->advanced_api_key() );
-	}
-
-	private static function normalize_base_url( string $url ): string {
-		$url = trim( $url );
-		if ( '' === $url ) {
-			return '';
-		}
-
-		$url = rtrim( $url, '/' );
-		if ( ! preg_match( '#^https?://#i', $url ) ) {
-			$url = 'https://' . $url;
-		}
-
-		return rtrim( $url, '/' );
-	}
-
-	private static function optional_url( $value ): ?string {
-		if ( null === $value ) {
-			return null;
-		}
-
-		$trimmed = trim( (string) $value );
-		if ( '' === $trimmed ) {
-			return null;
-		}
-
-		return self::normalize_base_url( $trimmed );
 	}
 }

@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.17] - 2026-09-21
+
+### Changed
+- WordPress Plugin Demo Settings happy path is **Connect to Recording Studio** only. Host URL and OAuth client id are no longer Settings fields. `CloudHost` bakes `http://localhost:3000` and `rsoauth_id_wordpress`. Override later with `RECORDING_STUDIO_HOST_BASE_URL` / `RECORDING_STUDIO_CLIENT_ID` or the `recording_studio_host_base_url` / `recording_studio_client_id` filters.
+- Connect starts at `GET {host}/recording_studio_oauth/wordpress/connect` with `client_id`, `return_to` (this site's admin-post callback), site `state`, and PKCE S256. Start does not send `redirect_uri`. Token exchange sends the relay callback `{host}/recording_studio_oauth/wordpress/callback` as `redirect_uri`. The PKCE verifier stays on WordPress.
+- Advanced is **API key** and **Secret key** only. The optional token URL override is gone. Token requests use `{host}/recording_studio_api/apis/wp_plugin_demo/oauth/token`. An empty Secret key still clears the stored secret. Connect still does not fall back to Advanced keys.
+- Dummy host pins `recording_studio_oauth` v0.3.0. Seed now uses the public **WordPress** Registered App (`client_id=rsoauth_id_wordpress`) whose redirect is the relay callback. `print_connect_client!` prints connect URL, named token URL, relay redirect, and example `return_to`.
+
+### Upgrade notes
+- Rebuild and reinstall the plugin ZIP (`bin/build-plugin-zip` or `npm run build` under `wordpress/recording-studio-widgets`).
+- You no longer paste a host URL or client id in Settings. Dummy and local ZIP defaults are `http://localhost:3000` and `rsoauth_id_wordpress`. For a tunnel or another cloud host, define the constants in `wp-config.php` or an mu-plugin, or add the filters. Do not invent a bowerbird2 host in this repo.
+- From `test/dummy` run `bundle update recording_studio_oauth` and re-seed so the **WordPress** app exists with the relay redirect. An older **WordPress Plugin Demo** client is renamed on the next `ensure_connect_client!`.
+- Add other WordPress origins as `return_to` values the relay already allowlists. Do not add each WordPress admin-post URL as a Registered App redirect.
+
 ## [0.4.16] - 2026-09-18
 
 ### Changed

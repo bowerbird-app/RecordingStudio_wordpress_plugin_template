@@ -14,7 +14,7 @@ The plugin in `wordpress/recording-studio-widgets/` is a dynamic block named **W
 
 ### Phase 4 (WordPress Plugin Demo client)
 
-- **Settings → WordPress Plugin Demo**: host base URL, public OAuth client id, **Connect to Recording Studio** (PKCE), connected state + **Disconnect**. Advanced is a dropdown for **Connect via API key** (API key, Secret key, optional token URL override). **Save settings** and **Test connection** come after that dropdown.
+- **Settings → WordPress Plugin Demo**: **Connect to Recording Studio** (PKCE through the Oauth 0.3.0 WordPress relay). Connected state plus **Disconnect**. Advanced is a dropdown for **Connect via API key** (API key and Secret key only). Host URL and client id are baked (`CloudHost`). **Save settings** and **Test connection** come after that dropdown.
 - **Block**: `pageRecordingId` attribute (UUID). Editor preview uses `GET /wp-json/recording-studio/v1/preview/{uuid}` (`edit_posts`).
 - **Front**: SSR `data-rs-payload` plus `viewScript` (`front.js`) calling `window.RecordingStudioPluginSdk.mount` — no secrets in the page.
 - **SDK**: committed under `assets/sdk/`, copied to `build/sdk/` on `npm run build`.
@@ -93,7 +93,7 @@ These versions come from the gemspec, the dummy Gemfile, `@wordpress/create-bloc
 | Attachable | dummy GitHub tag `v0.5.1` (Publishable boot dep) |
 | Root Switchable | dummy GitHub tag `v0.5.0` |
 | Users | dummy GitHub tag `v0.11.0` |
-| Oauth | dummy GitHub tag `v0.2.2` (Connect consent is a full page; public clients can exchange codes on the named token URL) |
+| Oauth | dummy GitHub tag `v0.3.0` (WordPress Connect relay; one public WordPress app; consent is a full page) |
 | FlatPack | dummy GitHub tag `v0.1.177` |
 | Devise | latest |
 | `@wordpress/create-block` | 4.98.0 |

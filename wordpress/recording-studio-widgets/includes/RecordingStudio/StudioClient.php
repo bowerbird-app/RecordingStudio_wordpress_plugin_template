@@ -30,9 +30,6 @@ final class StudioClient {
 
 	public static function from_wp_options(): self {
 		$settings = PluginSettings::load();
-		if ( null === $settings ) {
-			$settings = new PluginSettings( '', '', '', '' );
-		}
 
 		return new self( $settings, new HostUrls( $settings ) );
 	}

@@ -22,7 +22,28 @@ bin/rails tailwindcss:build
 - Accessible dummy tag `v0.9.1` and Root Switchable dummy tag `v0.5.0`
 - FlatPack dummy tag `v0.1.177`
 - Users dummy tag `v0.11.0`
+- Oauth dummy tag `v0.3.0`
 - Public RubyGems and GitHub access for dependency installation
+
+## 0.4.17
+
+Connect is one click against the Oauth 0.3.0 WordPress relay. Settings no longer ask for a host URL or client id.
+
+The plugin bakes dummy-friendly cloud defaults in `CloudHost`:
+
+- Host `http://localhost:3000`
+- Client id `rsoauth_id_wordpress`
+- Token URL `{host}/recording_studio_api/apis/wp_plugin_demo/oauth/token`
+
+To point a ZIP at another host later, define `RECORDING_STUDIO_HOST_BASE_URL` and `RECORDING_STUDIO_CLIENT_ID` in `wp-config.php` or an mu-plugin. Or add WordPress filters `recording_studio_host_base_url` and `recording_studio_client_id`. Do not add a Settings field for those values.
+
+From `test/dummy`:
+
+1. Pin `recording_studio_oauth` at GitHub tag `v0.3.0`.
+2. Run `bundle update recording_studio_oauth`.
+3. Re-seed so `WpPluginDemo::Seed.ensure_connect_client!` writes the public **WordPress** app with relay redirects and `client_id=rsoauth_id_wordpress`.
+
+Rebuild and reinstall the plugin ZIP. Click **Connect to Recording Studio**. Advanced stays API key plus Secret key. An empty Secret key still clears the stored secret.
 
 ## 0.4.16
 

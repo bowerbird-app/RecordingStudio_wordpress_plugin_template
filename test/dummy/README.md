@@ -53,7 +53,9 @@ After sign-in, use sidebar **API Keys** to open API clients (`/recording_studio_
 - `/docs/install`, `/docs/config`, `/docs/recordable_types`, `/docs/recordings_tree`, `/docs/gem_views`, `/docs/methods` are dummy-only starter pages
 - `/up` is the Rails health check
 - WordPress Plugin Demo named API (not the public `/recording_studio_api/api/v1` surface):
-  - `GET /recording_studio_oauth/oauth/authorize` (Connect; signed-out visitors use Users chrome; consent submit is a full page)
+  - `GET /recording_studio_oauth/wordpress/connect` (Connect start; relay)
+  - `GET /recording_studio_oauth/wordpress/callback` (Registered App redirect)
+  - `GET /recording_studio_oauth/oauth/authorize` (after the relay; signed-out visitors use Users chrome; consent submit is a full page)
   - `POST /recording_studio_api/apis/wp_plugin_demo/oauth/token` (Connect authorization_code + refresh_token, and Advanced client_credentials)
   - `GET /recording_studio_api/apis/wp_plugin_demo/v1/pages` (Page index for the WordPress picker)
   - `GET /recording_studio_api/apis/wp_plugin_demo/v1/pages/:id/actions/embed`
@@ -61,15 +63,15 @@ After sign-in, use sidebar **API Keys** to open API clients (`/recording_studio_
 
 ## OAuth client for the WordPress plugin
 
-Connect is the primary path. The plugin starts PKCE authorize against the public **WordPress Plugin Demo** client, then users sign in with Users chrome and pick a workspace.
+Connect is the primary path. The plugin starts PKCE at the Oauth WordPress relay against the public **WordPress** client, then users sign in with Users chrome and pick a workspace.
 
 ```bash
 bin/rails runner 'WpPluginDemo::Seed.print_connect_client!'
 ```
 
-That prints the public client id (no secret), authorize URL, named token URL, wp-admin callback, and Getting Started page id.
+That prints the baked client id (`rsoauth_id_wordpress`, no secret), connect URL, named token URL, relay redirect, example WordPress `return_to`, and Getting Started page id.
 
-Seeded exact redirect URIs are `http://localhost:8888/wp-admin/admin-post.php?action=recording_studio_oauth_callback` and the `127.0.0.1` twin. Add any other WordPress origin as an exact URI in Oauth Admin Registered apps (`/admin/screens/oauth_clients`).
+The Registered App redirect is `{host}/recording_studio_oauth/wordpress/callback`. WordPress `return_to` stays `…/wp-admin/admin-post.php?action=recording_studio_oauth_callback`. The relay allowlists that shape. Do not add each WordPress origin as a Registered App redirect.
 
 For minting Advanced API keys in the host UI, use sidebar **API Keys** after sign-in (`/recording_studio_api/api_clients`).
 
