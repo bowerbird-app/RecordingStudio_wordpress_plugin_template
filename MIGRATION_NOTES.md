@@ -36,7 +36,7 @@ Embeddable `HtmlSanitizer` removes `link` and `script` from BrowserPayload HTML.
 3. Run `bin/rails tailwindcss:build`.
 4. Restart the dummy. Do not re-seed. Oauth and Connect stay as they were.
 
-The dummy overrides `layouts/recording_studio_user/auth` so it also links `flat_pack/application`. FlatPack `v0.1.190` paints `.fp-button[data-fp-style="primary"]` in that sheet. The Users gem layout still omits it, which left Sign in transparent. Packed embed CSS stays in the Getting Started payload only.
+The dummy overrides `layouts/recording_studio_user/auth` so it also links `flat_pack/application`. FlatPack `v0.1.190` paints `.fp-button[data-fp-style="primary"]` in that sheet. The Users gem layout still omits it and only loads dummy Tailwind. That Tailwind build now repeats the unlayered `.fp-button` paint so preflight `button { background-color: transparent }` plus the component `border` class cannot ghost Sign in. Packed embed CSS stays in the Getting Started payload only.
 
 ## 0.4.19
 

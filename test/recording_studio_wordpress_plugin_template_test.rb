@@ -196,6 +196,9 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     refute_includes tailwind_source, "@theme"
     refute_includes tailwind_source, ":root {"
     refute_includes tailwind_source, "--color-fp-primary"
+    assert_includes tailwind_source, '.fp-button[data-fp-style="primary"]'
+    assert_includes tailwind_source, "--fp-button-background: var(--button-primary-background-color)"
+    assert_includes tailwind_source, "background-color: var(--fp-button-background)"
   end
 
   def test_dummy_tailwind_sources_resolve_via_vendor_symlinks
