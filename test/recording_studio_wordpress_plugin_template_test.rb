@@ -412,6 +412,10 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     assert_includes styles, "flat_pack/application.css"
     assert_includes styles, "tailwind.css"
     assert_includes styles, "strip_imports"
+    assert_includes styles, "TYPOGRAPHY_CSS"
+    assert_includes styles, "font-family: var(--font-sans)"
+    assert_includes styles, ".font-medium"
+    assert_includes styles, ".font-bold"
   end
 
   def test_engine_does_not_ship_a_home_view

@@ -12,10 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Dummy Getting Started embed now renders FlatPack `Badge`, `Card`, `Button::Pill`, and `Modal` (the closest public popup). FlatPack CSS is packed into a `<style>` tag in the BrowserPayload HTML so WordPress can show those components. Embeddable still strips `link` and `script`.
 - Dummy host pins FlatPack `v0.1.190`.
+- Getting Started embed CSS now pins FlatPack `system-ui` and `font-weight` utilities on the embed root. WordPress theme rules no longer replace family or weight. FlatPack ships no webfont files, so the payload does not add `@font-face`.
 
 ### Upgrade notes
 - From `test/dummy` run `bundle update flat_pack` and `bin/rails tailwindcss:build`. Restart the dummy. Re-seed is not required. The Getting Started page id stays the same.
 - WordPress shows the new components after the next embed fetch. No plugin ZIP rebuild. Oauth, Connect, and seed stay unchanged.
+- Refresh the WordPress block after the dummy restarts so the block picks up the pinned type. The preview at `/pages/:id/embed_preview` already used the same stack. The WordPress page no longer keeps its theme font inside the block.
 
 ## [0.4.19] - 2026-09-21
 

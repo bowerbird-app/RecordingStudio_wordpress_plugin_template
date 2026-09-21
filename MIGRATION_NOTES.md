@@ -29,7 +29,7 @@ bin/rails tailwindcss:build
 
 The Getting Started embed is a FlatPack demo for the WordPress block. `pages/embed` renders `FlatPack::Badge::Component`, `FlatPack::Card::Component`, `FlatPack::Button::Pill::Component`, and `FlatPack::Modal::Component` (used as the popup). FlatPack has no `Popup` class on `v0.1.190`.
 
-Embeddable `HtmlSanitizer` removes `link` and `script` from BrowserPayload HTML. The dummy packs `flat_pack/variables`, `flat_pack/application` (imports stripped), and the dummy Tailwind build into a `<style data-wp-plugin-demo-flatpack-assets="1">` tag. A short containment rule keeps the modal in the block instead of covering the WordPress page. Dummy Pages `/pages/:id/embed_preview` uses the same fragment, so you can eyeball it without WordPress.
+Embeddable `HtmlSanitizer` removes `link` and `script` from BrowserPayload HTML. The dummy packs `flat_pack/variables`, `flat_pack/application` (imports stripped), and the dummy Tailwind build into a `<style data-wp-plugin-demo-flatpack-assets="1">` tag. Unlayered rules on `[data-wordpress-plugin-demo-embed]` pin `--font-sans` to FlatPack `system-ui` and restate `.font-medium`, `.font-semibold`, and `.font-bold` so a WordPress theme cannot replace family or weight. FlatPack `v0.1.190` has no `@font-face` files, so the payload does not load remote fonts. A short containment rule keeps the modal in the block instead of covering the WordPress page. Dummy Pages `/pages/:id/embed_preview` uses the same fragment, so you can eyeball it without WordPress.
 
 1. From `test/dummy`, point FlatPack at GitHub tag `v0.1.190`.
 2. Run `bundle update flat_pack`.

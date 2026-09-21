@@ -15,7 +15,7 @@ This Rails app is the host for RecordingStudio WordPress widgets. It boots on it
 - Dummy-only `/docs/*` pages for host-app onboarding
 - Named API `wp_plugin_demo` with soft GET `:embed` (BrowserPayload schema v1)
 - **Seed Demo App** Oauth client for dummy Oauth tests. Staff create the public **WordPress** Connect client once (relay redirect). Seed does not write that app.
-- Host Page embed renderer (`pages/embed`) with seeded Getting Started FlatPack (`Badge`, `Card`, `Button::Pill`, `Modal`) for the WordPress Plugin Demo block. CSS is packed into the payload `<style>` tag so WordPress can paint those components.
+- Host Page embed renderer (`pages/embed`) with seeded Getting Started FlatPack (`Badge`, `Card`, `Button::Pill`, `Modal`) for the WordPress Plugin Demo block. CSS is packed into the payload `<style>` tag so WordPress can paint those components. The packed sheet pins `system-ui` and font weights on the embed root. There is no `@font-face`.
 - CI eager-load workarounds: ignore Embeddable `lib/` on host Zeitwerk
 - Env-only connectivity placeholders. No widget models or WordPress render routes in Rails
 

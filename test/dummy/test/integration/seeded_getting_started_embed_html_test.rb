@@ -48,6 +48,10 @@ class SeededGettingStartedEmbedHtmlTest < ActionDispatch::IntegrationTest
     assert_includes html, "--badge-success-background-color"
     assert_includes html, "--card-background-color"
     assert_includes html, "--tabs-pill-active-background-color"
+    assert_includes html, "font-family: var(--font-sans)"
+    assert_includes html, ".font-medium"
+    assert_includes html, ".font-bold"
+    refute_includes html, "@font-face"
     assert_includes html, 'data-controller="flat-pack--modal"'
     assert_includes html, "Host is live"
     assert_includes html, "Connect the block"

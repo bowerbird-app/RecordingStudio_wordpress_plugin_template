@@ -112,7 +112,7 @@ bin/rails runner 'puts WpPluginDemo::Seed.getting_started_page_recording_id'
 
 The id is the active page id for **Getting Started**. It stays stable across `db:seed` / `ensure_studio_embed!` on an existing database. A fresh `db:setup` or `db:reset` creates a new UUID. Create the WordPress app again after reset, then re-print with `print_connect_client!` or the lookup above and paste the new id into the WordPress block.
 
-Embed HTML for Getting Started comes from `app/views/pages/embed.html.erb`. That template renders FlatPack `Badge`, `Card`, `Button::Pill`, and `Modal`, then packs FlatPack plus dummy Tailwind CSS into a `<style>` tag. Embeddable strips `link` and `script`, so the payload carries the CSS itself. Re-seed does not rewrite the view. Change the template or `WpPluginDemo::EmbedStyles` and restart the dummy to refresh payload HTML. Eyeball the same fragment at `/pages/:id/embed_preview`.
+Embed HTML for Getting Started comes from `app/views/pages/embed.html.erb`. That template renders FlatPack `Badge`, `Card`, `Button::Pill`, and `Modal`, then packs FlatPack plus dummy Tailwind CSS into a `<style>` tag. Embeddable strips `link` and `script`, so the payload carries the CSS itself. The packed sheet also pins FlatPack `system-ui` and font-weight utilities on the embed root. WordPress theme fonts stay outside the block. FlatPack `v0.1.190` ships no `@font-face` files. Re-seed does not rewrite the view. Change the template or `WpPluginDemo::EmbedStyles` and restart the dummy to refresh payload HTML. Eyeball the same fragment at `/pages/:id/embed_preview`.
 
 ## 4. Build the installable plugin ZIP
 
