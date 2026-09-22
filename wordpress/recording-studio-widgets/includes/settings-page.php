@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 use RecordingStudio\ConnectFlow;
 use RecordingStudio\ConnectHandoff;
+use RecordingStudio\ConnectNotice;
 use RecordingStudio\ConnectStatus;
+use RecordingStudio\ConnectTokens;
 use RecordingStudio\HostUrls;
 use RecordingStudio\PluginSettings;
+use RecordingStudio\ProductConfig;
 use RecordingStudio\SettingsForm;
 use RecordingStudio\SettingsPage;
 use RecordingStudio\StudioClient;
@@ -37,8 +40,18 @@ function recording_studio_plugin_demo_render_settings_page(): void {
 		update_option( PluginSettings::OPTION_KEY, $saved->to_storage_array(), false );
 		StudioClient::from_wp_options()->flush_token_cache();
 		$stored = $saved->to_storage_array();
-		$probe  = StudioClient::from_wp_options()->probe_credentials();
-		$notice = $probe->is_error() ? 'probe_failed' : 'probe_ok';
+		$config = ProductConfig::all();
+		if ( $config['api_keys'] ) {
+			$probe  = StudioClient::from_wp_options()->probe_credentials();
+			$notice = $probe->is_error() ? 'probe_failed' : 'probe_ok';
+		} elseif ( $config['oauth_connect'] ) {
+			$tokens = ConnectTokens::load();
+			$notice = ( null !== $tokens && $tokens->usable() )
+				? ConnectNotice::CONNECTED
+				: ConnectNotice::RECONNECT_NEEDED;
+		} else {
+			$notice = ConnectNotice::PROBE_FAILED;
+		}
 	}
 
 	ob_start();
@@ -83,6 +96,11 @@ function recording_studio_plugin_demo_persist_posted_settings(): PluginSettings 
 function recording_studio_plugin_demo_connect_start(): void {
 	recording_studio_plugin_demo_require_manage_options();
 	check_admin_referer( 'rs_plugin_demo_settings' );
+	if ( ! ProductConfig::all()['oauth_connect'] ) {
+		wp_safe_redirect( recording_studio_plugin_demo_settings_url( '' ) );
+		recording_studio_plugin_demo_halt();
+	}
+
 	$settings = recording_studio_plugin_demo_persist_posted_settings();
 	if ( ! $settings->can_start_connect() ) {
 		wp_safe_redirect( recording_studio_plugin_demo_settings_url( 'connect_failed' ) );
@@ -129,6 +147,11 @@ function recording_studio_plugin_demo_connect_callback(): void {
 function recording_studio_plugin_demo_disconnect(): void {
 	recording_studio_plugin_demo_require_manage_options();
 	check_admin_referer( 'rs_plugin_demo_settings' );
+	if ( ! ProductConfig::all()['oauth_connect'] ) {
+		wp_safe_redirect( recording_studio_plugin_demo_settings_url( '' ) );
+		recording_studio_plugin_demo_halt();
+	}
+
 	$notice = ConnectFlow::disconnect();
 	wp_safe_redirect( recording_studio_plugin_demo_settings_url( $notice ) );
 	exit;

@@ -31,6 +31,7 @@ foreach (
 		'BlockStylesheetTest.php',
 		'BrowserPayloadTest.php',
 		'PluginSettingsTest.php',
+		'ProductConfigTest.php',
 		'StudioClientTest.php',
 		'ConnectTest.php',
 		'PageListTest.php',

@@ -16,24 +16,29 @@ final class SettingsPage {
 		string $disconnect_action_url,
 		string $nonce_html = ''
 	): string {
-		$settings = PluginSettings::from_storage_array( $stored );
-		$api_key  = $settings->advanced_api_key();
-		$secret   = $settings->client_secret;
+		$config = ProductConfig::all();
 
 		$html  = '<div class="wrap">';
-		$html .= '<h1>' . esc_html( self::title() ) . '</h1>';
-		$html .= self::notice_markup( $notice );
+		$html .= '<h1>' . esc_html( (string) $config['name'] ) . '</h1>';
+		$html .= self::notice_markup( $notice, (bool) $config['oauth_connect'] );
 		$html .= '<form method="post">';
 		$html .= $nonce_html;
-		$html .= self::connect_buttons( $status->connected, $connect_action_url, $disconnect_action_url );
-		$html .= '<details>';
-		$html .= '<summary>' . esc_html( 'Advanced' ) . '</summary>';
-		$html .= '<p><strong>' . esc_html( 'Connect via API key' ) . '</strong></p>';
-		$html .= '<table class="form-table" role="presentation">';
-		$html .= self::text_row( 'rs_api_key', 'API key', 'text', $api_key, '' );
-		$html .= self::text_row( 'rs_client_secret', 'Secret key', 'password', $secret, '' );
-		$html .= '</table>';
-		$html .= '</details>';
+		if ( $config['oauth_connect'] ) {
+			$html .= self::connect_buttons( $status->connected, $connect_action_url, $disconnect_action_url );
+		}
+		if ( $config['api_keys'] ) {
+			$settings = PluginSettings::from_storage_array( $stored );
+			$api_key  = $settings->advanced_api_key();
+			$secret   = $settings->client_secret;
+			$html    .= '<details>';
+			$html    .= '<summary>' . esc_html( 'Advanced' ) . '</summary>';
+			$html    .= '<p><strong>' . esc_html( 'Connect via API key' ) . '</strong></p>';
+			$html    .= '<table class="form-table" role="presentation">';
+			$html    .= self::text_row( 'rs_api_key', 'API key', 'text', $api_key, '' );
+			$html    .= self::text_row( 'rs_client_secret', 'Secret key', 'password', $secret, '' );
+			$html    .= '</table>';
+			$html    .= '</details>';
+		}
 		$html .= '<p class="submit">';
 		$html .= '<button type="submit" name="rs_save_settings" class="button button-primary">' . esc_html( 'Save settings' ) . '</button> ';
 		$html .= '<button type="submit" name="rs_test_connection" class="button">' . esc_html( 'Test connection' ) . '</button>';
@@ -45,7 +50,7 @@ final class SettingsPage {
 	}
 
 	public static function title(): string {
-		return 'WordPress Plugin Demo';
+		return (string) ProductConfig::all()['name'];
 	}
 
 	private static function connect_buttons( bool $connected, string $connect_action_url, string $disconnect_action_url ): string {
@@ -71,9 +76,13 @@ final class SettingsPage {
 		return '<div class="notice notice-success"><p>' . esc_html( ConnectNotice::message( ConnectNotice::CONNECTED ) ) . '</p></div>';
 	}
 
-	private static function notice_markup( string $notice ): string {
+	private static function notice_markup( string $notice, bool $oauth_connect ): string {
 		$entry = ConnectNotice::lookup( $notice );
 		if ( null === $entry ) {
+			return '';
+		}
+
+		if ( ConnectNotice::CONNECTED === $notice && ! $oauth_connect ) {
 			return '';
 		}
 
