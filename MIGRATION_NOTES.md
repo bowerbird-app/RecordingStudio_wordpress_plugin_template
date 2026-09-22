@@ -25,6 +25,16 @@ bin/rails tailwindcss:build
 - Oauth dummy tag `v0.4.0`
 - Public RubyGems and GitHub access for dependency installation
 
+## 0.4.24
+
+Disconnected Settings shows **Login** and **Register**. Both post to the same Connect start action. Connected Settings still shows **Disconnect** and **Connect again**.
+
+**Save settings** and **Test connection** sit inside Advanced, after the API key and Secret key. When `ProductConfig::API_KEYS` is false, those buttons are not rendered.
+
+`ProductConfig::LOGIN_BUTTON_TEXT` and `REGISTER_BUTTON_TEXT` default to `Login` and `Register`. `all()` adds `login_button_text` and `register_button_text` to the `recording_studio_product_config` filter. Trimmed empty strings and non-strings fall back to the defaults.
+
+Rebuild and reinstall the plugin ZIP.
+
 ## 0.4.23
 
 Settings looks like a FlatPack form inside wp-admin. Styles load only on that screen under `.rs-settings-fp`. ProductConfig, Connect, and API keys are unchanged.

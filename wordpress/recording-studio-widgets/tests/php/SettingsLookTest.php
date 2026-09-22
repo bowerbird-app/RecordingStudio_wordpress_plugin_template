@@ -48,10 +48,11 @@ function rs_settings_look_button( string $html, string $label ): string {
 }
 
 function test_settings_look_disconnected_reads_as_flatpack_form(): void {
-	$html  = rs_settings_look_markup( false );
-	$save  = rs_settings_look_button( $html, 'Save settings' );
-	$probe = rs_settings_look_button( $html, 'Test connection' );
-	$connect = rs_settings_look_button( $html, 'Connect to Recording Studio' );
+	$html     = rs_settings_look_markup( false );
+	$save     = rs_settings_look_button( $html, 'Save settings' );
+	$probe    = rs_settings_look_button( $html, 'Test connection' );
+	$login    = rs_settings_look_button( $html, 'Login' );
+	$register = rs_settings_look_button( $html, 'Register' );
 
 	if ( false === strpos( $html, 'rs-settings-fp' ) ) {
 		throw new RuntimeException( 'disconnected markup missing rs-settings-fp' );
@@ -71,11 +72,24 @@ function test_settings_look_disconnected_reads_as_flatpack_form(): void {
 	if ( false === strpos( $probe, 'rs-settings-fp__button--outline' ) || false === strpos( $probe, 'Test connection' ) ) {
 		throw new RuntimeException( 'Test connection button missing outline class' );
 	}
-	if ( false === strpos( $connect, 'rs-settings-fp__button--outline' ) ) {
-		throw new RuntimeException( 'Connect button missing outline class' );
+	if ( false === strpos( $login, 'rs-settings-fp__button--outline' ) || false === strpos( $register, 'rs-settings-fp__button--outline' ) ) {
+		throw new RuntimeException( 'Login and Register must use the outline button' );
 	}
-	if ( false !== strpos( $connect, 'button-primary' ) ) {
-		throw new RuntimeException( 'Connect button still uses button-primary' );
+	if ( false !== strpos( $login, 'button-primary' ) || false !== strpos( $register, 'button-primary' ) ) {
+		throw new RuntimeException( 'Login or Register still uses button-primary' );
+	}
+	$start = 'http://localhost:8888/wp-admin/admin-post.php?action=recording_studio_oauth_start';
+	if ( false === strpos( $login, $start ) || false === strpos( $register, $start ) ) {
+		throw new RuntimeException( 'Login and Register must share the Connect start action' );
+	}
+	$details_end = strpos( $html, '</details>' );
+	$save_pos    = strpos( $html, 'Save settings' );
+	$secret_pos  = strpos( $html, 'Secret key' );
+	if ( false === $details_end || false === $save_pos || false === $secret_pos || $secret_pos > $save_pos || $save_pos > $details_end ) {
+		throw new RuntimeException( 'Save settings must sit inside Advanced after the secret field' );
+	}
+	if ( false !== strpos( $html, 'Connect to Recording Studio' ) ) {
+		throw new RuntimeException( 'disconnected markup should not show Connect to Recording Studio' );
 	}
 }
 
@@ -95,6 +109,9 @@ function test_settings_look_connected_buttons_stay_outline(): void {
 	}
 	if ( false === strpos( $html, 'rs-settings-fp__alert' ) ) {
 		throw new RuntimeException( 'connected status missing rs-settings-fp__alert' );
+	}
+	if ( false !== strpos( $html, '>Login</button>' ) || false !== strpos( $html, '>Register</button>' ) ) {
+		throw new RuntimeException( 'connected markup should keep Disconnect and Connect again' );
 	}
 }
 

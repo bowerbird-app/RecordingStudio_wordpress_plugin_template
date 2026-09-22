@@ -79,8 +79,7 @@
 }
 
 .rs-settings-fp .rs-settings-fp__alert + .rs-settings-fp__actions,
-.rs-settings-fp .rs-settings-fp__advanced + .rs-settings-fp__actions,
-.rs-settings-fp .rs-settings-fp__actions + .rs-settings-fp__actions {
+.rs-settings-fp .rs-settings-fp__advanced .rs-settings-fp__actions {
   margin-top: 1rem;
 }
 
