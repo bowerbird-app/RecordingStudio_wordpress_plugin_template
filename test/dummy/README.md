@@ -14,7 +14,7 @@ This Rails app is the host for RecordingStudio WordPress widgets. It boots on it
 - Mounted `RecordingStudio::Engine` route behavior inside a host app
 - Dummy-only `/docs/*` pages for host-app onboarding
 - Named API `wp_plugin_demo` with soft GET `:embed` (BrowserPayload schema v1)
-- **Seed Demo App** Oauth client for dummy Oauth tests. Staff create the public **WordPress** Connect client once (relay redirect). Seed does not write that app.
+- **Seed Demo App** Oauth client for dummy Oauth tests. Staff create the public **WordPress** Connect client once (central relay). Seed does not write that app.
 - Host Page embed renderer (`pages/embed`) with seeded Getting Started FlatPack (`Badge`, `Card`, `Button::Pill`, `Modal`) for the WordPress Plugin Demo block. CSS is packed into the payload `<style>` tag so WordPress can paint those components. The packed sheet pins `system-ui` and font weights on the embed root. There is no `@font-face`.
 - CI eager-load workarounds: ignore Embeddable `lib/` on host Zeitwerk
 - Env-only connectivity placeholders. No widget models or WordPress render routes in Rails
@@ -53,8 +53,8 @@ After sign-in, use sidebar **API Keys** to open API clients (`/recording_studio_
 - `/docs/install`, `/docs/config`, `/docs/recordable_types`, `/docs/recordings_tree`, `/docs/gem_views`, `/docs/methods` are dummy-only starter pages
 - `/up` is the Rails health check
 - WordPress Plugin Demo named API (not the public `/recording_studio_api/api/v1` surface):
-  - `GET /recording_studio_oauth/wordpress/connect` (Connect start; relay)
-  - `GET /recording_studio_oauth/wordpress/callback` (Registered App redirect)
+  - `GET /recording_studio_oauth/connect` (Connect start)
+  - `GET /recording_studio_oauth/callback` (Registered App redirect and token exchange `redirect_uri`)
   - `GET /recording_studio_oauth/oauth/authorize` (after the relay; signed-out visitors use Users chrome; consent submit is a full page)
   - `POST /recording_studio_api/apis/wp_plugin_demo/oauth/token` (Connect authorization_code + refresh_token, and Advanced client_credentials)
   - `GET /recording_studio_api/apis/wp_plugin_demo/v1/pages` (Page index for the WordPress picker)
@@ -63,9 +63,9 @@ After sign-in, use sidebar **API Keys** to open API clients (`/recording_studio_
 
 ## OAuth client for the WordPress plugin
 
-Connect is the primary path. The plugin starts PKCE at the Oauth WordPress relay against the public **WordPress** client, then users sign in with Users chrome and pick a workspace.
+Connect is the primary path. The plugin starts PKCE at `GET /recording_studio_oauth/connect` against the public **WordPress** client, then users sign in with Users chrome and pick a workspace.
 
-`db:seed` does not create that client. After a fresh setup, open sidebar **Registered Apps** and create a public app named **WordPress** with redirect `{host}/recording_studio_oauth/wordpress/callback`. Use client id `rsoauth_id_wordpress` to match the plugin ZIP default, or set `RECORDING_STUDIO_CLIENT_ID`.
+`db:seed` does not create that client. After a fresh setup, open sidebar **Registered Apps** and create a public app named **WordPress**. Set the redirect to `{host}/recording_studio_oauth/callback`. Turn **Use central relay** on. Add allowed return pattern `https://*/wp-admin/admin-post.php?action=recording_studio_oauth_callback`. For a local http WordPress, also add `http://*/wp-admin/admin-post.php?action=recording_studio_oauth_callback`. Use client id `rsoauth_id_wordpress` to match the plugin ZIP default, or set `RECORDING_STUDIO_CLIENT_ID`.
 
 ```bash
 bin/rails runner 'WpPluginDemo::Seed.print_connect_client!'
@@ -73,7 +73,7 @@ bin/rails runner 'WpPluginDemo::Seed.print_connect_client!'
 
 That prints the baked client id (`rsoauth_id_wordpress`, no secret), connect URL, named token URL, relay redirect, example WordPress `return_to`, and Getting Started page id.
 
-The Registered App redirect is `{host}/recording_studio_oauth/wordpress/callback`. WordPress `return_to` stays `…/wp-admin/admin-post.php?action=recording_studio_oauth_callback`. The relay allowlists that shape. Do not add each WordPress origin as a Registered App redirect.
+The Registered App redirect is `{host}/recording_studio_oauth/callback`. Token exchange `redirect_uri` is that same callback URL. Connect start is `GET {host}/recording_studio_oauth/connect`. WordPress `return_to` stays `…/wp-admin/admin-post.php?action=recording_studio_oauth_callback`. Allow the https pattern. For a local http WordPress, also allow the http pattern. Do not add each WordPress origin as a Registered App redirect.
 
 For minting Advanced API keys in the host UI, use sidebar **API Keys** after sign-in (`/recording_studio_api/api_clients`).
 

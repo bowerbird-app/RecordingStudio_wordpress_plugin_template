@@ -12,9 +12,9 @@ final class ContractPaths {
 	public const TOKEN_GRANT             = 'client_credentials';
 	public const CONNECT_GRANT           = 'authorization_code';
 	public const REFRESH_GRANT           = 'refresh_token';
-	public const AUTHORIZE_PATH          = '/recording_studio_oauth/oauth/authorize';
-	public const WORDPRESS_CONNECT_PATH  = '/recording_studio_oauth/wordpress/connect';
-	public const WORDPRESS_CALLBACK_PATH = '/recording_studio_oauth/wordpress/callback';
+	public const AUTHORIZE_PATH              = '/recording_studio_oauth/oauth/authorize';
+	public const CENTRAL_RELAY_CONNECT_PATH  = '/recording_studio_oauth/connect';
+	public const CENTRAL_RELAY_CALLBACK_PATH = '/recording_studio_oauth/callback';
 
 	public static function token_path(): string {
 		return self::NAMED_PREFIX . '/oauth/token';
@@ -24,12 +24,12 @@ final class ContractPaths {
 		return self::AUTHORIZE_PATH;
 	}
 
-	public static function wordpress_connect_path(): string {
-		return self::WORDPRESS_CONNECT_PATH;
+	public static function central_relay_connect_path(): string {
+		return self::CENTRAL_RELAY_CONNECT_PATH;
 	}
 
-	public static function wordpress_callback_path(): string {
-		return self::WORDPRESS_CALLBACK_PATH;
+	public static function central_relay_callback_path(): string {
+		return self::CENTRAL_RELAY_CALLBACK_PATH;
 	}
 
 	public static function connect_token_path(): string {

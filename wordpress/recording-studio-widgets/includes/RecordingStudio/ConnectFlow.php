@@ -21,7 +21,7 @@ final class ConnectFlow {
 		$session        = new ConnectSession( $pkce->verifier, $state, $token_redirect );
 		$session->persist();
 
-		return $urls->wordpress_connect_url(
+		return $urls->central_relay_connect_url(
 			array(
 				'client_id'             => $settings->client_id,
 				'return_to'             => $return_to,

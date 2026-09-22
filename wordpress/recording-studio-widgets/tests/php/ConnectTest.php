@@ -89,8 +89,8 @@ function rs_assert_handoff_to_host( string $html, string $host, string $scheme =
 	if ( $scheme !== ( $parts['scheme'] ?? '' ) || $host !== ( $parts['host'] ?? '' ) ) {
 		throw new RuntimeException( 'leaving page did not point at the configured host: ' . $location );
 	}
-	if ( '/recording_studio_oauth/wordpress/connect' !== ( $parts['path'] ?? '' ) ) {
-		throw new RuntimeException( 'leaving page path was not wordpress/connect: ' . $location );
+	if ( '/recording_studio_oauth/connect' !== ( $parts['path'] ?? '' ) ) {
+		throw new RuntimeException( 'leaving page path was not the central relay connect path: ' . $location );
 	}
 	if ( 'http://localhost:8888/wp-admin/' === $location ) {
 		throw new RuntimeException( 'connect start fell back to admin' );
@@ -133,7 +133,7 @@ function test_connect_start_builds_relay_url_and_keeps_verifier_in_transient(): 
 	$query = array();
 	parse_str( (string) ( $parts['query'] ?? '' ), $query );
 
-	if ( ( $parts['path'] ?? '' ) !== ContractPaths::wordpress_connect_path() ) {
+	if ( '/recording_studio_oauth/connect' !== ( $parts['path'] ?? '' ) ) {
 		throw new RuntimeException( 'connect path mismatch: ' . ( $parts['path'] ?? '' ) );
 	}
 	if ( isset( $query['redirect_uri'] ) ) {
@@ -210,11 +210,14 @@ function test_connect_callback_stores_tokens_and_embed_uses_connect_bearer(): vo
 			if ( $session->redirect_uri !== ( $fields['redirect_uri'] ?? '' ) ) {
 				throw new RuntimeException( 'token redirect_uri must be the stored relay callback, got ' . ( $fields['redirect_uri'] ?? '' ) );
 			}
-			if ( false === strpos( (string) ( $fields['redirect_uri'] ?? '' ), '/recording_studio_oauth/wordpress/callback' ) ) {
-				throw new RuntimeException( 'token redirect_uri must be the relay callback' );
+			if ( false === strpos( (string) ( $fields['redirect_uri'] ?? '' ), '/recording_studio_oauth/callback' ) ) {
+				throw new RuntimeException( 'token redirect_uri must be the central relay callback' );
+			}
+			if ( false !== strpos( (string) ( $fields['redirect_uri'] ?? '' ), '/wordpress/' ) ) {
+				throw new RuntimeException( 'token redirect_uri must not contain /wordpress/' );
 			}
 			if ( false !== strpos( (string) ( $fields['redirect_uri'] ?? '' ), 'admin-post.php' ) ) {
-				throw new RuntimeException( 'token redirect_uri must not be the WordPress admin-post URL' );
+				throw new RuntimeException( 'token redirect_uri must not contain admin-post.php' );
 			}
 			if ( ! empty( $fields['client_secret'] ) ) {
 				throw new RuntimeException( 'connect exchange sent a client secret' );

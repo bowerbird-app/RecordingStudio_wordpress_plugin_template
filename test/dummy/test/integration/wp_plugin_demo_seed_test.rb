@@ -59,10 +59,20 @@ class WpPluginDemoSeedTest < ActiveSupport::TestCase
     refute client.confidential?
     assert_equal "wp_plugin_demo", client.api_key
     assert_equal WpPluginDemo::Seed::CONNECT_CLIENT_ID, client.client_id
-    assert_equal WpPluginDemo::Seed.connect_redirect_uris, client.redirect_uris
-    assert_includes client.redirect_uris, RecordingStudioOauth.wordpress_relay_callback_url(base_url: "http://localhost:3000")
+    assert_equal [
+      "http://localhost:3000/recording_studio_oauth/callback",
+      "http://127.0.0.1:3000/recording_studio_oauth/callback"
+    ], client.redirect_uris
     refute_includes client.redirect_uris, WpPluginDemo::Seed.example_return_to
     assert_nil client.client_secret_digest
+    assert_equal true, client.use_central_relay
+    assert_equal [
+      "https://*/wp-admin/admin-post.php?action=recording_studio_oauth_callback",
+      "http://*/wp-admin/admin-post.php?action=recording_studio_oauth_callback"
+    ], client.allowed_return_patterns
+    assert_equal [], client.exact_return_urls
+    assert client.allows_return_to?("http://localhost:8888/wp-admin/admin-post.php?action=recording_studio_oauth_callback")
+    refute client.allows_return_to?("http://localhost:8888/wp-admin/admin-post.php?action=recording_studio_oauth_start")
   end
 
   test "print_connect_client! prints public relay fields and no secret" do
@@ -73,17 +83,17 @@ class WpPluginDemoSeedTest < ActiveSupport::TestCase
       assert_equal "http://localhost:3000", connection.host_base_url
       assert_equal WpPluginDemo::Seed::CONNECT_CLIENT_ID, connection.connect_client_id
       assert_equal connection.connect_client_id, RecordingStudioOauth::OauthClient.find_by!(name: "WordPress").client_id
-      assert_equal "http://localhost:3000#{WpPluginDemo::Contract::CONNECT_PATH}", connection.connect_url
+      assert_equal "http://localhost:3000/recording_studio_oauth/connect", connection.connect_url
       assert_equal "http://localhost:3000#{WpPluginDemo::Contract::CONNECT_TOKEN_PATH}", connection.token_url
-      assert_equal RecordingStudioOauth.wordpress_relay_callback_url(base_url: "http://localhost:3000"), connection.relay_redirect_uri
+      assert_equal "http://localhost:3000/recording_studio_oauth/callback", connection.relay_redirect_uri
       assert_equal WpPluginDemo::Seed.example_return_to, connection.return_to
       assert_equal WpPluginDemo::Seed.getting_started_page_recording_id, connection.page_recording_id
     end.first
 
     assert_includes output, "connect_client_id=#{WpPluginDemo::Seed::CONNECT_CLIENT_ID}"
-    assert_includes output, "connect_url=http://localhost:3000/recording_studio_oauth/wordpress/connect"
+    assert_includes output, "connect_url=http://localhost:3000/recording_studio_oauth/connect"
     assert_includes output, "token_url=http://localhost:3000/recording_studio_api/apis/wp_plugin_demo/oauth/token"
-    assert_includes output, "relay_redirect_uri=http://localhost:3000/recording_studio_oauth/wordpress/callback"
+    assert_includes output, "relay_redirect_uri=http://localhost:3000/recording_studio_oauth/callback"
     refute_includes output, "authorize_url="
     refute_includes output, "client_secret"
     refute_includes output, "oauth_client_secret"

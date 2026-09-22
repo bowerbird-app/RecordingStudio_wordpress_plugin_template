@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.21] - 2026-09-22
+
+### Changed
+- Connect start is `GET {host}/recording_studio_oauth/connect`. Token exchange sends `{host}/recording_studio_oauth/callback` as `redirect_uri`.
+- Dummy host pins `recording_studio_oauth` v0.4.0. `WpPluginDemo::Seed.ensure_connect_client!` turns central relay on, stores that callback URL for `http://localhost:3000` and `http://127.0.0.1:3000`, and allowlists the https and http admin-post return patterns. `exact_return_urls` stays empty. `db:seed` still does not create the WordPress client.
+
+### Upgrade notes
+- From `test/dummy` pin Oauth `v0.4.0`, `bundle update recording_studio_oauth`, `bin/rails db:migrate`. Rebuild and reinstall the plugin ZIP.
+- On the existing WordPress Registered App, set the redirect to `{host}/recording_studio_oauth/callback` and turn Use central relay on. Add `https://*/wp-admin/admin-post.php?action=recording_studio_oauth_callback`. For a local http WordPress, also add `http://*/wp-admin/admin-post.php?action=recording_studio_oauth_callback`.
+- `/recording_studio_oauth/wordpress/connect` and `/wordpress/callback` are gone.
+
 ## [0.4.20] - 2026-09-21
 
 ### Changed

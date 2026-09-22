@@ -24,7 +24,7 @@ class OauthConnectConsentTurboTest < ActionDispatch::IntegrationTest
     get "/recording_studio_oauth/apis/#{WpPluginDemo::Contract::API_KEY}/oauth/authorize", params: {
       response_type: "code",
       client_id: @oauth_client.client_id,
-      redirect_uri: RecordingStudioOauth.wordpress_relay_callback_url(base_url: "http://localhost:3000"),
+      redirect_uri: RecordingStudioOauth.central_relay_callback_url(base_url: "http://localhost:3000"),
       state: "connect-turbo",
       code_challenge: @pkce.fetch(:challenge),
       code_challenge_method: "S256",

@@ -22,8 +22,20 @@ bin/rails tailwindcss:build
 - Accessible dummy tag `v0.9.1` and Root Switchable dummy tag `v0.5.0`
 - FlatPack dummy tag `v0.1.190`
 - Users dummy tag `v0.11.0`
-- Oauth dummy tag `v0.3.0`
+- Oauth dummy tag `v0.4.0`
 - Public RubyGems and GitHub access for dependency installation
+
+## 0.4.21
+
+Connect uses the Oauth 0.4.0 central relay. PHP path constants match those gem paths. `db:seed` still does not create the WordPress client.
+
+From `test/dummy`, pin Oauth `v0.4.0`, run `bundle update recording_studio_oauth`, then run `bin/rails db:migrate`. Rebuild and reinstall the plugin ZIP.
+
+On the existing WordPress Registered App, set the redirect to `{host}/recording_studio_oauth/callback`. Turn **Use central relay** on. Add allowed return pattern `https://*/wp-admin/admin-post.php?action=recording_studio_oauth_callback`. For a local http WordPress, also add `http://*/wp-admin/admin-post.php?action=recording_studio_oauth_callback`.
+
+Token exchange `redirect_uri` is that same callback URL. Connect start is `GET {host}/recording_studio_oauth/connect`.
+
+`/recording_studio_oauth/wordpress/connect` and `/wordpress/callback` are gone.
 
 ## 0.4.20
 
