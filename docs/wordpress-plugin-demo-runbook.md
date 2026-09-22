@@ -16,11 +16,14 @@ Do this once per Recording Studio cloud host.
 
 1. Open **Registered Apps**.
 2. Create a public app named **WordPress**.
-3. Set the redirect to `{host}/recording_studio_oauth/wordpress/callback`.
-4. Copy the client id.
-5. Put the host URL and that client id in `CloudHost` (`wordpress/recording-studio-widgets/includes/RecordingStudio/CloudHost.php`). This is a source change, not a customer env setting.
-6. Run `bin/build-plugin-zip` from the repository root.
-7. Distribute `pkg/recording-studio-widgets.zip`.
+3. Set the redirect to `{host}/recording_studio_oauth/callback`.
+4. Turn **Use central relay** on.
+5. Add allowed return pattern `https://*/wp-admin/admin-post.php?action=recording_studio_oauth_callback`.
+6. For a local http WordPress, also add `http://*/wp-admin/admin-post.php?action=recording_studio_oauth_callback`.
+7. Copy the client id.
+8. Put the host URL and that client id in `CloudHost` (`wordpress/recording-studio-widgets/includes/RecordingStudio/CloudHost.php`). This is a source change, not a customer env setting.
+9. Run `bin/build-plugin-zip` from the repository root.
+10. Distribute `pkg/recording-studio-widgets.zip`.
 
 ### WordPress site owners
 
@@ -63,8 +66,8 @@ It does not create the **WordPress** Connect client. Create that app once. See [
 
 Named API paths the plugin uses (do not change these unless the host is broken):
 
-- Connect start: `GET http://localhost:3000/recording_studio_oauth/wordpress/connect`
-- Relay callback: `GET http://localhost:3000/recording_studio_oauth/wordpress/callback`
+- Connect start: `GET http://localhost:3000/recording_studio_oauth/connect`
+- Callback and token exchange redirect_uri: `GET http://localhost:3000/recording_studio_oauth/callback`
 - Authorize (after the relay): `GET http://localhost:3000/recording_studio_oauth/oauth/authorize`
 - Token + refresh (Connect `authorization_code` and Advanced `client_credentials`): `POST http://localhost:3000/recording_studio_api/apis/wp_plugin_demo/oauth/token`
 - Pages index (block picker): `GET http://localhost:3000/recording_studio_api/apis/wp_plugin_demo/v1/pages`
@@ -77,8 +80,11 @@ Create this app once after a fresh `db:setup` or `db:reset`. Seed does not write
 1. Sign in at `/users/sign_in` with `admin@admin.com` / `Password`.
 2. Open sidebar **Registered Apps** (`/admin/screens/oauth_clients`). Switch the root switcher to **Admin** if the screen returns 403.
 3. Create a public app named **WordPress**.
-4. Set the redirect to `{host}/recording_studio_oauth/wordpress/callback`. On the dummy that is `http://localhost:3000/recording_studio_oauth/wordpress/callback`.
-5. Use client id `rsoauth_id_wordpress` so it matches the plugin ZIP default.
+4. Set the redirect to `{host}/recording_studio_oauth/callback`. On the dummy that is `http://localhost:3000/recording_studio_oauth/callback`.
+5. Turn **Use central relay** on.
+6. Add allowed return pattern `https://*/wp-admin/admin-post.php?action=recording_studio_oauth_callback`.
+7. For a local http WordPress, also add `http://*/wp-admin/admin-post.php?action=recording_studio_oauth_callback`.
+8. Use client id `rsoauth_id_wordpress` so it matches the plugin ZIP default.
 
 The dummy ZIP bakes `http://localhost:3000` and `rsoauth_id_wordpress`. For local or tunnel testing only, define `RECORDING_STUDIO_HOST_BASE_URL` and `RECORDING_STUDIO_CLIENT_ID` in `wp-config.php` or an mu-plugin, or add the `recording_studio_host_base_url` and `recording_studio_client_id` filters.
 
@@ -95,14 +101,14 @@ Example output shape:
 ```text
 host_base_url=http://localhost:3000
 connect_client_id=rsoauth_id_wordpress
-connect_url=http://localhost:3000/recording_studio_oauth/wordpress/connect
+connect_url=http://localhost:3000/recording_studio_oauth/connect
 token_url=http://localhost:3000/recording_studio_api/apis/wp_plugin_demo/oauth/token
-relay_redirect_uri=http://localhost:3000/recording_studio_oauth/wordpress/callback
+relay_redirect_uri=http://localhost:3000/recording_studio_oauth/callback
 return_to=http://localhost:8888/wp-admin/admin-post.php?action=recording_studio_oauth_callback
 page_recording_id=<uuid of Getting Started>
 ```
 
-This public client has no secret. The Registered App redirect is the relay callback, not each WordPress admin-post URL. WordPress sends `return_to` as `admin_url('admin-post.php?action=recording_studio_oauth_callback')`. The Oauth 0.3.0 relay allowlists that shape. Do not add each WordPress origin as a Registered App redirect.
+This public client has no secret. The Registered App redirect is `{host}/recording_studio_oauth/callback`. Token exchange sends that same URL as `redirect_uri`. Connect start is `GET {host}/recording_studio_oauth/connect`. WordPress sends `return_to` as `admin_url('admin-post.php?action=recording_studio_oauth_callback')`. Turn **Use central relay** on and add the https return pattern. For a local http WordPress, also add the http return pattern. Do not add each WordPress origin as a Registered App redirect.
 
 To look up only the seeded Getting Started id after seed:
 
@@ -146,12 +152,12 @@ Stop with `npm run env stop`.
 
 Upload `pkg/recording-studio-widgets.zip` in wp-admin and activate **WordPress Plugin Demo**.
 
-If that WordPress origin is not the usual `localhost:8888` shape, the relay still accepts `…/wp-admin/admin-post.php?action=recording_studio_oauth_callback`. You do not add that URL on the Registered App.
+If that WordPress origin is not `localhost:8888`, the allowed return pattern still matches `…/wp-admin/admin-post.php?action=recording_studio_oauth_callback`. You do not add that URL on the Registered App.
 
 ### Settings → WordPress Plugin Demo
 
 1. Click **Connect to Recording Studio**. There is no host URL field and no client id field.
-2. WordPress shows **Taking you to Recording Studio to connect…**, then opens `{host}/recording_studio_oauth/wordpress/connect`. It does not bounce to `/wp-admin/`.
+2. WordPress shows **Taking you to Recording Studio to connect…**, then opens `{host}/recording_studio_oauth/connect`. It does not bounce to `/wp-admin/`.
 3. Sign in on the host with Users chrome (`admin@admin.com` / `Password` on the dummy).
 4. Pick the Studio workspace when the host asks which workspace to connect.
 

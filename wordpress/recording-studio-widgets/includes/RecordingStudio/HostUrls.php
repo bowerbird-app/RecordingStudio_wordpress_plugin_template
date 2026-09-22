@@ -21,14 +21,14 @@ final class HostUrls {
 	}
 
 	public function relay_callback_url(): string {
-		return $this->settings->host_base_url . ContractPaths::wordpress_callback_path();
+		return $this->settings->host_base_url . ContractPaths::central_relay_callback_path();
 	}
 
 	/**
 	 * @param array<string, string> $query
 	 */
-	public function wordpress_connect_url( array $query ): string {
-		return $this->settings->host_base_url . ContractPaths::wordpress_connect_path() . '?' . http_build_query( $query );
+	public function central_relay_connect_url( array $query ): string {
+		return $this->settings->host_base_url . ContractPaths::central_relay_connect_path() . '?' . http_build_query( $query );
 	}
 
 	public function pages_get_url(): string {

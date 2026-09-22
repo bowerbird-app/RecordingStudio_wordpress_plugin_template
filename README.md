@@ -14,7 +14,7 @@ The plugin in `wordpress/recording-studio-widgets/` is a dynamic block named **W
 
 ### Phase 4 (WordPress Plugin Demo client)
 
-- **Settings → WordPress Plugin Demo**: **Connect to Recording Studio** (PKCE through the Oauth 0.3.0 WordPress relay). Connected state plus **Disconnect**. Advanced is a dropdown for **Connect via API key** (API key and Secret key only). Host URL and client id are baked (`CloudHost`). **Save settings** and **Test connection** come after that dropdown.
+- **Settings → WordPress Plugin Demo**: **Connect to Recording Studio** (PKCE through the Oauth 0.4.0 central relay). Connected state plus **Disconnect**. Advanced is a dropdown for **Connect via API key** (API key and Secret key only). Host URL and client id are baked (`CloudHost`). **Save settings** and **Test connection** come after that dropdown.
 - **Block**: `pageRecordingId` attribute (UUID). Editor preview uses `GET /wp-json/recording-studio/v1/preview/{uuid}` (`edit_posts`).
 - **Front**: SSR `data-rs-payload` plus `viewScript` (`front.js`) calling `window.RecordingStudioPluginSdk.mount` — no secrets in the page.
 - **SDK**: committed under `assets/sdk/`, copied to `build/sdk/` on `npm run build`.
@@ -33,10 +33,16 @@ Staff bake one ZIP against a Recording Studio cloud host. Every download of that
 Do this once per cloud host.
 
 1. On the Recording Studio cloud host, open **Registered Apps**.
-2. Create a public app named **WordPress**. Set the redirect to `{host}/recording_studio_oauth/wordpress/callback`.
-3. Copy the client id.
-4. Put the host URL and that client id in the plugin baked defaults (`CloudHost` in `wordpress/recording-studio-widgets/includes/RecordingStudio/CloudHost.php`). This is a source change, not a customer env setting.
-5. Run `bin/build-plugin-zip` and distribute `pkg/recording-studio-widgets.zip`.
+2. Create a public app named **WordPress**.
+3. Set the redirect to `{host}/recording_studio_oauth/callback`.
+4. Turn **Use central relay** on.
+5. Add allowed return pattern `https://*/wp-admin/admin-post.php?action=recording_studio_oauth_callback`.
+6. For a local http WordPress, also add `http://*/wp-admin/admin-post.php?action=recording_studio_oauth_callback`.
+7. Copy the client id.
+8. Put the host URL and that client id in the plugin baked defaults (`CloudHost` in `wordpress/recording-studio-widgets/includes/RecordingStudio/CloudHost.php`). This is a source change, not a customer env setting.
+9. Run `bin/build-plugin-zip` and distribute `pkg/recording-studio-widgets.zip`.
+
+Connect start is `GET {host}/recording_studio_oauth/connect`. Token exchange `redirect_uri` is `{host}/recording_studio_oauth/callback`.
 
 ### WordPress site owners
 
@@ -121,7 +127,7 @@ These versions come from the gemspec, the dummy Gemfile, `@wordpress/create-bloc
 | Attachable | dummy GitHub tag `v0.5.1` (Publishable boot dep) |
 | Root Switchable | dummy GitHub tag `v0.5.0` |
 | Users | dummy GitHub tag `v0.11.0` |
-| Oauth | dummy GitHub tag `v0.3.0` (WordPress Connect relay; one public WordPress app; consent is a full page) |
+| Oauth | dummy GitHub tag `v0.4.0` (central relay; one public WordPress app; consent is a full page) |
 | FlatPack | dummy GitHub tag `v0.1.190` |
 | Devise | latest |
 | `@wordpress/create-block` | 4.98.0 |

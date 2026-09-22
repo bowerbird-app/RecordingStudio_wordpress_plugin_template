@@ -40,7 +40,7 @@ module WpPluginDemo
 
     def connect_redirect_uris(host_base_url: "http://localhost:3000")
       hosts = [host_base_url, host_base_url.to_s.sub("localhost", "127.0.0.1")].uniq
-      hosts.map { |host| RecordingStudioOauth.wordpress_relay_callback_url(base_url: host) }
+      hosts.map { |host| RecordingStudioOauth.central_relay_callback_url(base_url: host) }
     end
 
     def example_return_to
@@ -117,7 +117,13 @@ module WpPluginDemo
       client ||= RecordingStudioOauth::OauthClient.find_by(name: LEGACY_CONNECT_CLIENT_NAME)
       client ||= RecordingStudioOauth::OauthClient.new(name: CONNECT_CLIENT_NAME)
       client.name = CONNECT_CLIENT_NAME
+      client.use_central_relay = true
       client.redirect_uris = connect_redirect_uris
+      client.allowed_return_patterns = [
+        "https://*/wp-admin/admin-post.php?action=recording_studio_oauth_callback",
+        "http://*/wp-admin/admin-post.php?action=recording_studio_oauth_callback"
+      ]
+      client.exact_return_urls = []
       client.confidential = false
       client.api_key = Contract::API_KEY.to_s
       client.client_id = CONNECT_CLIENT_ID if client.client_id.blank?
@@ -132,9 +138,9 @@ module WpPluginDemo
       ConnectClient.new(
         host_base_url: host,
         connect_client_id: client.client_id,
-        connect_url: "#{host}#{Contract::CONNECT_PATH}",
+        connect_url: RecordingStudioOauth.central_relay_connect_url(base_url: host),
         token_url: "#{host}#{Contract::CONNECT_TOKEN_PATH}",
-        relay_redirect_uri: RecordingStudioOauth.wordpress_relay_callback_url(base_url: host),
+        relay_redirect_uri: RecordingStudioOauth.central_relay_callback_url(base_url: host),
         return_to: example_return_to,
         page_recording_id: page_recording.id
       )
