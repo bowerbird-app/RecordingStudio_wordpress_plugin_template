@@ -157,6 +157,8 @@ If that WordPress origin is not `localhost:8888`, the allowed return pattern sti
 
 ### Settings → WordPress Plugin Demo
 
+The screen is a card form styled only on that page, and the WordPress sidebar and top bar stay as they are.
+
 1. Click **Connect to Recording Studio**. There is no host URL field and no client id field.
 2. WordPress shows **Taking you to Recording Studio to connect…**, then opens `{host}/recording_studio_oauth/connect`. It does not bounce to `/wp-admin/`.
 3. Sign in on the host with Users chrome (`admin@admin.com` / `Password` on the dummy).

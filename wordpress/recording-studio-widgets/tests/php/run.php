@@ -32,6 +32,7 @@ foreach (
 		'BrowserPayloadTest.php',
 		'PluginSettingsTest.php',
 		'ProductConfigTest.php',
+		'SettingsLookTest.php',
 		'StudioClientTest.php',
 		'ConnectTest.php',
 		'PageListTest.php',
