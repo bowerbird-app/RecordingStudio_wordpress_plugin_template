@@ -51,9 +51,10 @@ function recording_studio_recording_studio_widget_block_init(): void {
 add_action( 'init', 'recording_studio_recording_studio_widget_block_init' );
 
 function recording_studio_widget_register_settings_page(): void {
+	$title = \RecordingStudio\SettingsPage::title();
 	add_options_page(
-		__( 'WordPress Plugin Demo', 'recording-studio-widget' ),
-		__( 'WordPress Plugin Demo', 'recording-studio-widget' ),
+		$title,
+		$title,
 		'manage_options',
 		'recording-studio-plugin-demo',
 		'recording_studio_plugin_demo_render_settings_page'

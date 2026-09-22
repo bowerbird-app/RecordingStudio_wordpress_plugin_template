@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.22] - 2026-09-22
+
+### Changed
+- Staff edit `ProductConfig` (`NAME`, `OAUTH_CONNECT`, `API_KEYS`) before `bin/build-plugin-zip`. `all()` runs filter `recording_studio_product_config`. Defaults stay both modes on, name `WordPress Plugin Demo`. Site owners do not edit the class. `RECORDING_STUDIO_HOST_BASE_URL` and `RECORDING_STUDIO_CLIENT_ID` stay the wp-config overrides.
+
+### Upgrade notes
+- Rebuild the ZIP only when you want a different name or a single connect mode. A default ZIP does not change Settings.
+
 ## [0.4.21] - 2026-09-22
 
 ### Changed

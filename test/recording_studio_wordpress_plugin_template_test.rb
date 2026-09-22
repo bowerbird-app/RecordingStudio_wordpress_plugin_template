@@ -7,7 +7,7 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     "Site owners do not enter a client id, open Registered Apps, or edit wp-config for normal use."
 
   def test_version_matches_release
-    assert_equal "0.4.21", ::RecordingStudioWordpressPluginTemplate::VERSION
+    assert_equal "0.4.22", ::RecordingStudioWordpressPluginTemplate::VERSION
   end
 
   def test_engine_exists
