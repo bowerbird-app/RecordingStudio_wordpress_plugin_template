@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.23] - 2026-09-22
+
+### Changed
+- Settings looks like a FlatPack form inside wp-admin. Styles load only on that screen under `.rs-settings-fp`. ProductConfig, Connect, and API keys are unchanged.
+
+### Upgrade notes
+- Rebuild and reinstall the plugin ZIP.
+
 ## [0.4.22] - 2026-09-22
 
 ### Changed

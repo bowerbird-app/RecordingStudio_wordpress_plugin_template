@@ -156,3 +156,19 @@ function recording_studio_plugin_demo_disconnect(): void {
 	wp_safe_redirect( recording_studio_plugin_demo_settings_url( $notice ) );
 	exit;
 }
+
+function recording_studio_plugin_demo_enqueue_settings_styles( string $hook_suffix ): void {
+	if ( 'settings_page_recording-studio-plugin-demo' !== $hook_suffix ) {
+		return;
+	}
+
+	$plugin_file = dirname( __DIR__ ) . '/recording-studio-widget.php';
+	$style_path  = dirname( __DIR__ ) . '/assets/admin/settings.css';
+
+	wp_enqueue_style(
+		'recording-studio-plugin-demo-settings',
+		plugins_url( 'assets/admin/settings.css', $plugin_file ),
+		array(),
+		(string) filemtime( $style_path )
+	);
+}

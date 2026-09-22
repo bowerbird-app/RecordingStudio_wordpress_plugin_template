@@ -25,6 +25,12 @@ bin/rails tailwindcss:build
 - Oauth dummy tag `v0.4.0`
 - Public RubyGems and GitHub access for dependency installation
 
+## 0.4.23
+
+Settings looks like a FlatPack form inside wp-admin. Styles load only on that screen under `.rs-settings-fp`. ProductConfig, Connect, and API keys are unchanged.
+
+Rebuild and reinstall the plugin ZIP.
+
 ## 0.4.22
 
 Staff edit `ProductConfig` (`NAME`, `OAUTH_CONNECT`, `API_KEYS`) before `bin/build-plugin-zip`. `all()` runs filter `recording_studio_product_config`. Defaults stay both modes on, name `WordPress Plugin Demo`. Site owners do not edit the class. `RECORDING_STUDIO_HOST_BASE_URL` and `RECORDING_STUDIO_CLIENT_ID` stay the wp-config overrides.

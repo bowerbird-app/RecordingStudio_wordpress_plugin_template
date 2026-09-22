@@ -61,6 +61,7 @@ function recording_studio_widget_register_settings_page(): void {
 	);
 }
 add_action( 'admin_menu', 'recording_studio_widget_register_settings_page' );
+add_action( 'admin_enqueue_scripts', 'recording_studio_plugin_demo_enqueue_settings_styles' );
 add_action( 'admin_post_recording_studio_oauth_start', 'recording_studio_plugin_demo_connect_start' );
 add_action( 'admin_post_recording_studio_oauth_callback', 'recording_studio_plugin_demo_connect_callback' );
 add_action( 'admin_post_recording_studio_oauth_disconnect', 'recording_studio_plugin_demo_disconnect' );
