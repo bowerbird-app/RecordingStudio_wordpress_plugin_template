@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.24] - 2026-09-22
+
+### Changed
+- Disconnected Settings shows **Login** and **Register**. Both start the same Connect flow. Connected Settings still shows **Disconnect** and **Connect again**.
+- **Save settings** and **Test connection** sit inside Advanced, after the API key and Secret key. When `API_KEYS` is off, those buttons are absent.
+- `ProductConfig::LOGIN_BUTTON_TEXT` and `REGISTER_BUTTON_TEXT` default to `Login` and `Register`. `all()` exposes `login_button_text` and `register_button_text` on the `recording_studio_product_config` filter. Empty or non-string values fall back to those defaults.
+
+### Upgrade notes
+- Rebuild and reinstall the plugin ZIP. A default ZIP changes the disconnected buttons and moves Save and Test into Advanced. Connected labels stay the same. Set `LOGIN_BUTTON_TEXT` and `REGISTER_BUTTON_TEXT` before the build when a flavor needs different words.
+
 ## [0.4.23] - 2026-09-22
 
 ### Changed

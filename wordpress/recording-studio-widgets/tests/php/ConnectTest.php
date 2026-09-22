@@ -485,8 +485,8 @@ function test_settings_markup_never_prints_connect_tokens(): void {
 	if ( false === strpos( $html, $connect_url ) ) {
 		throw new RuntimeException( 'Connect again must use the same start action as Connect' );
 	}
-	if ( false !== strpos( $html, 'Connect to Recording Studio' ) ) {
-		throw new RuntimeException( 'connected settings should not show the primary Connect button' );
+	if ( false !== strpos( $html, 'Connect to Recording Studio' ) || false !== strpos( $html, '>Login</button>' ) || false !== strpos( $html, '>Register</button>' ) ) {
+		throw new RuntimeException( 'connected settings should keep Disconnect and Connect again' );
 	}
 	if ( false !== strpos( $html, 'rsoauth_at_should_never_render' ) || false !== strpos( $html, 'rsoauth_rt_should_never_render' ) ) {
 		throw new RuntimeException( 'Connect tokens leaked into settings HTML' );
@@ -554,9 +554,16 @@ function rs_finish_with_token_error_body( string $host_error ): string {
 }
 
 function test_settings_markup_when_disconnected_shows_primary_connect(): void {
-	$html = rs_settings_markup( false );
-	if ( false === strpos( $html, 'Connect to Recording Studio' ) ) {
-		throw new RuntimeException( 'disconnected settings missing primary Connect' );
+	$html  = rs_settings_markup( false );
+	$start = 'http://localhost:8888/wp-admin/admin-post.php?action=recording_studio_oauth_start';
+	if ( 2 !== substr_count( $html, 'formaction="' . $start . '"' ) ) {
+		throw new RuntimeException( 'disconnected settings should start Connect from Login and Register' );
+	}
+	if ( false === strpos( $html, '>Login</button>' ) || false === strpos( $html, '>Register</button>' ) ) {
+		throw new RuntimeException( 'disconnected settings missing Login and Register' );
+	}
+	if ( false !== strpos( $html, 'Connect to Recording Studio' ) ) {
+		throw new RuntimeException( 'disconnected settings should not show Connect to Recording Studio' );
 	}
 	if ( false !== strpos( $html, 'Connect again' ) ) {
 		throw new RuntimeException( 'disconnected settings should not show Connect again' );
@@ -579,7 +586,8 @@ function test_settings_markup_is_connect_button_then_advanced_keys(): void {
 		'http://localhost:8888/wp-admin/admin-post.php?action=recording_studio_oauth_disconnect'
 	);
 
-	$connect_pos  = strpos( $html, 'Connect to Recording Studio' );
+	$login_pos    = strpos( $html, '>Login</button>' );
+	$register_pos = strpos( $html, '>Register</button>' );
 	$advanced_pos = strpos( $html, '<summary>Advanced</summary>' );
 	$intro_pos    = strpos( $html, 'Connect via API key' );
 	$api_pos      = strpos( $html, '>API key<' );
@@ -588,8 +596,8 @@ function test_settings_markup_is_connect_button_then_advanced_keys(): void {
 	$save_pos     = strpos( $html, 'Save settings' );
 	$test_pos     = strpos( $html, 'Test connection' );
 
-	if ( false === $connect_pos ) {
-		throw new RuntimeException( 'happy path must show Connect' );
+	if ( false === $login_pos || false === $register_pos ) {
+		throw new RuntimeException( 'happy path must show Login and Register' );
 	}
 	if ( false !== strpos( $html, 'Host base URL' ) || false !== strpos( $html, 'OAuth client id' ) ) {
 		throw new RuntimeException( 'happy path must not show host or client id fields' );
@@ -597,8 +605,8 @@ function test_settings_markup_is_connect_button_then_advanced_keys(): void {
 	if ( false !== strpos( $html, 'Token URL override' ) ) {
 		throw new RuntimeException( 'Advanced must not show a token URL override' );
 	}
-	if ( false === $advanced_pos || $connect_pos > $advanced_pos ) {
-		throw new RuntimeException( 'Advanced must come after Connect' );
+	if ( false === $advanced_pos || $login_pos > $advanced_pos || $register_pos > $advanced_pos ) {
+		throw new RuntimeException( 'Advanced must come after Login and Register' );
 	}
 	if ( false === $intro_pos || $advanced_pos > $intro_pos ) {
 		throw new RuntimeException( 'Advanced must introduce Connect via API key' );
@@ -612,11 +620,11 @@ function test_settings_markup_is_connect_button_then_advanced_keys(): void {
 	if ( false === $details_end || $secret_pos > $details_end ) {
 		throw new RuntimeException( 'Advanced fields must stay inside the dropdown' );
 	}
-	if ( false === $save_pos || $details_end > $save_pos ) {
-		throw new RuntimeException( 'Save settings must sit after Advanced' );
+	if ( false === $save_pos || $secret_pos > $save_pos || $save_pos > $details_end ) {
+		throw new RuntimeException( 'Save settings must sit inside Advanced after Secret key' );
 	}
-	if ( false === $test_pos || $save_pos > $test_pos ) {
-		throw new RuntimeException( 'Test connection must follow Save settings' );
+	if ( false === $test_pos || $save_pos > $test_pos || $test_pos > $details_end ) {
+		throw new RuntimeException( 'Test connection must follow Save settings inside Advanced' );
 	}
 	if ( false !== strpos( $html, 'OAuth client secret' ) ) {
 		throw new RuntimeException( 'Advanced must not say OAuth client secret' );
