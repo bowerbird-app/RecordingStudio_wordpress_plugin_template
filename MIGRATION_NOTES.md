@@ -25,6 +25,12 @@ bin/rails tailwindcss:build
 - Oauth dummy tag `v0.4.0`
 - Public RubyGems and GitHub access for dependency installation
 
+## 0.4.22
+
+Staff edit `ProductConfig` (`NAME`, `OAUTH_CONNECT`, `API_KEYS`) before `bin/build-plugin-zip`. `all()` runs filter `recording_studio_product_config`. Defaults stay both modes on, name `WordPress Plugin Demo`. Site owners do not edit the class. `RECORDING_STUDIO_HOST_BASE_URL` and `RECORDING_STUDIO_CLIENT_ID` stay the wp-config overrides.
+
+Rebuild the ZIP only when you want a different name or a single connect mode. A default ZIP does not change Settings.
+
 ## 0.4.21
 
 Connect uses the Oauth 0.4.0 central relay. PHP path constants match those gem paths. `db:seed` still does not create the WordPress client.
