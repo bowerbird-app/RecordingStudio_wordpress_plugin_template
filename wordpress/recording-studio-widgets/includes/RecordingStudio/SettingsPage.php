@@ -23,7 +23,12 @@ final class SettingsPage {
 		}
 
 		$html  = '<div class="wrap rs-settings-fp">';
-		$html .= '<h1 class="rs-settings-fp__title">' . esc_html( (string) $config['name'] ) . '</h1>';
+		$html .= '<h1 class="rs-settings-fp__title">';
+		$logo  = ProductConfig::logo_url();
+		if ( '' !== $logo ) {
+			$html .= '<img class="rs-settings-fp__logo" src="' . esc_url( $logo ) . '" alt="" width="32" height="32" />';
+		}
+		$html .= esc_html( (string) $config['name'] ) . '</h1>';
 		$html .= self::notice_markup( $notice, (bool) $config['oauth_connect'] );
 		$html .= '<form method="post" class="rs-settings-fp__card">';
 		$html .= $nonce_html;

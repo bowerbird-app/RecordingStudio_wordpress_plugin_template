@@ -17,6 +17,9 @@
 }
 
 .rs-settings-fp h1.rs-settings-fp__title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
   margin: 0 0 1rem;
   padding: 0;
   color: var(--rs-charcoal);
@@ -24,6 +27,13 @@
   font-size: 1.5rem;
   font-weight: 600;
   line-height: 1.2;
+}
+
+.rs-settings-fp .rs-settings-fp__logo {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  border-radius: 0.375rem;
 }
 
 .rs-settings-fp > .notice.rs-settings-fp__alert {

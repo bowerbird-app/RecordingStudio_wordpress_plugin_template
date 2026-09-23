@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace RecordingStudio;
 
 final class ProductConfig {
-	public const NAME                 = 'WordPress Plugin Demo';
+	public const NAME                 = 'WP Template Demo';
+	public const DESCRIPTION          = 'Shows a page from your studio.';
 	public const OAUTH_CONNECT        = true;
-	public const API_KEYS             = true;
+	public const API_KEYS             = false;
 	public const REGISTER             = true;
 	public const LOGIN_BUTTON_TEXT    = 'Login';
 	public const REGISTER_BUTTON_TEXT = 'Register';
@@ -15,11 +16,12 @@ final class ProductConfig {
 	public const EDITOR_SCRIPT_HANDLE = 'recording-studio-recording-studio-widget-editor-script';
 
 	/**
-	 * @return array{name: string, oauth_connect: bool, api_keys: bool, register: bool, login_button_text: string, register_button_text: string, logo: string}
+	 * @return array{name: string, description: string, oauth_connect: bool, api_keys: bool, register: bool, login_button_text: string, register_button_text: string, logo: string}
 	 */
 	public static function all(): array {
 		$config = array(
 			'name'                 => self::NAME,
+			'description'          => self::DESCRIPTION,
 			'oauth_connect'        => self::OAUTH_CONNECT,
 			'api_keys'             => self::API_KEYS,
 			'register'             => self::REGISTER,
@@ -37,6 +39,7 @@ final class ProductConfig {
 
 		return array(
 			'name'                 => self::normalize_text( $config['name'] ?? null, self::NAME ),
+			'description'          => self::normalize_text( $config['description'] ?? null, self::DESCRIPTION ),
 			'oauth_connect'        => self::normalize_flag( $config['oauth_connect'] ?? null, self::OAUTH_CONNECT ),
 			'api_keys'             => self::normalize_flag( $config['api_keys'] ?? null, self::API_KEYS ),
 			'register'             => self::normalize_flag( $config['register'] ?? null, self::REGISTER ),
@@ -44,6 +47,18 @@ final class ProductConfig {
 			'register_button_text' => self::normalize_text( $config['register_button_text'] ?? null, self::REGISTER_BUTTON_TEXT ),
 			'logo'                 => self::normalize_logo( $config['logo'] ?? null ),
 		);
+	}
+
+	public static function filter_block_metadata( array $metadata ): array {
+		if ( ( $metadata['name'] ?? '' ) !== 'recording-studio/recording-studio-widget' ) {
+			return $metadata;
+		}
+
+		$config                  = self::all();
+		$metadata['title']       = $config['name'];
+		$metadata['description'] = $config['description'];
+
+		return $metadata;
 	}
 
 	public static function logo_url(): string {
@@ -61,11 +76,15 @@ final class ProductConfig {
 	}
 
 	/**
-	 * @return array{logoUrl: string}
+	 * @return array{name: string, description: string, logoUrl: string}
 	 */
 	public static function editor_config(): array {
+		$config = self::all();
+
 		return array(
-			'logoUrl' => self::logo_url(),
+			'name'        => $config['name'],
+			'description' => $config['description'],
+			'logoUrl'     => self::logo_url(),
 		);
 	}
 

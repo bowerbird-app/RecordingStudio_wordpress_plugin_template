@@ -6,9 +6,9 @@ return array(
 		'apiVersion' => 3,
 		'name' => 'recording-studio/recording-studio-widget',
 		'version' => '0.2.0',
-		'title' => 'WordPress Plugin Demo',
+		'title' => 'WP Template Demo',
 		'category' => 'widgets',
-		'description' => 'Embeds a Recording Studio page from the wp_plugin_demo host API. Server-rendered payload; SDK mounts on the front.',
+		'description' => 'Shows a page from your studio.',
 		'example' => array(
 			
 		),

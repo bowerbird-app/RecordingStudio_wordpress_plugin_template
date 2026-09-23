@@ -42,9 +42,10 @@ function test_product_config_defaults_and_disconnected_markup(): void {
 	rs_clear_product_config_filter();
 
 	$expected = array(
-		'name'                 => 'WordPress Plugin Demo',
+		'name'                 => 'WP Template Demo',
+		'description'          => 'Shows a page from your studio.',
 		'oauth_connect'        => true,
-		'api_keys'             => true,
+		'api_keys'             => false,
 		'register'             => true,
 		'login_button_text'    => 'Login',
 		'register_button_text' => 'Register',
@@ -55,8 +56,14 @@ function test_product_config_defaults_and_disconnected_markup(): void {
 	}
 
 	$html = rs_product_config_markup( false );
-	if ( false === strpos( $html, 'WordPress Plugin Demo' ) ) {
+	if ( false === strpos( $html, 'WP Template Demo' ) ) {
 		throw new RuntimeException( 'disconnected markup missing default name' );
+	}
+	$logo_url = 'http://localhost:8888/wp-content/plugins/recording-studio-widgets/build/brand/product-logo-red.jpg';
+	$logo_pos = strpos( $html, '<img class="rs-settings-fp__logo" src="' . $logo_url . '" alt="" width="32" height="32" />' );
+	$name_pos = strpos( $html, 'WP Template Demo' );
+	if ( false === $logo_pos || false === $name_pos || $logo_pos > $name_pos ) {
+		throw new RuntimeException( 'settings heading should show the product logo before the title' );
 	}
 	if ( false === strpos( $html, '>Login</button>' ) || false === strpos( $html, '>Register</a>' ) ) {
 		throw new RuntimeException( 'disconnected markup missing Login and Register' );
@@ -64,17 +71,14 @@ function test_product_config_defaults_and_disconnected_markup(): void {
 	if ( false !== strpos( $html, 'Connect to Recording Studio' ) ) {
 		throw new RuntimeException( 'disconnected markup should not show Connect to Recording Studio' );
 	}
-	if ( false === strpos( $html, '<summary>Advanced</summary>' ) ) {
-		throw new RuntimeException( 'disconnected markup missing Advanced' );
+	if ( false !== strpos( $html, '<summary>Advanced</summary>' ) ) {
+		throw new RuntimeException( 'demo markup should hide Advanced while API_KEYS is false' );
 	}
-	if ( false === strpos( $html, 'name="rs_api_key"' ) ) {
-		throw new RuntimeException( 'disconnected markup missing API key field' );
+	if ( false !== strpos( $html, 'Connect via API key' ) || false !== strpos( $html, 'name="rs_api_key"' ) ) {
+		throw new RuntimeException( 'demo markup should hide Connect via API key' );
 	}
-	if ( false === strpos( $html, 'Save settings' ) ) {
-		throw new RuntimeException( 'disconnected markup missing Save settings' );
-	}
-	if ( false === strpos( $html, 'Test connection' ) ) {
-		throw new RuntimeException( 'disconnected markup missing Test connection' );
+	if ( false !== strpos( $html, 'Save settings' ) || false !== strpos( $html, 'Test connection' ) ) {
+		throw new RuntimeException( 'demo markup should hide Save settings and Test connection' );
 	}
 
 	rs_clear_product_config_filter();
@@ -116,6 +120,7 @@ function test_product_config_api_only_hides_connect(): void {
 		'recording_studio_product_config',
 		static function ( array $config ): array {
 			$config['oauth_connect'] = false;
+			$config['api_keys']      = true;
 			return $config;
 		}
 	);
@@ -168,7 +173,7 @@ function test_product_config_button_texts_trim_and_fall_back(): void {
 	if ( 'Register' !== $all['register_button_text'] ) {
 		throw new RuntimeException( 'blank register button text should fall back to Register' );
 	}
-	if ( 'WordPress Plugin Demo' !== $all['name'] ) {
+	if ( 'WP Template Demo' !== $all['name'] ) {
 		throw new RuntimeException( 'non-string name should fall back to the default' );
 	}
 
@@ -209,7 +214,7 @@ function test_product_config_filter_overrides_name(): void {
 	if ( false === strpos( $html, 'Harbor Widgets' ) ) {
 		throw new RuntimeException( 'markup missing filtered name' );
 	}
-	if ( false !== strpos( $html, 'WordPress Plugin Demo' ) ) {
+	if ( false !== strpos( $html, 'WP Template Demo' ) ) {
 		throw new RuntimeException( 'markup still shows the default name' );
 	}
 
@@ -256,6 +261,13 @@ function test_product_config_omits_posted_keys_when_api_keys_off(): void {
 
 function test_product_config_empty_secret_clears_when_api_keys_on(): void {
 	rs_clear_product_config_filter();
+	add_filter(
+		'recording_studio_product_config',
+		static function ( array $config ): array {
+			$config['api_keys'] = true;
+			return $config;
+		}
+	);
 
 	update_option(
 		PluginSettings::OPTION_KEY,
@@ -365,9 +377,38 @@ function test_product_config_logo_ships_the_red_jpeg_to_the_block(): void {
 	$json = substr( $data, strlen( 'window.recordingStudioProductConfig = ' ) );
 	$json = rtrim( $json, ';' );
 	$decoded = json_decode( $json, true );
-	$logo_url = is_array( $decoded ) ? (string) ( $decoded['logoUrl'] ?? '' ) : '';
+	if ( ! is_array( $decoded ) ) {
+		throw new RuntimeException( 'editor config was not JSON' );
+	}
+	if ( 'WP Template Demo' !== ( $decoded['name'] ?? '' ) ) {
+		throw new RuntimeException( 'editor config name mismatch, got ' . (string) ( $decoded['name'] ?? '' ) );
+	}
+	if ( 'Shows a page from your studio.' !== ( $decoded['description'] ?? '' ) ) {
+		throw new RuntimeException( 'editor config description mismatch, got ' . (string) ( $decoded['description'] ?? '' ) );
+	}
+	$logo_url = (string) ( $decoded['logoUrl'] ?? '' );
 	if ( 'http://localhost:8888/wp-content/plugins/recording-studio-widgets/build/brand/product-logo-red.jpg' !== $logo_url ) {
 		throw new RuntimeException( 'editor config logo url mismatch, got ' . $logo_url );
+	}
+
+	$metadata = ProductConfig::filter_block_metadata(
+		array(
+			'name'        => 'recording-studio/recording-studio-widget',
+			'title'       => 'WordPress Plugin Demo',
+			'description' => 'Embeds a Recording Studio page from the wp_plugin_demo host API. Server-rendered payload; SDK mounts on the front.',
+		)
+	);
+	if ( 'WP Template Demo' !== $metadata['title'] || 'Shows a page from your studio.' !== $metadata['description'] ) {
+		throw new RuntimeException( 'block metadata should take the product name and description' );
+	}
+	$other = ProductConfig::filter_block_metadata(
+		array(
+			'name'  => 'core/paragraph',
+			'title' => 'Paragraph',
+		)
+	);
+	if ( 'Paragraph' !== $other['title'] ) {
+		throw new RuntimeException( 'block metadata filter should ignore other blocks' );
 	}
 }
 

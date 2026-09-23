@@ -27,6 +27,13 @@ require_once dirname( __DIR__, 2 ) . '/includes/settings-page.php';
 
 function rs_settings_look_markup( bool $connected ): string {
 	rs_clear_product_config_filter();
+	add_filter(
+		'recording_studio_product_config',
+		static function ( array $config ): array {
+			$config['api_keys'] = true;
+			return $config;
+		}
+	);
 	return SettingsPage::markup(
 		array(
 			'client_id'     => 'legacy-shared-id',

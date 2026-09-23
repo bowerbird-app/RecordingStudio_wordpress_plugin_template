@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.26] - 2026-09-23
+
+### Changed
+- `ProductConfig::NAME` is `WP Template Demo`. The Settings menu label, Settings heading, and block title use that name.
+- `ProductConfig::DESCRIPTION` is the block description under the block title. The demo sentence is `Shows a page from your studio.`
+- `ProductConfig::API_KEYS` is `false`. Advanced, **Connect via API key**, the API key, the Secret key, **Save settings**, and **Test connection** stay in the plugin and stay hidden until that flag is `true`.
+- The Settings heading shows `ProductConfig::LOGO` before the title. The block icon still uses that same file.
+- The page dropdown reads the host index field `title`. The seeded Getting Started page returns that title from `GET /recording_studio_api/apis/wp_plugin_demo/v1/pages`.
+
+### Upgrade notes
+- Rebuild with `bin/build-plugin-zip` from the repository root, reinstall the ZIP, and refresh WordPress.
+- Set `API_KEYS` to `true` in `ProductConfig.php` and rebuild when a flavor should show Advanced again.
+- Change `DESCRIPTION` in `ProductConfig.php` and rebuild to change the block sidebar description. `REGISTER` stays a boolean and stays `true` in this demo.
+
 ## [0.4.25] - 2026-09-23
 
 ### Changed

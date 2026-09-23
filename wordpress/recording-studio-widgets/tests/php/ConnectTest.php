@@ -491,7 +491,7 @@ function test_settings_markup_never_prints_connect_tokens(): void {
 	if ( false !== strpos( $html, 'rsoauth_at_should_never_render' ) || false !== strpos( $html, 'rsoauth_rt_should_never_render' ) ) {
 		throw new RuntimeException( 'Connect tokens leaked into settings HTML' );
 	}
-	if ( false === strpos( $html, 'WordPress Plugin Demo' ) ) {
+	if ( false === strpos( $html, 'WP Template Demo' ) ) {
 		throw new RuntimeException( 'settings title missing product name' );
 	}
 	if ( preg_match( '/\b(recordable|actor|root)\b/i', $html ) ) {
@@ -576,6 +576,14 @@ function test_settings_markup_when_disconnected_shows_primary_connect(): void {
 }
 
 function test_settings_markup_is_connect_button_then_advanced_keys(): void {
+	rs_clear_product_config_filter();
+	add_filter(
+		'recording_studio_product_config',
+		static function ( array $config ): array {
+			$config['api_keys'] = true;
+			return $config;
+		}
+	);
 	$html = SettingsPage::markup(
 		array(
 			'client_id'     => 'legacy-shared-id',
@@ -636,6 +644,7 @@ function test_settings_markup_is_connect_button_then_advanced_keys(): void {
 	if ( ! preg_match( '/name="rs_api_key"[^>]*value="legacy-shared-id"/', $html ) ) {
 		throw new RuntimeException( 'legacy secret should show the stored client_id in the API key field' );
 	}
+	rs_clear_product_config_filter();
 }
 
 function test_connect_again_shows_leaving_page_while_already_connected(): void {

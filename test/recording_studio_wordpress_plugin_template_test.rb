@@ -7,7 +7,7 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     "Site owners do not enter a client id, open Registered Apps, or edit wp-config for normal use."
 
   def test_version_matches_release
-    assert_equal "0.4.25", ::RecordingStudioWordpressPluginTemplate::VERSION
+    assert_equal "0.4.26", ::RecordingStudioWordpressPluginTemplate::VERSION
   end
 
   def test_engine_exists
@@ -54,7 +54,8 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     assert_includes plugin, "Plugin Name:       WordPress Plugin Demo"
     assert_includes plugin, "recording_studio_widget_register_settings_page"
     assert_equal "recording-studio/recording-studio-widget", block["name"]
-    assert_equal "WordPress Plugin Demo", block["title"]
+    assert_equal "WP Template Demo", block["title"]
+    assert_equal "Shows a page from your studio.", block["description"]
     assert_equal "file:./render.php", block["render"]
     assert_equal "file:./front.js", block["viewScript"]
     assert block.dig("attributes", "pageRecordingId")

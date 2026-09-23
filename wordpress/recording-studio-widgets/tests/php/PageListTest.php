@@ -49,6 +49,35 @@ function test_page_choice_parses_records_and_ignores_other_keys(): void {
 	}
 }
 
+function test_page_choice_reads_the_host_index_title(): void {
+	$pages = PageChoice::list_from_index_body(
+		array(
+			'resource' => 'pages',
+			'type'     => 'Page',
+			'records'  => array(
+				array(
+					'id'         => RS_TEST_PAGE_UUID,
+					'type'       => 'Page',
+					'parent_id'  => 'b48f6bcf-3f8d-47a0-84e8-b40c438d37de',
+					'root_id'    => 'd1971764-b179-4736-9eab-207990cbb1da',
+					'created_at' => '2026-09-23T05:28:31Z',
+					'updated_at' => '2026-09-23T05:28:31Z',
+					'title'      => 'Getting Started',
+				),
+			),
+		)
+	);
+
+	if ( 1 !== count( $pages ) || 'Getting Started' !== $pages[0]->title ) {
+		throw new RuntimeException( 'host index title was not copied onto the page choice' );
+	}
+
+	$payload = $pages[0]->to_array();
+	if ( 'Getting Started' !== ( $payload['title'] ?? '' ) ) {
+		throw new RuntimeException( 'editor page list dropped the host title' );
+	}
+}
+
 function test_empty_page_list_still_allows_pasted_uuid(): void {
 	$pages = PageChoice::list_from_records( array() );
 	if ( array() !== $pages ) {
