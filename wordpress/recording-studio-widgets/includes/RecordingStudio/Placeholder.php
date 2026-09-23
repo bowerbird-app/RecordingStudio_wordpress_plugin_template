@@ -6,10 +6,13 @@ namespace RecordingStudio;
 
 final class Placeholder {
 	public static function front_message(): string {
-		return '<p ' . get_block_wrapper_attributes() . '>' . esc_html__(
-			'Pick a page in the block settings to show the WordPress Plugin Demo embed.',
-			'recording-studio-widget'
-		) . '</p>';
+		$text = sprintf(
+			/* translators: %s: product name. */
+			__( 'Pick a page in the block settings to show the %s embed.', 'recording-studio-widget' ),
+			ProductConfig::all()['name']
+		);
+
+		return '<p ' . get_block_wrapper_attributes() . '>' . esc_html( $text ) . '</p>';
 	}
 
 	public static function embed_error_markup( string $code, ?EmbedRequest $request = null ): string {
@@ -17,7 +20,28 @@ final class Placeholder {
 	}
 
 	public static function settings_incomplete_message(): string {
-		return __( 'Connect this site under Settings → WordPress Plugin Demo, or add API keys under Advanced.', 'recording-studio-widget' );
+		$config = ProductConfig::all();
+		$name   = $config['name'];
+		if ( $config['oauth_connect'] && $config['api_keys'] ) {
+			return sprintf(
+				/* translators: %s: product name. */
+				__( 'Connect this site under Settings → %s, or add API keys under Advanced.', 'recording-studio-widget' ),
+				$name
+			);
+		}
+		if ( $config['api_keys'] ) {
+			return sprintf(
+				/* translators: %s: product name. */
+				__( 'Add an API key and secret under Settings → %s.', 'recording-studio-widget' ),
+				$name
+			);
+		}
+
+		return sprintf(
+			/* translators: %s: product name. */
+			__( 'Connect this site under Settings → %s.', 'recording-studio-widget' ),
+			$name
+		);
 	}
 
 	public static function embed_error_message( string $code, ?EmbedRequest $request = null ): string {
@@ -47,7 +71,11 @@ final class Placeholder {
 				}
 				return __( 'Could not load the embed from the host.', 'recording-studio-widget' );
 			default:
-				return __( 'Something went wrong loading the WordPress Plugin Demo embed.', 'recording-studio-widget' );
+				return sprintf(
+					/* translators: %s: product name. */
+					__( 'Something went wrong loading the %s embed.', 'recording-studio-widget' ),
+					ProductConfig::all()['name']
+				);
 		}
 	}
 }

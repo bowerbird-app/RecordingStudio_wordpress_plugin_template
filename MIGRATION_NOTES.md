@@ -25,6 +25,18 @@ bin/rails tailwindcss:build
 - Oauth dummy tag `v0.5.0`
 - Public RubyGems and GitHub access for dependency installation
 
+## 0.4.26
+
+`ProductConfig::NAME` is `WP Template Demo`. Settings uses that string for the menu label and the page heading, and the heading shows `ProductConfig::LOGO` before the words. The block title and the sentence under it come from `NAME` and `DESCRIPTION`. The demo description is `Shows a page from your studio.`
+
+`ProductConfig::API_KEYS` is `false`. The Advanced section and its API key fields stay in the plugin. They render again when `API_KEYS` is `true`.
+
+`ProductConfig` no longer has `REGISTER` or `REGISTER_BUTTON_TEXT`. Disconnected Settings shows Login only. The plugin does not call `GET {host}/recording_studio_oauth/connect/options`. A `recording_studio_product_config` filter that still sets `register`, `register_button_text`, or `link_to` is ignored. Host **Allow registration** on the WordPress app is unchanged.
+
+The page dropdown label is the host record `title`. For the seeded Getting Started page, that value is `Getting Started`.
+
+Rebuild with `bin/build-plugin-zip`, reinstall the ZIP, and refresh WordPress. A `ProductConfig` edit does not show up until that rebuild.
+
 ## 0.4.25
 
 `ProductConfig::REGISTER` is a boolean. There is no `link_to`. `REGISTER_BUTTON_TEXT` still sets the label when Register is shown. `ProductConfig::LOGO` points at `build/brand/product-logo-red.jpg`, and that file is the block icon.

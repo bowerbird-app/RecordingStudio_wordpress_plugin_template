@@ -22,8 +22,8 @@ class CursorSkillFetchTest < ActiveSupport::TestCase
     assert_includes script, 'RULES_DIR="${ROOT}/.cursor/rules"'
   end
 
-  test "gem version is 0.4.25 and gemspec still excludes .cursor" do
-    assert_equal "0.4.25", RecordingStudioWordpressPluginTemplate::VERSION
+  test "gem version is 0.4.26 and gemspec still excludes .cursor" do
+    assert_equal "0.4.26", RecordingStudioWordpressPluginTemplate::VERSION
 
     spec = Gem::Specification.load(
       RecordingStudioWordpressPluginTemplate::Engine.root.join(

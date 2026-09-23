@@ -491,7 +491,7 @@ function test_settings_markup_never_prints_connect_tokens(): void {
 	if ( false !== strpos( $html, 'rsoauth_at_should_never_render' ) || false !== strpos( $html, 'rsoauth_rt_should_never_render' ) ) {
 		throw new RuntimeException( 'Connect tokens leaked into settings HTML' );
 	}
-	if ( false === strpos( $html, 'WordPress Plugin Demo' ) ) {
+	if ( false === strpos( $html, 'WP Template Demo' ) ) {
 		throw new RuntimeException( 'settings title missing product name' );
 	}
 	if ( preg_match( '/\b(recordable|actor|root)\b/i', $html ) ) {
@@ -520,9 +520,7 @@ function rs_settings_markup( bool $connected, string $notice = '' ): string {
 		$notice,
 		new ConnectStatus( $connected ),
 		'http://localhost:8888/wp-admin/admin-post.php?action=recording_studio_oauth_start',
-		'http://localhost:8888/wp-admin/admin-post.php?action=recording_studio_oauth_disconnect',
-		'',
-		rs_open_registration_offer()
+		'http://localhost:8888/wp-admin/admin-post.php?action=recording_studio_oauth_disconnect'
 	);
 }
 
@@ -561,8 +559,11 @@ function test_settings_markup_when_disconnected_shows_primary_connect(): void {
 	if ( 1 !== substr_count( $html, 'formaction="' . $start . '"' ) ) {
 		throw new RuntimeException( 'disconnected settings should start Connect from Login only' );
 	}
-	if ( false === strpos( $html, '>Login</button>' ) || false === strpos( $html, '>Register</a>' ) ) {
-		throw new RuntimeException( 'disconnected settings missing Login and Register' );
+	if ( false === strpos( $html, '>Login</button>' ) ) {
+		throw new RuntimeException( 'disconnected settings missing Login' );
+	}
+	if ( false !== strpos( $html, '>Register</a>' ) || false !== strpos( $html, '>Register</button>' ) ) {
+		throw new RuntimeException( 'disconnected settings must not show Register' );
 	}
 	if ( false !== strpos( $html, 'Connect to Recording Studio' ) ) {
 		throw new RuntimeException( 'disconnected settings should not show Connect to Recording Studio' );
@@ -576,6 +577,14 @@ function test_settings_markup_when_disconnected_shows_primary_connect(): void {
 }
 
 function test_settings_markup_is_connect_button_then_advanced_keys(): void {
+	rs_clear_product_config_filter();
+	add_filter(
+		'recording_studio_product_config',
+		static function ( array $config ): array {
+			$config['api_keys'] = true;
+			return $config;
+		}
+	);
 	$html = SettingsPage::markup(
 		array(
 			'client_id'     => 'legacy-shared-id',
@@ -585,13 +594,10 @@ function test_settings_markup_is_connect_button_then_advanced_keys(): void {
 		'',
 		new ConnectStatus( false ),
 		'http://localhost:8888/wp-admin/admin-post.php?action=recording_studio_oauth_start',
-		'http://localhost:8888/wp-admin/admin-post.php?action=recording_studio_oauth_disconnect',
-		'',
-		rs_open_registration_offer()
+		'http://localhost:8888/wp-admin/admin-post.php?action=recording_studio_oauth_disconnect'
 	);
 
 	$login_pos    = strpos( $html, '>Login</button>' );
-	$register_pos = strpos( $html, '>Register</a>' );
 	$advanced_pos = strpos( $html, '<summary>Advanced</summary>' );
 	$intro_pos    = strpos( $html, 'Connect via API key' );
 	$api_pos      = strpos( $html, '>API key<' );
@@ -600,8 +606,11 @@ function test_settings_markup_is_connect_button_then_advanced_keys(): void {
 	$save_pos     = strpos( $html, 'Save settings' );
 	$test_pos     = strpos( $html, 'Test connection' );
 
-	if ( false === $login_pos || false === $register_pos ) {
-		throw new RuntimeException( 'happy path must show Login and Register' );
+	if ( false === $login_pos ) {
+		throw new RuntimeException( 'happy path must show Login' );
+	}
+	if ( false !== strpos( $html, '>Register</a>' ) || false !== strpos( $html, '>Register</button>' ) ) {
+		throw new RuntimeException( 'happy path must not show Register' );
 	}
 	if ( false !== strpos( $html, 'Host base URL' ) || false !== strpos( $html, 'OAuth client id' ) ) {
 		throw new RuntimeException( 'happy path must not show host or client id fields' );
@@ -609,8 +618,8 @@ function test_settings_markup_is_connect_button_then_advanced_keys(): void {
 	if ( false !== strpos( $html, 'Token URL override' ) ) {
 		throw new RuntimeException( 'Advanced must not show a token URL override' );
 	}
-	if ( false === $advanced_pos || $login_pos > $advanced_pos || $register_pos > $advanced_pos ) {
-		throw new RuntimeException( 'Advanced must come after Login and Register' );
+	if ( false === $advanced_pos || $login_pos > $advanced_pos ) {
+		throw new RuntimeException( 'Advanced must come after Login' );
 	}
 	if ( false === $intro_pos || $advanced_pos > $intro_pos ) {
 		throw new RuntimeException( 'Advanced must introduce Connect via API key' );
@@ -636,6 +645,7 @@ function test_settings_markup_is_connect_button_then_advanced_keys(): void {
 	if ( ! preg_match( '/name="rs_api_key"[^>]*value="legacy-shared-id"/', $html ) ) {
 		throw new RuntimeException( 'legacy secret should show the stored client_id in the API key field' );
 	}
+	rs_clear_product_config_filter();
 }
 
 function test_connect_again_shows_leaving_page_while_already_connected(): void {

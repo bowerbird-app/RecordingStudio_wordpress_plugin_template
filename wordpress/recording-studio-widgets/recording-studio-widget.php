@@ -49,6 +49,7 @@ function recording_studio_recording_studio_widget_block_init(): void {
 	wp_register_block_types_from_metadata_collection( $build, $manifest );
 	\RecordingStudio\ProductConfig::enqueue_editor_config();
 }
+add_filter( 'block_type_metadata', array( '\RecordingStudio\ProductConfig', 'filter_block_metadata' ) );
 add_action( 'init', 'recording_studio_recording_studio_widget_block_init' );
 
 function recording_studio_widget_register_settings_page(): void {

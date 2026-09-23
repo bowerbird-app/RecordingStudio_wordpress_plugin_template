@@ -5,10 +5,11 @@ import {
 	Spinner,
 	Notice,
 } from '@wordpress/components';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import apiFetch from '@wordpress/api-fetch';
 import { useState, useEffect } from '@wordpress/element';
 import { pageSelectOptions, pickerMode } from './page-picker.mjs';
+import { productText } from './product-text.mjs';
 
 async function fetchEditorPreview( pageRecordingId ) {
 	return apiFetch( {
@@ -102,16 +103,14 @@ export default function Edit( { attributes, setAttributes } ) {
 		__( 'Pick a page', 'recording-studio-widget' ),
 		__( 'Untitled', 'recording-studio-widget' )
 	);
+	const productName =
+		productText( 'name' ) ||
+		__( 'WP Template Demo', 'recording-studio-widget' );
 
 	return (
 		<>
 			<InspectorControls>
-				<PanelBody
-					title={ __(
-						'WordPress Plugin Demo',
-						'recording-studio-widget'
-					) }
-				>
+				<PanelBody title={ productName }>
 					{ mode === 'loading' && <Spinner /> }
 					{ mode === 'empty' && (
 						<p>
@@ -136,9 +135,13 @@ export default function Edit( { attributes, setAttributes } ) {
 			<div { ...blockProps }>
 				{ ! pageRecordingId.trim() && (
 					<p>
-						{ __(
-							'Pick a page in the block settings to preview the WordPress Plugin Demo embed.',
-							'recording-studio-widget'
+						{ sprintf(
+							/* translators: %s: product name. */
+							__(
+								'Pick a page in the block settings to preview the %s embed.',
+								'recording-studio-widget'
+							),
+							productName
 						) }
 					</p>
 				) }

@@ -141,6 +141,15 @@ function test_plugin_settings_blank_secret_clears_stored_secret(): void {
 }
 
 function test_settings_form_blank_secret_clears_storage(): void {
+	rs_clear_product_config_filter();
+	add_filter(
+		'recording_studio_product_config',
+		static function ( array $config ): array {
+			$config['api_keys'] = true;
+			return $config;
+		}
+	);
+
 	update_option(
 		PluginSettings::OPTION_KEY,
 		array(
@@ -161,6 +170,7 @@ function test_settings_form_blank_secret_clears_storage(): void {
 	if ( array_key_exists( 'host_base_url', SettingsForm::read_post() ) || array_key_exists( 'client_id', SettingsForm::read_post() ) ) {
 		throw new RuntimeException( 'Settings form should not read host or client id' );
 	}
+	rs_clear_product_config_filter();
 }
 
 function test_plugin_settings_omitted_secret_keeps_stored_secret(): void {

@@ -7,9 +7,10 @@ function test_block_icon_uses_product_logo_and_page_picker_has_no_id_field(): vo
 	$block_json  = file_get_contents( $plugin_root . '/src/recording-studio-widget/block.json' );
 	$edit        = file_get_contents( $plugin_root . '/src/recording-studio-widget/edit.js' );
 	$index       = file_get_contents( $plugin_root . '/src/recording-studio-widget/index.js' );
+	$product     = file_get_contents( $plugin_root . '/src/recording-studio-widget/product-text.mjs' );
 	$built       = file_get_contents( $plugin_root . '/build/recording-studio-widget/index.js' );
 	$built_block = file_get_contents( $plugin_root . '/build/recording-studio-widget/block.json' );
-	if ( false === $block_json || false === $edit || false === $index || false === $built || false === $built_block ) {
+	if ( false === $block_json || false === $edit || false === $index || false === $product || false === $built || false === $built_block ) {
 		throw new RuntimeException( 'could not read block sources' );
 	}
 	if ( false !== strpos( $block_json, 'smiley' ) || false !== strpos( $built_block, 'smiley' ) ) {
@@ -21,7 +22,7 @@ function test_block_icon_uses_product_logo_and_page_picker_has_no_id_field(): vo
 	if ( false === strpos( $edit, 'No pages yet. Add one, then pick it here.' ) ) {
 		throw new RuntimeException( 'empty page list needs the empty state' );
 	}
-	if ( false === strpos( $index, 'recordingStudioProductConfig' ) || false === strpos( $built, 'recordingStudioProductConfig' ) ) {
+	if ( false === strpos( $product, 'recordingStudioProductConfig' ) || false === strpos( $index, 'logoUrl' ) || false === strpos( $built, 'recordingStudioProductConfig' ) ) {
 		throw new RuntimeException( 'block script must read the ProductConfig logo url' );
 	}
 }
