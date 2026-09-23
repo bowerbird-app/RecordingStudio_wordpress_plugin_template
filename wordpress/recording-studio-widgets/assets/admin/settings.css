@@ -83,7 +83,7 @@
   margin-top: 1rem;
 }
 
-.rs-settings-fp .rs-settings-fp__actions button.rs-settings-fp__button {
+.rs-settings-fp .rs-settings-fp__actions .rs-settings-fp__button {
   appearance: none;
   box-sizing: border-box;
   display: inline-flex;
@@ -102,33 +102,34 @@
   cursor: pointer;
 }
 
-.rs-settings-fp .rs-settings-fp__actions button.rs-settings-fp__button.rs-settings-fp__button--primary {
+.rs-settings-fp .rs-settings-fp__actions .rs-settings-fp__button.rs-settings-fp__button--primary {
   background: var(--rs-charcoal);
   border: 1px solid var(--rs-charcoal);
   color: #fff;
 }
 
-.rs-settings-fp .rs-settings-fp__actions button.rs-settings-fp__button.rs-settings-fp__button--primary:hover,
-.rs-settings-fp .rs-settings-fp__actions button.rs-settings-fp__button.rs-settings-fp__button--primary:focus {
+.rs-settings-fp .rs-settings-fp__actions .rs-settings-fp__button.rs-settings-fp__button--primary:hover,
+.rs-settings-fp .rs-settings-fp__actions .rs-settings-fp__button.rs-settings-fp__button--primary:focus {
   background: var(--rs-charcoal-hover);
   border-color: var(--rs-charcoal-hover);
   color: #fff;
 }
 
-.rs-settings-fp .rs-settings-fp__actions button.rs-settings-fp__button.rs-settings-fp__button--outline {
+.rs-settings-fp .rs-settings-fp__actions .rs-settings-fp__button.rs-settings-fp__button--outline {
   background: transparent;
   border: 1px solid var(--rs-charcoal);
   color: var(--rs-charcoal);
 }
 
-.rs-settings-fp .rs-settings-fp__actions button.rs-settings-fp__button.rs-settings-fp__button--outline:hover,
-.rs-settings-fp .rs-settings-fp__actions button.rs-settings-fp__button.rs-settings-fp__button--outline:focus {
+.rs-settings-fp .rs-settings-fp__actions .rs-settings-fp__button.rs-settings-fp__button--outline:hover,
+.rs-settings-fp .rs-settings-fp__actions .rs-settings-fp__button.rs-settings-fp__button--outline:focus,
+.rs-settings-fp .rs-settings-fp__actions .rs-settings-fp__button.rs-settings-fp__button--outline:visited {
   background: var(--rs-outline-hover);
   border-color: var(--rs-charcoal);
   color: var(--rs-charcoal);
 }
 
-.rs-settings-fp .rs-settings-fp__actions button.rs-settings-fp__button:focus-visible {
+.rs-settings-fp .rs-settings-fp__actions .rs-settings-fp__button:focus-visible {
   outline: 2px solid var(--rs-charcoal);
   outline-offset: 2px;
 }

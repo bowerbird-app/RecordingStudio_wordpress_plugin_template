@@ -14,9 +14,13 @@ final class SettingsPage {
 		ConnectStatus $status,
 		string $connect_action_url,
 		string $disconnect_action_url,
-		string $nonce_html = ''
+		string $nonce_html = '',
+		?RegistrationOffer $registration_offer = null
 	): string {
 		$config = ProductConfig::all();
+		if ( null === $registration_offer ) {
+			$registration_offer = RegistrationOffer::hidden();
+		}
 
 		$html  = '<div class="wrap rs-settings-fp">';
 		$html .= '<h1 class="rs-settings-fp__title">' . esc_html( (string) $config['name'] ) . '</h1>';
@@ -29,7 +33,9 @@ final class SettingsPage {
 				$connect_action_url,
 				$disconnect_action_url,
 				(string) $config['login_button_text'],
-				(string) $config['register_button_text']
+				(string) $config['register_button_text'],
+				(bool) $config['register'],
+				$registration_offer
 			);
 		}
 		if ( $config['api_keys'] ) {
@@ -59,7 +65,9 @@ final class SettingsPage {
 		string $connect_action_url,
 		string $disconnect_action_url,
 		string $login_label,
-		string $register_label
+		string $register_label,
+		bool $product_register,
+		RegistrationOffer $registration_offer
 	): string {
 		if ( $connected ) {
 			return self::connected_status_banner()
@@ -69,10 +77,22 @@ final class SettingsPage {
 				. '</div>';
 		}
 
-		return '<div class="rs-settings-fp__actions">'
-			. self::outline_button( $connect_action_url, $login_label ) . ' '
-			. self::outline_button( $connect_action_url, $register_label )
-			. '</div>';
+		$html = '<div class="rs-settings-fp__actions">'
+			. self::primary_button( $connect_action_url, $login_label );
+		if ( $registration_offer->visible_with( $product_register ) ) {
+			$html .= ' ' . self::secondary_link( $registration_offer->url, $register_label );
+		}
+		$html .= '</div>';
+
+		return $html;
+	}
+
+	private static function primary_button( string $action_url, string $label ): string {
+		return '<button type="submit" class="rs-settings-fp__button rs-settings-fp__button--primary" formaction="' . esc_attr( $action_url ) . '">' . esc_html( $label ) . '</button>';
+	}
+
+	private static function secondary_link( string $url, string $label ): string {
+		return '<a class="rs-settings-fp__button rs-settings-fp__button--outline" href="' . esc_url( $url ) . '" target="_blank" rel="noopener noreferrer">' . esc_html( $label ) . '</a>';
 	}
 
 	private static function outline_button( string $action_url, string $label ): string {

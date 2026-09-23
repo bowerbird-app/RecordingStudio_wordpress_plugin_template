@@ -5,11 +5,13 @@ declare(strict_types=1);
 use RecordingStudio\ConnectFlow;
 use RecordingStudio\ConnectHandoff;
 use RecordingStudio\ConnectNotice;
+use RecordingStudio\ConnectOptions;
 use RecordingStudio\ConnectStatus;
 use RecordingStudio\ConnectTokens;
 use RecordingStudio\HostUrls;
 use RecordingStudio\PluginSettings;
 use RecordingStudio\ProductConfig;
+use RecordingStudio\RegistrationOffer;
 use RecordingStudio\SettingsForm;
 use RecordingStudio\SettingsPage;
 use RecordingStudio\StudioClient;
@@ -58,14 +60,22 @@ function recording_studio_plugin_demo_render_settings_page(): void {
 	wp_nonce_field( 'rs_plugin_demo_settings' );
 	$nonce_html = (string) ob_get_clean();
 
+	$status       = ConnectStatus::current();
+	$config       = ProductConfig::all();
+	$registration = RegistrationOffer::hidden();
+	if ( $config['oauth_connect'] && $config['register'] && ! $status->connected ) {
+		$registration = ConnectOptions::for_settings( PluginSettings::from_storage_array( $stored ) );
+	}
+
 	// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- SettingsPage::markup escapes visible text and attributes.
 	echo SettingsPage::markup(
 		$stored,
 		$notice,
-		ConnectStatus::current(),
+		$status,
 		admin_url( 'admin-post.php?action=' . ConnectFlow::START_ACTION ),
 		admin_url( 'admin-post.php?action=' . ConnectFlow::DISCONNECT_ACTION ),
-		$nonce_html
+		$nonce_html,
+		$registration
 	);
 	// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
 }

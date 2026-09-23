@@ -8,7 +8,6 @@ return array(
 		'version' => '0.2.0',
 		'title' => 'WordPress Plugin Demo',
 		'category' => 'widgets',
-		'icon' => 'smiley',
 		'description' => 'Embeds a Recording Studio page from the wp_plugin_demo host API. Server-rendered payload; SDK mounts on the front.',
 		'example' => array(
 			

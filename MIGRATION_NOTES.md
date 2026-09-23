@@ -22,8 +22,20 @@ bin/rails tailwindcss:build
 - Accessible dummy tag `v0.9.1` and Root Switchable dummy tag `v0.5.0`
 - FlatPack dummy tag `v0.1.190`
 - Users dummy tag `v0.11.0`
-- Oauth dummy tag `v0.4.2`
+- Oauth dummy tag `v0.5.0`
 - Public RubyGems and GitHub access for dependency installation
+
+## 0.4.25
+
+`ProductConfig::REGISTER` is a boolean. There is no `link_to`. `REGISTER_BUTTON_TEXT` still sets the label when Register is shown. `ProductConfig::LOGO` points at `build/brand/product-logo-red.jpg`, and that file is the block icon.
+
+Disconnected Settings styles Login as the primary button. Register is the secondary button and opens the host signup page in a new tab. Login still starts Connect.
+
+On each Settings load the plugin calls `GET {host}/recording_studio_oauth/connect/options?client_id={client id}`. Register is rendered only when `REGISTER` is true, the JSON says `"registration": true`, and `registration_url` is an http or https url. Any other response hides Register.
+
+The block sidebar dropdown shows page titles and stores the page id. An empty list shows "No pages yet. Add one, then pick it here." The Page id field is gone.
+
+From `test/dummy`, pin Oauth `v0.5.0`, run `bundle update recording_studio_oauth`, then run `bin/rails db:migrate`. Rebuild and reinstall the plugin ZIP. On the WordPress Registered App, check Allow registration when Register should appear.
 
 ## 0.4.24
 

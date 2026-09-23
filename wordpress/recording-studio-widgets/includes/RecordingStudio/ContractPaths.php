@@ -15,6 +15,7 @@ final class ContractPaths {
 	public const AUTHORIZE_PATH              = '/recording_studio_oauth/oauth/authorize';
 	public const CENTRAL_RELAY_CONNECT_PATH  = '/recording_studio_oauth/connect';
 	public const CENTRAL_RELAY_CALLBACK_PATH = '/recording_studio_oauth/callback';
+	public const CONNECT_OPTIONS_PATH        = '/recording_studio_oauth/connect/options';
 
 	public static function token_path(): string {
 		return self::NAMED_PREFIX . '/oauth/token';
@@ -30,6 +31,10 @@ final class ContractPaths {
 
 	public static function central_relay_callback_path(): string {
 		return self::CENTRAL_RELAY_CALLBACK_PATH;
+	}
+
+	public static function connect_options_path(): string {
+		return self::CONNECT_OPTIONS_PATH;
 	}
 
 	public static function connect_token_path(): string {

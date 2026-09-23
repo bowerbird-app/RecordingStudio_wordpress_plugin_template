@@ -120,6 +120,9 @@ jobs:
       - name: Lint JavaScript
         run: npm run lint:js
 
+      - name: Test page picker
+        run: npm run test:js
+
       - name: Lint CSS
         run: npm run lint:css
 
