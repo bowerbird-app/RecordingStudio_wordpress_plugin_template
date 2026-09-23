@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Dummy host pins `recording_studio_oauth` v0.4.2. Registered App forms use the Admin layout from that release.
+
+### Upgrade notes
+- From `test/dummy`, run `bundle install`. The plugin ZIP stays on 0.4.24.
+
 ## [0.4.24] - 2026-09-22
 
 ### Changed

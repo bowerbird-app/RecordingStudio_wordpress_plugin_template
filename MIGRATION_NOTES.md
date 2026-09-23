@@ -22,7 +22,7 @@ bin/rails tailwindcss:build
 - Accessible dummy tag `v0.9.1` and Root Switchable dummy tag `v0.5.0`
 - FlatPack dummy tag `v0.1.190`
 - Users dummy tag `v0.11.0`
-- Oauth dummy tag `v0.4.0`
+- Oauth dummy tag `v0.4.2`
 - Public RubyGems and GitHub access for dependency installation
 
 ## 0.4.24
