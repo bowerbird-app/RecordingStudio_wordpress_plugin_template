@@ -29,7 +29,9 @@ bin/rails tailwindcss:build
 
 `ProductConfig::NAME` is `WP Template Demo`. Settings uses that string for the menu label and the page heading, and the heading shows `ProductConfig::LOGO` before the words. The block title and the sentence under it come from `NAME` and `DESCRIPTION`. The demo description is `Shows a page from your studio.`
 
-`ProductConfig::API_KEYS` is `false`. The Advanced section and its API key fields stay in the plugin. They render again when `API_KEYS` is `true`. `REGISTER` stays `true`.
+`ProductConfig::API_KEYS` is `false`. The Advanced section and its API key fields stay in the plugin. They render again when `API_KEYS` is `true`.
+
+`ProductConfig` no longer has `REGISTER` or `REGISTER_BUTTON_TEXT`. Disconnected Settings shows Login only. The plugin does not call `GET {host}/recording_studio_oauth/connect/options`. A `recording_studio_product_config` filter that still sets `register`, `register_button_text`, or `link_to` is ignored. Host **Allow registration** on the WordPress app is unchanged.
 
 The page dropdown label is the host record `title`. For the seeded Getting Started page, that value is `Getting Started`.
 

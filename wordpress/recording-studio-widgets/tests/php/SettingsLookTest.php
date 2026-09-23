@@ -42,9 +42,7 @@ function rs_settings_look_markup( bool $connected ): string {
 		'',
 		new ConnectStatus( $connected ),
 		'http://localhost:8888/wp-admin/admin-post.php?action=recording_studio_oauth_start',
-		'http://localhost:8888/wp-admin/admin-post.php?action=recording_studio_oauth_disconnect',
-		'',
-		rs_open_registration_offer()
+		'http://localhost:8888/wp-admin/admin-post.php?action=recording_studio_oauth_disconnect'
 	);
 }
 
@@ -61,7 +59,6 @@ function test_settings_look_disconnected_reads_as_flatpack_form(): void {
 	$save     = rs_settings_look_button( $html, 'Save settings' );
 	$probe    = rs_settings_look_button( $html, 'Test connection' );
 	$login    = rs_settings_look_button( $html, 'Login' );
-	$register = rs_settings_look_button( $html, 'Register' );
 
 	if ( false === strpos( $html, 'rs-settings-fp' ) ) {
 		throw new RuntimeException( 'disconnected markup missing rs-settings-fp' );
@@ -84,18 +81,15 @@ function test_settings_look_disconnected_reads_as_flatpack_form(): void {
 	if ( false === strpos( $login, 'rs-settings-fp__button--primary' ) ) {
 		throw new RuntimeException( 'Login must use the primary button' );
 	}
-	if ( false === strpos( $register, 'rs-settings-fp__button--outline' ) || 0 !== strpos( $register, '<a ' ) ) {
-		throw new RuntimeException( 'Register must use the secondary link' );
+	if ( false !== strpos( $html, '>Register</a>' ) || false !== strpos( $html, '>Register</button>' ) ) {
+		throw new RuntimeException( 'disconnected markup must not show Register' );
 	}
-	if ( false !== strpos( $login, 'button-primary' ) || false !== strpos( $register, 'button-primary' ) ) {
-		throw new RuntimeException( 'Login or Register still uses button-primary' );
+	if ( false !== strpos( $login, 'button-primary' ) ) {
+		throw new RuntimeException( 'Login still uses button-primary' );
 	}
 	$start = 'http://localhost:8888/wp-admin/admin-post.php?action=recording_studio_oauth_start';
 	if ( false === strpos( $login, $start ) ) {
 		throw new RuntimeException( 'Login must start Connect' );
-	}
-	if ( false === strpos( $register, 'href="https://studio.example/users/sign_up"' ) || false !== strpos( $register, $start ) ) {
-		throw new RuntimeException( 'Register must open host signup and must not start Connect' );
 	}
 	$details_end = strpos( $html, '</details>' );
 	$save_pos    = strpos( $html, 'Save settings' );
@@ -213,49 +207,17 @@ function test_settings_styles_enqueue_only_on_the_settings_screen(): void {
 	}
 }
 
-function test_settings_load_shows_register_only_when_options_allow_signup(): void {
+function test_settings_load_shows_login_and_hides_register(): void {
 	\RecordingStudio\ConnectTokens::clear();
-	\RecordingStudio\ConnectOptions::set_test_get(
-		static function (): array {
-			return array(
-				'status' => 200,
-				'body'   => array(
-					'registration' => false,
-				),
-			);
-		}
-	);
+	rs_clear_product_config_filter();
 
 	ob_start();
 	recording_studio_plugin_demo_render_settings_page();
-	$hidden = (string) ob_get_clean();
-	if ( false !== strpos( $hidden, '>Register</a>' ) ) {
-		throw new RuntimeException( 'settings load must hide Register when registration is false' );
-	}
-	if ( false === strpos( $hidden, '>Login</button>' ) || false === strpos( $hidden, 'rs-settings-fp__button--primary' ) ) {
+	$html = (string) ob_get_clean();
+	if ( false === strpos( $html, '>Login</button>' ) || false === strpos( $html, 'rs-settings-fp__button--primary' ) ) {
 		throw new RuntimeException( 'settings load must keep Login as the primary button' );
 	}
-
-	\RecordingStudio\ConnectOptions::set_test_get(
-		static function (): array {
-			return array(
-				'status' => 200,
-				'body'   => array(
-					'registration'     => true,
-					'registration_url' => 'https://studio.example/users/sign_up',
-				),
-			);
-		}
-	);
-	ob_start();
-	recording_studio_plugin_demo_render_settings_page();
-	$shown = (string) ob_get_clean();
-	\RecordingStudio\ConnectOptions::set_test_get( null );
-
-	if ( false === strpos( $shown, 'href="https://studio.example/users/sign_up"' ) || false === strpos( $shown, 'target="_blank"' ) ) {
-		throw new RuntimeException( 'settings load must open host signup when registration is allowed' );
-	}
-	if ( false === strpos( $shown, 'rs-settings-fp__button--outline' ) ) {
-		throw new RuntimeException( 'settings load must style Register as the secondary button' );
+	if ( false !== strpos( $html, '>Register</a>' ) || false !== strpos( $html, '>Register</button>' ) || false !== strpos( $html, 'connect/options' ) ) {
+		throw new RuntimeException( 'settings load must not show Register or request connect options' );
 	}
 }

@@ -75,7 +75,7 @@ That prints the baked client id (`rsoauth_id_wordpress`, no secret), connect URL
 
 The Registered App redirect is `{host}/recording_studio_oauth/callback`. Token exchange `redirect_uri` is that same callback URL. Connect start is `GET {host}/recording_studio_oauth/connect`. WordPress `return_to` stays `…/wp-admin/admin-post.php?action=recording_studio_oauth_callback`. Allow the https pattern. For a local http WordPress, also allow the http pattern. Do not add each WordPress origin as a Registered App redirect.
 
-Check **Allow registration** on that WordPress app when Settings should show Register. The plugin reads `GET /recording_studio_oauth/connect/options?client_id=rsoauth_id_wordpress`. A false or failed response hides the button.
+**Allow registration** stays a host setting on the WordPress app. The plugin does not read `GET /recording_studio_oauth/connect/options` and does not show a Register button.
 
 For minting Advanced API keys in the host UI, use sidebar **API Keys** after sign-in (`/recording_studio_api/api_clients`).
 

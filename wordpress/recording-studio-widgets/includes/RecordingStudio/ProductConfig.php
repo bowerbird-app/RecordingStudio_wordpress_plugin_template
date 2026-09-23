@@ -9,25 +9,21 @@ final class ProductConfig {
 	public const DESCRIPTION          = 'Shows a page from your studio.';
 	public const OAUTH_CONNECT        = true;
 	public const API_KEYS             = false;
-	public const REGISTER             = true;
 	public const LOGIN_BUTTON_TEXT    = 'Login';
-	public const REGISTER_BUTTON_TEXT = 'Register';
 	public const LOGO                 = 'build/brand/product-logo-red.jpg';
 	public const EDITOR_SCRIPT_HANDLE = 'recording-studio-recording-studio-widget-editor-script';
 
 	/**
-	 * @return array{name: string, description: string, oauth_connect: bool, api_keys: bool, register: bool, login_button_text: string, register_button_text: string, logo: string}
+	 * @return array{name: string, description: string, oauth_connect: bool, api_keys: bool, login_button_text: string, logo: string}
 	 */
 	public static function all(): array {
 		$config = array(
-			'name'                 => self::NAME,
-			'description'          => self::DESCRIPTION,
-			'oauth_connect'        => self::OAUTH_CONNECT,
-			'api_keys'             => self::API_KEYS,
-			'register'             => self::REGISTER,
-			'login_button_text'    => self::LOGIN_BUTTON_TEXT,
-			'register_button_text' => self::REGISTER_BUTTON_TEXT,
-			'logo'                 => self::LOGO,
+			'name'              => self::NAME,
+			'description'       => self::DESCRIPTION,
+			'oauth_connect'     => self::OAUTH_CONNECT,
+			'api_keys'          => self::API_KEYS,
+			'login_button_text' => self::LOGIN_BUTTON_TEXT,
+			'logo'              => self::LOGO,
 		);
 
 		if ( function_exists( 'apply_filters' ) ) {
@@ -38,14 +34,12 @@ final class ProductConfig {
 		}
 
 		return array(
-			'name'                 => self::normalize_text( $config['name'] ?? null, self::NAME ),
-			'description'          => self::normalize_text( $config['description'] ?? null, self::DESCRIPTION ),
-			'oauth_connect'        => self::normalize_flag( $config['oauth_connect'] ?? null, self::OAUTH_CONNECT ),
-			'api_keys'             => self::normalize_flag( $config['api_keys'] ?? null, self::API_KEYS ),
-			'register'             => self::normalize_flag( $config['register'] ?? null, self::REGISTER ),
-			'login_button_text'    => self::normalize_text( $config['login_button_text'] ?? null, self::LOGIN_BUTTON_TEXT ),
-			'register_button_text' => self::normalize_text( $config['register_button_text'] ?? null, self::REGISTER_BUTTON_TEXT ),
-			'logo'                 => self::normalize_logo( $config['logo'] ?? null ),
+			'name'              => self::normalize_text( $config['name'] ?? null, self::NAME ),
+			'description'       => self::normalize_text( $config['description'] ?? null, self::DESCRIPTION ),
+			'oauth_connect'     => self::normalize_flag( $config['oauth_connect'] ?? null, self::OAUTH_CONNECT ),
+			'api_keys'          => self::normalize_flag( $config['api_keys'] ?? null, self::API_KEYS ),
+			'login_button_text' => self::normalize_text( $config['login_button_text'] ?? null, self::LOGIN_BUTTON_TEXT ),
+			'logo'              => self::normalize_logo( $config['logo'] ?? null ),
 		);
 	}
 

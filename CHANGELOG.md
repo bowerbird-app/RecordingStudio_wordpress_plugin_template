@@ -15,11 +15,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `ProductConfig::API_KEYS` is `false`. Advanced, **Connect via API key**, the API key, the Secret key, **Save settings**, and **Test connection** stay in the plugin and stay hidden until that flag is `true`.
 - The Settings heading shows `ProductConfig::LOGO` before the title. The block icon still uses that same file.
 - The page dropdown reads the host index field `title`. The seeded Getting Started page returns that title from `GET /recording_studio_api/apis/wp_plugin_demo/v1/pages`.
+- `ProductConfig` no longer has `REGISTER` or `REGISTER_BUTTON_TEXT`. Disconnected Settings shows **Login** only. The plugin does not call `GET {host}/recording_studio_oauth/connect/options`. Host **Allow registration** is unchanged.
 
 ### Upgrade notes
 - Rebuild with `bin/build-plugin-zip` from the repository root, reinstall the ZIP, and refresh WordPress.
 - Set `API_KEYS` to `true` in `ProductConfig.php` and rebuild when a flavor should show Advanced again.
-- Change `DESCRIPTION` in `ProductConfig.php` and rebuild to change the block sidebar description. `REGISTER` stays a boolean and stays `true` in this demo.
+- Change `DESCRIPTION` in `ProductConfig.php` and rebuild to change the block sidebar description.
+- A filter that still sets `register`, `register_button_text`, or `link_to` is ignored. `all()` does not return those keys. There is no Register button to turn back on from `ProductConfig`.
 
 ## [0.4.25] - 2026-09-23
 
