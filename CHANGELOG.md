@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Dummy host pins `recording_studio_oauth` v0.5.2. Registered App forms stack Allow registration above Use central relay.
+
+### Upgrade notes
+- From `test/dummy`, run `bundle update recording_studio_oauth`.
+- Run `bin/rails db:migrate`. The migration drops `recording_studio_oauth_registration_settings`.
+- The plugin ZIP stays on 0.4.26.
+
 ## [0.4.26] - 2026-09-23
 
 ### Changed
