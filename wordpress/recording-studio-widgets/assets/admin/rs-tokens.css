@@ -1,0 +1,14 @@
+.rs-settings-fp,
+.rs-embed-empty {
+  --rs-charcoal: oklch(0.3211 0 0);
+  --rs-charcoal-hover: oklch(0.42 0 0);
+  --rs-line: oklch(0.86 0 0);
+  --rs-muted: oklch(0.48 0 0);
+  --rs-outline-hover: oklch(0.96 0 0);
+  --rs-success-surface: oklch(0.97 0.025 145);
+  --rs-success-border: oklch(0.72 0.09 145);
+  --rs-success-text: oklch(0.38 0.05 145);
+  --rs-error-surface: oklch(0.97 0.02 25);
+  --rs-error-border: oklch(0.75 0.1 25);
+  --rs-error-text: oklch(0.42 0.12 25);
+}

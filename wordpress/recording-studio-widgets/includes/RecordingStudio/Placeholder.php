@@ -6,13 +6,24 @@ namespace RecordingStudio;
 
 final class Placeholder {
 	public static function front_message(): string {
-		$text = sprintf(
-			/* translators: %s: product name. */
-			__( 'Pick a page in the block settings to show the %s embed.', 'recording-studio-widget' ),
-			ProductConfig::all()['name']
-		);
+		return '<div ' . get_block_wrapper_attributes() . '>' . self::empty_card_markup() . '</div>';
+	}
 
-		return '<p ' . get_block_wrapper_attributes() . '>' . esc_html( $text ) . '</p>';
+	public static function empty_card_markup(): string {
+		$config = ProductConfig::all();
+		$name   = $config['name'];
+		$body   = __( 'Pick a page on the block settings to embed.', 'recording-studio-widget' );
+		$logo   = ProductConfig::logo_url();
+		$image  = '';
+		if ( '' !== $logo ) {
+			$image = '<img class="rs-embed-empty__logo" src="' . esc_url( $logo ) . '" alt="" width="40" height="40" />';
+		}
+
+		return '<div class="rs-embed-empty">'
+			. $image
+			. '<p class="rs-embed-empty__title">' . esc_html( $name ) . '</p>'
+			. '<p class="rs-embed-empty__body">' . esc_html( $body ) . '</p>'
+			. '</div>';
 	}
 
 	public static function embed_error_markup( string $code, ?EmbedRequest $request = null ): string {

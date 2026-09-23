@@ -928,7 +928,9 @@ function test_editor_embed_copy_shares_connect_notice_codes(): void {
 	}
 
 	$front = Placeholder::front_message();
-	if ( preg_match( '/\b(recording|recordable|actor|root)\b/i', $front ) ) {
-		throw new RuntimeException( 'front placeholder used backend words' );
+	$visible = preg_replace( '/<img\b[^>]*>/', '', $front );
+	$visible = trim( strip_tags( is_string( $visible ) ? $visible : '' ) );
+	if ( preg_match( '/\b(recording|recordable|actor|root)\b/i', $visible ) ) {
+		throw new RuntimeException( 'front placeholder used backend words: ' . $visible );
 	}
 }

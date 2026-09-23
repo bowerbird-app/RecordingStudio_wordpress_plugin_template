@@ -5,7 +5,7 @@ import {
 	Spinner,
 	Notice,
 } from '@wordpress/components';
-import { __, sprintf } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 import apiFetch from '@wordpress/api-fetch';
 import { useState, useEffect } from '@wordpress/element';
 import { pageSelectOptions, pickerMode } from './page-picker.mjs';
@@ -106,6 +106,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	const productName =
 		productText( 'name' ) ||
 		__( 'WP Template Demo', 'recording-studio-widget' );
+	const logoUrl = productText( 'logoUrl' );
 
 	return (
 		<>
@@ -134,16 +135,24 @@ export default function Edit( { attributes, setAttributes } ) {
 			</InspectorControls>
 			<div { ...blockProps }>
 				{ ! pageRecordingId.trim() && (
-					<p>
-						{ sprintf(
-							/* translators: %s: product name. */
-							__(
-								'Pick a page in the block settings to preview the %s embed.',
-								'recording-studio-widget'
-							),
-							productName
+					<div className="rs-embed-empty">
+						{ logoUrl !== '' && (
+							<img
+								className="rs-embed-empty__logo"
+								src={ logoUrl }
+								alt=""
+								width="40"
+								height="40"
+							/>
 						) }
-					</p>
+						<p className="rs-embed-empty__title">{ productName }</p>
+						<p className="rs-embed-empty__body">
+							{ __(
+								'Pick a page on the block settings to embed.',
+								'recording-studio-widget'
+							) }
+						</p>
+					</div>
 				) }
 				{ loading && <Spinner /> }
 				{ error && (
