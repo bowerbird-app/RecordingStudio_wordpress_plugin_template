@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.26] - 2026-09-23
+
+### Changed
+- Dummy host pins `recording_studio_oauth` v0.5.1.
+- `test/dummy/config/initializers/recording_studio_oauth.rb` sets `config.allow_registration` to false. New Registered Apps start with registration off. Existing apps keep their own flag.
+- The Registered apps screen has no site Registration control.
+
+### Upgrade notes
+- From `test/dummy`, pin Oauth `v0.5.1`, run `bundle update recording_studio_oauth`, then run `bin/rails db:migrate`. That migration drops `recording_studio_oauth_registration_settings`.
+- Set `config.allow_registration` in the Oauth initializer. `false` is the default for a new app. Connect options still read each app's Allow registration flag.
+- No plugin ZIP rebuild. WordPress PHP is unchanged.
+
 ## [0.4.25] - 2026-09-23
 
 ### Changed

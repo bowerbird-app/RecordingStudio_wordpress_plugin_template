@@ -128,7 +128,7 @@ These versions come from the gemspec, the dummy Gemfile, `@wordpress/create-bloc
 | Attachable | dummy GitHub tag `v0.5.1` (Publishable boot dep) |
 | Root Switchable | dummy GitHub tag `v0.5.0` |
 | Users | dummy GitHub tag `v0.11.0` |
-| Oauth | dummy GitHub tag `v0.5.0` (central relay; connect options; one public WordPress app; consent is a full page) |
+| Oauth | dummy GitHub tag `v0.5.1` (central relay; connect options; registration starts from `config.allow_registration`; one public WordPress app; consent is a full page) |
 | FlatPack | dummy GitHub tag `v0.1.190` |
 | Devise | latest |
 | `@wordpress/create-block` | 4.98.0 |

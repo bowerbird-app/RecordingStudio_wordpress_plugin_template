@@ -43,6 +43,7 @@ class OauthAdminSidebarTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_includes response.body, "Registered apps"
     assert_includes response.body, "New app"
+    refute_includes response.body, "Registration"
     assert_select "turbo-frame#screen-table[src=?]", "#{REGISTERED_APPS_PATH}/table"
 
     get "#{REGISTERED_APPS_PATH}/table",

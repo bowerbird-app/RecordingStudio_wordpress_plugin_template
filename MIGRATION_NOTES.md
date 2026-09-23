@@ -22,8 +22,16 @@ bin/rails tailwindcss:build
 - Accessible dummy tag `v0.9.1` and Root Switchable dummy tag `v0.5.0`
 - FlatPack dummy tag `v0.1.190`
 - Users dummy tag `v0.11.0`
-- Oauth dummy tag `v0.5.0`
+- Oauth dummy tag `v0.5.1`
 - Public RubyGems and GitHub access for dependency installation
+
+## 0.4.26
+
+The dummy pins Recording Studio Oauth `v0.5.1`. Site registration for a new Registered App comes from `config.allow_registration` in `test/dummy/config/initializers/recording_studio_oauth.rb`. This dummy sets it to false. Apps that already exist keep their own Allow registration flag.
+
+`bin/rails db:migrate` drops `recording_studio_oauth_registration_settings`. The Registered apps list no longer has a site Registration control. Each app form still has Allow registration.
+
+No plugin ZIP rebuild. WordPress PHP is unchanged.
 
 ## 0.4.25
 

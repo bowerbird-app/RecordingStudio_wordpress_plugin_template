@@ -30,7 +30,7 @@ Do this once per Recording Studio cloud host.
 
 1. Install and activate the plugin ZIP.
 2. Open **Settings → WordPress Plugin Demo**.
-3. Click **Login**, then log in and approve. **Register** opens signup in a new tab when this host allows new accounts. Check **Allow registration** on the WordPress Registered App when that button should appear.
+3. Click **Login**, then log in and approve. **Register** opens signup in a new tab when this host allows new accounts. Check **Allow registration** on the WordPress Registered App when that button should appear. New apps start from `config.allow_registration` in `test/dummy/config/initializers/recording_studio_oauth.rb`. The Registered apps list has no site Registration control.
 
 Site owners do not enter a client id, open Registered Apps, or edit wp-config for normal use.
 
