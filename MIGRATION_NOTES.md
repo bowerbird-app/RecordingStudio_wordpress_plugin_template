@@ -25,7 +25,7 @@ bin/rails tailwindcss:build
 - Oauth dummy tag `v0.5.2`
 - Public RubyGems and GitHub access for dependency installation
 
-From `test/dummy`, run `bundle update recording_studio_oauth`. Then run `bin/rails db:migrate`. Oauth 0.5.2 drops `recording_studio_oauth_registration_settings`. The plugin ZIP stays on 0.4.26.
+From `test/dummy`, run `bundle lock --update=recording_studio_oauth`, then `bundle install`. Then run `bin/rails db:migrate`. Oauth 0.5.2 drops `recording_studio_oauth_registration_settings`. The plugin ZIP stays on 0.4.26.
 
 ## 0.4.26
 
