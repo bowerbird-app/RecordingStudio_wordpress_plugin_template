@@ -1,7 +1,6 @@
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 import {
 	PanelBody,
-	TextControl,
 	SelectControl,
 	Spinner,
 	Notice,
@@ -9,6 +8,7 @@ import {
 import { __ } from '@wordpress/i18n';
 import apiFetch from '@wordpress/api-fetch';
 import { useState, useEffect } from '@wordpress/element';
+import { pageSelectOptions, pickerMode } from './page-picker.mjs';
 
 async function fetchEditorPreview( pageRecordingId ) {
 	return apiFetch( {
@@ -31,6 +31,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	const [ error, setError ] = useState( null );
 	const [ loading, setLoading ] = useState( false );
 	const [ pages, setPages ] = useState( [] );
+	const [ pagesStatus, setPagesStatus ] = useState( 'loading' );
 
 	useEffect( () => {
 		let cancelled = false;
@@ -40,11 +41,13 @@ export default function Edit( { attributes, setAttributes } ) {
 					setPages(
 						Array.isArray( payload?.pages ) ? payload.pages : []
 					);
+					setPagesStatus( 'ready' );
 				}
 			} )
 			.catch( () => {
 				if ( ! cancelled ) {
 					setPages( [] );
+					setPagesStatus( 'ready' );
 				}
 			} );
 		return () => {
@@ -93,16 +96,12 @@ export default function Edit( { attributes, setAttributes } ) {
 	}, [ pageRecordingId ] );
 
 	const blockProps = useBlockProps();
-	const pageOptions = [
-		{
-			label: __( 'Pick a page', 'recording-studio-widget' ),
-			value: '',
-		},
-		...pages.map( ( page ) => ( {
-			label: page.title || page.id,
-			value: page.id,
-		} ) ),
-	];
+	const mode = pickerMode( pagesStatus, pages );
+	const pageOptions = pageSelectOptions(
+		pages,
+		__( 'Pick a page', 'recording-studio-widget' ),
+		__( 'Untitled', 'recording-studio-widget' )
+	);
 
 	return (
 		<>
@@ -113,7 +112,16 @@ export default function Edit( { attributes, setAttributes } ) {
 						'recording-studio-widget'
 					) }
 				>
-					{ pages.length > 0 && (
+					{ mode === 'loading' && <Spinner /> }
+					{ mode === 'empty' && (
+						<p>
+							{ __(
+								'No pages yet. Add one, then pick it here.',
+								'recording-studio-widget'
+							) }
+						</p>
+					) }
+					{ mode === 'choose' && (
 						<SelectControl
 							label={ __( 'Page', 'recording-studio-widget' ) }
 							value={ pageRecordingId }
@@ -123,17 +131,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							}
 						/>
 					) }
-					<TextControl
-						label={ __( 'Page id', 'recording-studio-widget' ) }
-						value={ pageRecordingId }
-						onChange={ ( value ) =>
-							setAttributes( { pageRecordingId: value } )
-						}
-						help={ __(
-							'Pick a page, or paste an id if the list is empty.',
-							'recording-studio-widget'
-						) }
-					/>
 				</PanelBody>
 			</InspectorControls>
 			<div { ...blockProps }>

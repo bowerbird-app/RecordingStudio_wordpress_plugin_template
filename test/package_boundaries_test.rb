@@ -24,6 +24,8 @@ class PackageBoundariesTest < Minitest::Test
     assert PackageBoundaries.zip_path_allowed?("build/recording-studio-widget/render.php")
     assert PackageBoundaries.zip_path_allowed?("build/sdk/recording-studio-plugin-sdk.js")
     assert PackageBoundaries.zip_path_allowed?("build/sdk/recording-studio-plugin-sdk.css")
+    assert PackageBoundaries.zip_path_allowed?("build/brand/product-logo-red.jpg")
+    refute PackageBoundaries.zip_path_allowed?("assets/brand/product-logo-red.jpg")
     refute PackageBoundaries.zip_path_allowed?("src/recording-studio-widget/edit.js")
     refute PackageBoundaries.zip_path_allowed?("assets/sdk/recording-studio-plugin-sdk.js")
     refute PackageBoundaries.zip_path_allowed?("tests/php/placeholder-text.php")

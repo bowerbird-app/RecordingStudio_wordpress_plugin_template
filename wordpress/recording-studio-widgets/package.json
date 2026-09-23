@@ -6,7 +6,9 @@
 	"license": "GPL-2.0-or-later",
 	"main": "build/index.js",
 	"scripts": {
-		"build": "wp-scripts build --webpack-copy-php --blocks-manifest && npm run copy-sdk",
+		"build": "wp-scripts build --webpack-copy-php --blocks-manifest && npm run copy-sdk && npm run copy-brand",
+		"copy-brand": "mkdir -p build/brand && cp assets/brand/product-logo-red.jpg build/brand/product-logo-red.jpg",
+		"test:js": "node tests/js/page-picker.test.mjs",
 		"copy-sdk": "mkdir -p build/sdk && cp -r assets/sdk/* build/sdk/",
 		"format": "wp-scripts format",
 		"lint:css": "sh -c 'files=$(find src -name \"*.scss\" -print); [ -z \"$files\" ] || wp-scripts lint-style $files'",

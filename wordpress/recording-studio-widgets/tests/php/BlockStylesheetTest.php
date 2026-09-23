@@ -2,6 +2,30 @@
 
 declare(strict_types=1);
 
+function test_block_icon_uses_product_logo_and_page_picker_has_no_id_field(): void {
+	$plugin_root = dirname( __DIR__, 2 );
+	$block_json  = file_get_contents( $plugin_root . '/src/recording-studio-widget/block.json' );
+	$edit        = file_get_contents( $plugin_root . '/src/recording-studio-widget/edit.js' );
+	$index       = file_get_contents( $plugin_root . '/src/recording-studio-widget/index.js' );
+	$built       = file_get_contents( $plugin_root . '/build/recording-studio-widget/index.js' );
+	$built_block = file_get_contents( $plugin_root . '/build/recording-studio-widget/block.json' );
+	if ( false === $block_json || false === $edit || false === $index || false === $built || false === $built_block ) {
+		throw new RuntimeException( 'could not read block sources' );
+	}
+	if ( false !== strpos( $block_json, 'smiley' ) || false !== strpos( $built_block, 'smiley' ) ) {
+		throw new RuntimeException( 'block icon must not stay the smiley dashicon' );
+	}
+	if ( false !== strpos( $edit, 'Page id' ) || false !== strpos( $edit, 'TextControl' ) ) {
+		throw new RuntimeException( 'page picker must not offer a Page id field' );
+	}
+	if ( false === strpos( $edit, 'No pages yet. Add one, then pick it here.' ) ) {
+		throw new RuntimeException( 'empty page list needs the empty state' );
+	}
+	if ( false === strpos( $index, 'recordingStudioProductConfig' ) || false === strpos( $built, 'recordingStudioProductConfig' ) ) {
+		throw new RuntimeException( 'block script must read the ProductConfig logo url' );
+	}
+}
+
 function test_block_does_not_register_a_stylesheet_handle(): void {
 	$plugin_root = dirname( __DIR__, 2 );
 	$block_json  = $plugin_root . '/src/recording-studio-widget/block.json';

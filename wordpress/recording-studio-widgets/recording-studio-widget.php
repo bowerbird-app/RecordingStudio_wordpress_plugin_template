@@ -47,6 +47,7 @@ function recording_studio_recording_studio_widget_block_init(): void {
 
 	\RecordingStudio\Assets::register_sdk();
 	wp_register_block_types_from_metadata_collection( $build, $manifest );
+	\RecordingStudio\ProductConfig::enqueue_editor_config();
 }
 add_action( 'init', 'recording_studio_recording_studio_widget_block_init' );
 

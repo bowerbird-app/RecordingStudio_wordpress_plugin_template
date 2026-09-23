@@ -485,7 +485,7 @@ function test_settings_markup_never_prints_connect_tokens(): void {
 	if ( false === strpos( $html, $connect_url ) ) {
 		throw new RuntimeException( 'Connect again must use the same start action as Connect' );
 	}
-	if ( false !== strpos( $html, 'Connect to Recording Studio' ) || false !== strpos( $html, '>Login</button>' ) || false !== strpos( $html, '>Register</button>' ) ) {
+	if ( false !== strpos( $html, 'Connect to Recording Studio' ) || false !== strpos( $html, '>Login</button>' ) || false !== strpos( $html, '>Register</a>' ) || false !== strpos( $html, '>Register</button>' ) ) {
 		throw new RuntimeException( 'connected settings should keep Disconnect and Connect again' );
 	}
 	if ( false !== strpos( $html, 'rsoauth_at_should_never_render' ) || false !== strpos( $html, 'rsoauth_rt_should_never_render' ) ) {
@@ -520,7 +520,9 @@ function rs_settings_markup( bool $connected, string $notice = '' ): string {
 		$notice,
 		new ConnectStatus( $connected ),
 		'http://localhost:8888/wp-admin/admin-post.php?action=recording_studio_oauth_start',
-		'http://localhost:8888/wp-admin/admin-post.php?action=recording_studio_oauth_disconnect'
+		'http://localhost:8888/wp-admin/admin-post.php?action=recording_studio_oauth_disconnect',
+		'',
+		rs_open_registration_offer()
 	);
 }
 
@@ -556,10 +558,10 @@ function rs_finish_with_token_error_body( string $host_error ): string {
 function test_settings_markup_when_disconnected_shows_primary_connect(): void {
 	$html  = rs_settings_markup( false );
 	$start = 'http://localhost:8888/wp-admin/admin-post.php?action=recording_studio_oauth_start';
-	if ( 2 !== substr_count( $html, 'formaction="' . $start . '"' ) ) {
-		throw new RuntimeException( 'disconnected settings should start Connect from Login and Register' );
+	if ( 1 !== substr_count( $html, 'formaction="' . $start . '"' ) ) {
+		throw new RuntimeException( 'disconnected settings should start Connect from Login only' );
 	}
-	if ( false === strpos( $html, '>Login</button>' ) || false === strpos( $html, '>Register</button>' ) ) {
+	if ( false === strpos( $html, '>Login</button>' ) || false === strpos( $html, '>Register</a>' ) ) {
 		throw new RuntimeException( 'disconnected settings missing Login and Register' );
 	}
 	if ( false !== strpos( $html, 'Connect to Recording Studio' ) ) {
@@ -583,11 +585,13 @@ function test_settings_markup_is_connect_button_then_advanced_keys(): void {
 		'',
 		new ConnectStatus( false ),
 		'http://localhost:8888/wp-admin/admin-post.php?action=recording_studio_oauth_start',
-		'http://localhost:8888/wp-admin/admin-post.php?action=recording_studio_oauth_disconnect'
+		'http://localhost:8888/wp-admin/admin-post.php?action=recording_studio_oauth_disconnect',
+		'',
+		rs_open_registration_offer()
 	);
 
 	$login_pos    = strpos( $html, '>Login</button>' );
-	$register_pos = strpos( $html, '>Register</button>' );
+	$register_pos = strpos( $html, '>Register</a>' );
 	$advanced_pos = strpos( $html, '<summary>Advanced</summary>' );
 	$intro_pos    = strpos( $html, 'Connect via API key' );
 	$api_pos      = strpos( $html, '>API key<' );

@@ -187,6 +187,38 @@ if ( ! function_exists( 'esc_url_raw' ) ) {
 	}
 }
 
+if ( ! function_exists( 'plugins_url' ) ) {
+	function plugins_url( $path = '', $plugin = '' ) {
+		unset( $plugin );
+		return 'http://localhost:8888/wp-content/plugins/recording-studio-widgets/' . ltrim( (string) $path, '/' );
+	}
+}
+
+if ( ! function_exists( 'wp_add_inline_script' ) ) {
+	function wp_add_inline_script( $handle, $data, $position = 'after' ): bool {
+		if ( ! isset( $GLOBALS['rs_test_inline_scripts'] ) || ! is_array( $GLOBALS['rs_test_inline_scripts'] ) ) {
+			$GLOBALS['rs_test_inline_scripts'] = array();
+		}
+		$GLOBALS['rs_test_inline_scripts'][] = array(
+			'handle'   => $handle,
+			'data'     => $data,
+			'position' => $position,
+		);
+		return true;
+	}
+}
+
+if ( ! function_exists( 'wp_nonce_field' ) ) {
+	function wp_nonce_field( $action = -1, $name = '_wpnonce', $referer = true, $echo = true ) {
+		unset( $action, $name, $referer );
+		$html = '<input type="hidden" name="_wpnonce" value="test-nonce" />';
+		if ( $echo ) {
+			echo $html;
+		}
+		return $html;
+	}
+}
+
 if ( ! function_exists( 'esc_url' ) ) {
 	/**
 	 * @param string $url URL.

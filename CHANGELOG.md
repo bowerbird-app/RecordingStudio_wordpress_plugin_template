@@ -7,11 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.25] - 2026-09-23
+
 ### Changed
-- Dummy host pins `recording_studio_oauth` v0.4.2. Registered App forms use the Admin layout from that release.
+- `ProductConfig::LOGO` is `build/brand/product-logo-red.jpg`. The block icon uses that file. The Dashicon `smiley` is gone.
+- `ProductConfig::REGISTER` is a boolean. `true` can show Register. `false` hides it. There is no `link_to`. `REGISTER_BUTTON_TEXT` still sets the label when the button is shown.
+- Disconnected Settings styles Login as the primary button and Register as the secondary button. Login still starts Connect. Register opens `registration_url` in a new tab.
+- On Settings load the plugin requests `GET {host}/recording_studio_oauth/connect/options?client_id={client id}`. Register shows only when `REGISTER` is true, the response includes `"registration": true` and a `registration_url`, and the site is disconnected. A failed request, a missing url, or `"registration": false` hides Register.
+- The block sidebar lists page titles and stores the page id. An empty list says "No pages yet. Add one, then pick it here." There is no Page id field.
+- Dummy host pins `recording_studio_oauth` v0.5.0.
 
 ### Upgrade notes
-- From `test/dummy`, run `bundle install`. The plugin ZIP stays on 0.4.24.
+- From `test/dummy`, pin Oauth `v0.5.0`, run `bundle update recording_studio_oauth`, then run `bin/rails db:migrate`.
+- Rebuild and reinstall the plugin ZIP. Set `REGISTER` to false before the build when a flavor should never show Register. To change the block icon, replace `assets/brand/product-logo-red.jpg` and rebuild.
+- On the WordPress Registered App, turn Allow registration on when Register should appear. Apps created before Oauth 0.5.0 stay off until that box is checked.
 
 ## [0.4.24] - 2026-09-22
 

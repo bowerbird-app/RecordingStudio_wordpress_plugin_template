@@ -21,7 +21,7 @@ The ZIP is the installable plugin folder `recording-studio-widgets/`. Allowed pa
 - `includes/`
 - `build/`
 
-The ZIP must include the baked SDK under `build/sdk/` (`recording-studio-plugin-sdk.js` and `.css`). Those files are copied from `assets/sdk/` by `npm run build`.
+The ZIP must include the baked SDK under `build/sdk/` (`recording-studio-plugin-sdk.js` and `.css`). Those files are copied from `assets/sdk/` by `npm run build`. The same build copies `assets/brand/product-logo-red.jpg` to `build/brand/product-logo-red.jpg`. That file is the block icon.
 
 The ZIP does not include `src/`, `assets/`, `tests/`, `node_modules/`, `vendor/`, `package.json`, `.wp-env.json`, Ruby files, or repo metadata.
 
