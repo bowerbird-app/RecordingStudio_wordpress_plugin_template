@@ -208,8 +208,8 @@ Open Advanced, then click **Save settings** and **Test connection**. A success n
 ### Insert the block
 
 1. Edit a page or post.
-2. Insert the **WP Template Demo** block.
-3. Pick **Getting Started** from the page list, or paste the printed page id if the list is empty.
+2. Insert the **WP Template Demo** block. Until a page is selected, the block shows a card with the product logo, the product name, and `Pick a page on the block settings to embed.`
+3. In the block settings, pick **Getting Started** from the page list.
 4. Preview or publish.
 
 ## 6. What good looks like

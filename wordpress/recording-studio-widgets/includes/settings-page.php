@@ -159,6 +159,22 @@ function recording_studio_plugin_demo_disconnect(): void {
 	exit;
 }
 
+function recording_studio_plugin_demo_look_token_handle(): string {
+	return 'recording-studio-plugin-demo-tokens';
+}
+
+function recording_studio_plugin_demo_enqueue_look_tokens(): void {
+	$plugin_file = dirname( __DIR__ ) . '/recording-studio-widget.php';
+	$style_path  = dirname( __DIR__ ) . '/assets/admin/rs-tokens.css';
+
+	wp_enqueue_style(
+		recording_studio_plugin_demo_look_token_handle(),
+		plugins_url( 'assets/admin/rs-tokens.css', $plugin_file ),
+		array(),
+		(string) filemtime( $style_path )
+	);
+}
+
 function recording_studio_plugin_demo_enqueue_settings_styles( string $hook_suffix ): void {
 	if ( 'settings_page_recording-studio-plugin-demo' !== $hook_suffix ) {
 		return;
@@ -167,10 +183,24 @@ function recording_studio_plugin_demo_enqueue_settings_styles( string $hook_suff
 	$plugin_file = dirname( __DIR__ ) . '/recording-studio-widget.php';
 	$style_path  = dirname( __DIR__ ) . '/assets/admin/settings.css';
 
+	recording_studio_plugin_demo_enqueue_look_tokens();
 	wp_enqueue_style(
 		'recording-studio-plugin-demo-settings',
 		plugins_url( 'assets/admin/settings.css', $plugin_file ),
-		array(),
+		array( recording_studio_plugin_demo_look_token_handle() ),
+		(string) filemtime( $style_path )
+	);
+}
+
+function recording_studio_plugin_demo_enqueue_embed_empty_styles(): void {
+	$plugin_file = dirname( __DIR__ ) . '/recording-studio-widget.php';
+	$style_path  = dirname( __DIR__ ) . '/assets/admin/embed-empty.css';
+
+	recording_studio_plugin_demo_enqueue_look_tokens();
+	wp_enqueue_style(
+		'recording-studio-plugin-demo-embed-empty',
+		plugins_url( 'assets/admin/embed-empty.css', $plugin_file ),
+		array( recording_studio_plugin_demo_look_token_handle() ),
 		(string) filemtime( $style_path )
 	);
 }

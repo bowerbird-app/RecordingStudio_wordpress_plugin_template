@@ -133,8 +133,16 @@ function test_settings_look_css_stays_under_rs_settings_fp(): void {
 	if ( false === strpos( $css, '.rs-settings-fp' ) ) {
 		throw new RuntimeException( 'settings.css missing .rs-settings-fp' );
 	}
-	if ( false === strpos( $css, 'oklch(0.3211 0 0)' ) ) {
-		throw new RuntimeException( 'settings.css missing charcoal oklch(0.3211 0 0)' );
+	if ( false === strpos( $css, 'var(--rs-charcoal)' ) ) {
+		throw new RuntimeException( 'settings.css missing var(--rs-charcoal)' );
+	}
+	$tokens_path = dirname( __DIR__, 2 ) . '/assets/admin/rs-tokens.css';
+	$tokens      = file_get_contents( $tokens_path );
+	if ( false === $tokens ) {
+		throw new RuntimeException( 'could not read rs-tokens.css' );
+	}
+	if ( false === strpos( $tokens, 'oklch(0.3211 0 0)' ) || false === strpos( $tokens, '.rs-settings-fp' ) || false === strpos( $tokens, '.rs-embed-empty' ) ) {
+		throw new RuntimeException( 'rs-tokens.css must share charcoal with the settings page and the empty embed card' );
 	}
 	if ( false === strpos( $css, '--rs-error-surface' ) ) {
 		throw new RuntimeException( 'settings.css missing tinted error alert' );
@@ -196,13 +204,19 @@ function test_settings_styles_enqueue_only_on_the_settings_screen(): void {
 	$GLOBALS['rs_test_enqueued_styles'] = array();
 	recording_studio_plugin_demo_enqueue_settings_styles( 'settings_page_recording-studio-plugin-demo' );
 	$enqueued = $GLOBALS['rs_test_enqueued_styles'];
-	if ( 1 !== count( $enqueued ) ) {
-		throw new RuntimeException( 'expected one settings stylesheet' );
+	if ( 2 !== count( $enqueued ) ) {
+		throw new RuntimeException( 'expected look tokens and the settings stylesheet' );
 	}
-	if ( 'recording-studio-plugin-demo-settings' !== $enqueued[0]['handle'] ) {
-		throw new RuntimeException( 'unexpected stylesheet handle ' . (string) $enqueued[0]['handle'] );
+	if ( 'recording-studio-plugin-demo-tokens' !== $enqueued[0]['handle'] ) {
+		throw new RuntimeException( 'settings screen must load look tokens first' );
 	}
-	if ( false === strpos( (string) $enqueued[0]['src'], 'assets/admin/settings.css' ) ) {
+	if ( false === strpos( (string) $enqueued[0]['src'], 'assets/admin/rs-tokens.css' ) ) {
+		throw new RuntimeException( 'token stylesheet src missing assets/admin/rs-tokens.css' );
+	}
+	if ( 'recording-studio-plugin-demo-settings' !== $enqueued[1]['handle'] ) {
+		throw new RuntimeException( 'unexpected stylesheet handle ' . (string) $enqueued[1]['handle'] );
+	}
+	if ( false === strpos( (string) $enqueued[1]['src'], 'assets/admin/settings.css' ) ) {
 		throw new RuntimeException( 'stylesheet src missing assets/admin/settings.css' );
 	}
 }

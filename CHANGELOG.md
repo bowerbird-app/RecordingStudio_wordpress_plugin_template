@@ -7,13 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.27] - 2026-09-23
+
 ### Changed
+- When the block has no page selected, the editor and the published page show the same card. The card has a white background, a `1px` line, and `0.75rem` corners. Inside it, the product logo sits centered, then the product name, then `Pick a page on the block settings to embed.`
+- The logo and the name still come from `ProductConfig`. An empty logo URL leaves the title and the sentence, with no image.
+- Settings colors and the empty card share `assets/admin/rs-tokens.css`. The card layout lives in `assets/admin/embed-empty.css` and loads on `enqueue_block_assets`. The block still has no `style` or `editorStyle`, so embed HTML and CSS pass through as-is.
 - Dummy host pins `recording_studio_oauth` v0.5.2. Registered App forms stack Allow registration above Use central relay.
 
 ### Upgrade notes
+- Rebuild with `bin/build-plugin-zip` from the repository root, reinstall the ZIP, and refresh WordPress.
+- A filter on `recording_studio_product_config` that changes `name` or `logo` still changes the card title and logo. The sentence under the title stays fixed.
 - From `test/dummy`, run `bundle lock --update=recording_studio_oauth`, then `bundle install`.
 - Run `bin/rails db:migrate`. The migration drops `recording_studio_oauth_registration_settings`.
-- The plugin ZIP stays on 0.4.26.
 
 ## [0.4.26] - 2026-09-23
 

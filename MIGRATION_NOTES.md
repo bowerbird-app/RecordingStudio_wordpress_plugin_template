@@ -25,7 +25,15 @@ bin/rails tailwindcss:build
 - Oauth dummy tag `v0.5.2`
 - Public RubyGems and GitHub access for dependency installation
 
-From `test/dummy`, run `bundle lock --update=recording_studio_oauth`, then `bundle install`. Then run `bin/rails db:migrate`. Oauth 0.5.2 drops `recording_studio_oauth_registration_settings`. The plugin ZIP stays on 0.4.26.
+## 0.4.27
+
+When the block has no page selected, the editor and the published page show one card. The logo and the title come from `ProductConfig`. The sentence under the title is `Pick a page on the block settings to embed.` If `logo_url()` is empty, the card keeps the title and the sentence and skips the image.
+
+Look tokens for Settings and that card live in `assets/admin/rs-tokens.css`. The card layout is `assets/admin/embed-empty.css`, enqueued on `enqueue_block_assets`. `block.json` still has no `style` or `editorStyle`.
+
+Dummy host pins `recording_studio_oauth` v0.5.2. From `test/dummy`, run `bundle lock --update=recording_studio_oauth`, then `bundle install`. Then run `bin/rails db:migrate`. Oauth 0.5.2 drops `recording_studio_oauth_registration_settings`.
+
+Rebuild with `bin/build-plugin-zip`, reinstall the ZIP, and refresh WordPress.
 
 ## 0.4.26
 

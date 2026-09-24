@@ -3,7 +3,7 @@
  * Plugin Name:       WordPress Plugin Demo
  * Plugin URI:        https://github.com/bowerbird-app/RecordingStudio_wordpress_plugin_template
  * Description:       Embeds Recording Studio pages from the wp_plugin_demo host API using the baked plugin SDK.
- * Version:           0.2.0
+ * Version:           0.4.27
  * Requires at least: 6.8
  * Requires PHP:      7.4
  * Author:            Bowerbird
@@ -64,6 +64,7 @@ function recording_studio_widget_register_settings_page(): void {
 }
 add_action( 'admin_menu', 'recording_studio_widget_register_settings_page' );
 add_action( 'admin_enqueue_scripts', 'recording_studio_plugin_demo_enqueue_settings_styles' );
+add_action( 'enqueue_block_assets', 'recording_studio_plugin_demo_enqueue_embed_empty_styles' );
 add_action( 'admin_post_recording_studio_oauth_start', 'recording_studio_plugin_demo_connect_start' );
 add_action( 'admin_post_recording_studio_oauth_callback', 'recording_studio_plugin_demo_connect_callback' );
 add_action( 'admin_post_recording_studio_oauth_disconnect', 'recording_studio_plugin_demo_disconnect' );
