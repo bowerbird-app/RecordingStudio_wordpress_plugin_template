@@ -18,12 +18,14 @@ bin/rails tailwindcss:build
 
 - Ruby 3.3 or newer
 - Rails 8.1 or newer
-- Recording Studio 4.x (`~> 4.2` in the gemspec; dummy GitHub tag `v4.2.0`)
+- Recording Studio 4.x (`~> 4.2` in the gemspec; dummy GitHub tag `v4.2.2`)
 - Accessible dummy tag `v0.9.1` and Root Switchable dummy tag `v0.5.0`
 - FlatPack dummy tag `v0.1.190`
 - Users dummy tag `v0.11.0`
 - Oauth dummy tag `v0.5.2`
 - Public RubyGems and GitHub access for dependency installation
+
+From the repo root and `test/dummy`, run `bundle lock --update=recording_studio`, then `bundle install`. The plugin ZIP stays on 0.4.27.
 
 ## 0.4.27
 

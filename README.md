@@ -119,7 +119,7 @@ These versions come from the gemspec, the dummy Gemfile, `@wordpress/create-bloc
 | PostgreSQL | 16 |
 | Node | 22 (CI) |
 | TailwindCSS | 4 |
-| RecordingStudio | 4.x (`~> 4.2` in the gemspec; dummy GitHub tag `v4.2.0`) |
+| RecordingStudio | 4.x (`~> 4.2` in the gemspec; dummy GitHub tag `v4.2.2`) |
 | Accessible | dummy GitHub tag `v0.9.1` |
 | API | dummy GitHub tag `v0.5.6` |
 | Embeddable | dummy GitHub tag `v0.2.1` |
