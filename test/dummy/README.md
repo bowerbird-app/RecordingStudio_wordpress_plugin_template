@@ -30,6 +30,8 @@ bin/rails tailwindcss:build
 bin/dev
 ```
 
+Dummy credentials (`config/credentials.yml.enc`) are encrypted with the shared RecordingStudio_* development master key. Set `RAILS_MASTER_KEY` or write that key to `config/master.key` (gitignored). Keep the encrypted file; do not generate a per-repo dummy key.
+
 `link_tailwind_sources` creates `vendor/flat_pack` and `vendor/recording_studio` so Tailwind can scan FlatPack classes. Without it, the dummy CSS build is nearly empty and the UI looks unstyled.
 
 Run the commands above from the dummy app directory, not the repository root.

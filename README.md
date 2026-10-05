@@ -73,6 +73,8 @@ Open http://localhost:3000 and sign in at `/users/sign_in`.
 
 A Cloud Agent already starts PostgreSQL and the dummy server from `.cursor/`. Open port 3000. No extra environment variables are required. The dummy `database.yml` defaults match the provisioned PostgreSQL cluster.
 
+Dummy credentials (`test/dummy/config/credentials.yml.enc`) are encrypted with the shared RecordingStudio_* development master key. Set `RAILS_MASTER_KEY` or put that key in `test/dummy/config/master.key` (gitignored). Keep the encrypted file; do not generate a per-repo dummy key.
+
 ### Login credentials
 
 | Field    | Value             |
