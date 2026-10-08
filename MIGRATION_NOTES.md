@@ -106,7 +106,7 @@ Embeddable `HtmlSanitizer` removes `link` and `script` from BrowserPayload HTML.
 3. Run `bin/rails tailwindcss:build`.
 4. Restart the dummy. Do not re-seed. Oauth and Connect stay as they were.
 
-The dummy overrides `layouts/recording_studio_user/auth` so it also links `flat_pack/application`. FlatPack `v0.1.190` paints `.fp-button[data-fp-style="primary"]` in that sheet. The Users gem layout still omits it and only loads dummy Tailwind plus `yield :head`. Dummy `users_auth_primary_buttons.css` paints primary buttons with charcoal `oklch(0.3211 0 0)` and is injected on `RecordingStudioUser::Auth::BaseController` so Continue with email and Sign in stay solid when the gem layout is the one that loads. Packed embed CSS stays in the Getting Started payload only.
+Users `v0.15.0` auth layout links `flat_pack/application` (plus variables and rich text), so FlatPack primary buttons paint as filled CTAs on the gem sheet. The dummy still keeps `layouts/recording_studio_user/auth` and `users_auth_primary_buttons.css` as a host override / charcoal fallback; Users prepends its engine views for signup composition, so the gem auth layout is the one that loads unless a host reorders view paths. Packed embed CSS stays in the Getting Started payload only.
 
 ## 0.4.19
 

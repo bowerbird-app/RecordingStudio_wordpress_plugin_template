@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_23_000002) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_08_061318) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -33,12 +33,33 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_000002) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "recording_studio_access_invitations", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "accepted_at"
+    t.uuid "accepted_by_actor_id"
+    t.string "accepted_by_actor_type"
+    t.datetime "created_at", null: false
+    t.string "email", null: false
+    t.datetime "expires_at", null: false
+    t.datetime "last_sent_at", null: false
+    t.uuid "manager_actor_id", null: false
+    t.string "manager_actor_type", null: false
+    t.uuid "recording_id", null: false
+    t.datetime "revoked_at"
+    t.string "role", null: false
+    t.string "token_digest", limit: 64, null: false
+    t.datetime "updated_at", null: false
+    t.index ["recording_id", "email"], name: "idx_rs_access_invitations_one_active", unique: true, where: "((accepted_at IS NULL) AND (revoked_at IS NULL))"
+    t.index ["recording_id"], name: "index_recording_studio_access_invitations_on_recording_id"
+    t.index ["token_digest"], name: "idx_rs_access_invitations_token_digest", unique: true
+    t.check_constraint "accepted_at IS NULL OR revoked_at IS NULL", name: "access_invitations_not_accepted_and_revoked"
+  end
+
   create_table "recording_studio_accesses", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "actor_id", null: false
     t.string "actor_type", null: false
     t.datetime "created_at", null: false
     t.uuid "depends_on_recording_id"
-    t.integer "role", default: 0, null: false
+    t.string "role", default: "view", null: false
     t.index ["actor_type", "actor_id", "role"], name: "index_recording_studio_accesses_on_actor_and_role"
     t.index ["actor_type", "actor_id"], name: "index_recording_studio_accesses_on_actor"
     t.index ["depends_on_recording_id"], name: "index_recording_studio_accesses_on_depends_on_recording_id"
@@ -171,14 +192,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_000002) do
   end
 
   create_table "recording_studio_attachable_attachments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.text "alt_text"
     t.string "attachment_kind", null: false
     t.bigint "byte_size", null: false
+    t.text "caption"
     t.string "content_type", null: false
+    t.text "credit"
     t.text "description"
     t.string "name", null: false
     t.string "original_filename", null: false
+    t.uuid "root_recording_id"
     t.index ["attachment_kind", "content_type"], name: "idx_rs_attachable_kind_type"
     t.index ["attachment_kind"], name: "idx_on_attachment_kind_d683071625"
+    t.index ["root_recording_id"], name: "index_rs_attachable_attachments_on_root_recording_id"
   end
 
   create_table "recording_studio_embeddable_embeds", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -325,10 +351,30 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_000002) do
     t.string "name", null: false
     t.jsonb "redirect_uris", default: [], null: false
     t.datetime "revoked_at"
+    t.boolean "self_registered", default: false, null: false
+    t.string "session_token_audience"
+    t.string "session_token_provider"
+    t.text "session_token_secret_ciphertext"
+    t.string "token_endpoint_auth_method", null: false
     t.datetime "updated_at", null: false
     t.boolean "use_central_relay", default: false, null: false
     t.index ["api_key"], name: "index_recording_studio_oauth_clients_on_api_key"
     t.index ["client_id"], name: "index_recording_studio_oauth_clients_on_client_id", unique: true
+  end
+
+  create_table "recording_studio_oauth_external_installs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "connected_by_id"
+    t.string "connected_by_type"
+    t.datetime "created_at", null: false
+    t.string "external_id", null: false
+    t.uuid "oauth_client_id", null: false
+    t.string "provider", null: false
+    t.uuid "root_recording_id"
+    t.datetime "updated_at", null: false
+    t.index ["connected_by_type", "connected_by_id"], name: "index_rs_oauth_external_installs_on_connected_by"
+    t.index ["oauth_client_id", "provider", "external_id"], name: "index_rs_oauth_external_installs_on_client_provider_external", unique: true
+    t.index ["provider", "external_id"], name: "index_rs_oauth_external_installs_on_provider_external"
+    t.index ["root_recording_id"], name: "idx_on_root_recording_id_efcab19ee0"
   end
 
   create_table "recording_studio_oauth_refresh_tokens", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -451,8 +497,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_000002) do
     t.jsonb "additional_profile_attributes", default: {}, null: false
     t.datetime "created_at", null: false
     t.string "first_name", null: false
-    t.string "last_name", null: false
-    t.string "time_zone", default: "UTC", null: false
+    t.string "last_name"
+    t.string "time_zone", default: "UTC"
     t.uuid "user_id", null: false
     t.index ["user_id"], name: "index_recording_studio_user_profiles_on_user_id"
   end
@@ -473,7 +519,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_000002) do
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
-    t.check_constraint "registered_with::text = ANY (ARRAY['password'::character varying, 'otp'::character varying]::text[])", name: "users_registered_with_check"
+    t.check_constraint "registered_with::text = ANY (ARRAY['password'::character varying::text, 'otp'::character varying::text])", name: "users_registered_with_check"
   end
 
   create_table "workspaces", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -482,6 +528,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_000002) do
     t.datetime "updated_at", null: false
   end
 
+  add_foreign_key "recording_studio_access_invitations", "recording_studio_recordings", column: "recording_id"
   add_foreign_key "recording_studio_api_api_access_tokens", "recording_studio_api_api_credentials", column: "api_credential_id"
   add_foreign_key "recording_studio_api_api_credentials", "recording_studio_api_api_clients", column: "api_client_id"
   add_foreign_key "recording_studio_embeddable_view_logs", "recording_studio_embeddable_embeds", column: "embed_id"
@@ -489,6 +536,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_000002) do
   add_foreign_key "recording_studio_oauth_access_tokens", "recording_studio_oauth_authorizations", column: "oauth_authorization_id"
   add_foreign_key "recording_studio_oauth_authorization_codes", "recording_studio_oauth_authorizations", column: "oauth_authorization_id"
   add_foreign_key "recording_studio_oauth_authorizations", "recording_studio_oauth_clients", column: "oauth_client_id"
+  add_foreign_key "recording_studio_oauth_external_installs", "recording_studio_oauth_clients", column: "oauth_client_id"
+  add_foreign_key "recording_studio_oauth_external_installs", "recording_studio_recordings", column: "root_recording_id"
   add_foreign_key "recording_studio_oauth_refresh_tokens", "recording_studio_oauth_authorizations", column: "oauth_authorization_id"
   add_foreign_key "recording_studio_publishable_publishables", "recording_studio_recordings", column: "social_image_attachment_recording_id", name: "fk_rs_publishables_social_image_attachment_recording"
   add_foreign_key "recording_studio_recordings", "recording_studio_recordings", column: "parent_recording_id"
