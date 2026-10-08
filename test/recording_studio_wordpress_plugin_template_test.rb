@@ -101,12 +101,13 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     assert_includes lockfile, "recording_studio_oauth (0.6.3)"
     assert_includes lockfile, "recording_studio_api (0.6.4)"
     assert_includes lockfile, "recording_studio_admin (2.0.7)"
+    assert_includes lockfile, "recording_studio_user (0.16.0)"
     assert_includes lockfile, "recording_studio_embeddable (0.4.0)"
     assert_includes lockfile, "recording_studio_artifacts (0.4.0)"
     assert_includes lockfile, "recording_studio_publishable (0.4.0)"
 
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_site_settings", tag: "v0.1.0"'
-    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_users", tag: "v0.15.0"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_users", tag: "v0.16.0"'
     refute_includes gemfile, "recording_studio/v3.0.0"
     refute_includes gemfile, 'tag: "v0.1.133"'
     refute_includes gemfile, 'tag: "v0.6.0"'
