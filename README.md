@@ -123,14 +123,14 @@ These versions come from the gemspec, the dummy Gemfile, `@wordpress/create-bloc
 | TailwindCSS | 4 |
 | RecordingStudio | 4.x (`~> 4.2` in the gemspec; dummy GitHub tag `v4.2.2`) |
 | Accessible | dummy GitHub tag `v0.11.2` |
-| API | dummy GitHub tag `v0.5.6` |
+| API | dummy GitHub tag `v0.6.4` |
 | Embeddable | dummy GitHub tag `v0.2.1` |
 | Admin | dummy GitHub tag `v2.0.2` (boot-only for this host) |
 | Publishable | dummy GitHub tag `v0.2.0` (Embeddable hard dep; not mixed into Page) |
 | Attachable | dummy GitHub tag `v0.7.4` (Publishable boot dep) |
 | Root Switchable | dummy GitHub tag `v0.5.0` |
 | Users | dummy GitHub tag `v0.15.0` |
-| Oauth | dummy GitHub tag `v0.5.2` (central relay; Allow registration above Use central relay; one public WordPress app; consent is a full page) |
+| Oauth | dummy GitHub tag `v0.6.3` (central relay; Allow registration above Use central relay; one public WordPress app; consent is a full page) |
 | FlatPack | dummy GitHub tag `v0.1.207` |
 | Devise | latest |
 | `@wordpress/create-block` | 4.98.0 |

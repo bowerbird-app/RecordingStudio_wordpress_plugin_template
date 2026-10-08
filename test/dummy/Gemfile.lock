@@ -20,16 +20,16 @@ GIT
 
 GIT
   remote: https://github.com/bowerbird-app/RecordingStudio_Oauth.git
-  revision: 5098473b04daf2cfb401a78d9e221076b814295f
-  tag: v0.5.2
+  revision: e5c35600510266c054369cdde572259b0b7234b7
+  tag: v0.6.3
   specs:
-    recording_studio_oauth (0.5.2)
-      flat_pack (~> 0.1.144)
+    recording_studio_oauth (0.6.3)
+      flat_pack (~> 0.1.198)
       rails (~> 8.1.0)
       recording_studio (~> 4.2)
-      recording_studio_accessible (~> 0.9)
+      recording_studio_accessible (~> 0.11)
       recording_studio_admin (~> 2.0)
-      recording_studio_api (~> 0.5.2)
+      recording_studio_api (>= 0.5.2, < 0.7)
       recording_studio_site_settings (~> 0.1)
 
 GIT
@@ -53,13 +53,13 @@ GIT
 
 GIT
   remote: https://github.com/bowerbird-app/RecordingStudio_api.git
-  revision: 8490812efdc598ed3e3e311a34d1df5b059d7bbb
-  tag: v0.5.6
+  revision: d1b8700c361e6b376394764444206ac57367241f
+  tag: v0.6.4
   specs:
-    recording_studio_api (0.5.6)
+    recording_studio_api (0.6.4)
       rails (~> 8.1.0)
       recording_studio (~> 4.2)
-      recording_studio_accessible (~> 0.9)
+      recording_studio_accessible (~> 0.11)
       redis (~> 5.3)
 
 GIT
@@ -808,10 +808,10 @@ CHECKSUMS
   recording_studio (4.2.1)
   recording_studio_accessible (0.11.0)
   recording_studio_admin (2.0.2)
-  recording_studio_api (0.5.6)
+  recording_studio_api (0.6.4)
   recording_studio_attachable (0.7.3)
   recording_studio_embeddable (0.2.1)
-  recording_studio_oauth (0.5.2)
+  recording_studio_oauth (0.6.3)
   recording_studio_publishable (0.2.0)
   recording_studio_root_switchable (0.5.0)
   recording_studio_site_settings (0.1.0)
