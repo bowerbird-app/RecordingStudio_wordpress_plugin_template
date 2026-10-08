@@ -34,10 +34,10 @@ GIT
 
 GIT
   remote: https://github.com/bowerbird-app/RecordingStudio_accessible.git
-  revision: bdff3ee3ace5cf3bfe33ba40476c1522cf1b6d61
-  tag: v0.9.1
+  revision: 8e2cde65984727c3197891671fed0dc270349e9e
+  tag: v0.11.2
   specs:
-    recording_studio_accessible (0.9.1)
+    recording_studio_accessible (0.11.0)
       rails (~> 8.1.0)
       recording_studio (~> 4.2)
 
@@ -64,11 +64,11 @@ GIT
 
 GIT
   remote: https://github.com/bowerbird-app/RecordingStudio_attachable.git
-  revision: 7945b22e0151d901daf6a242c54cfac4703148fb
-  tag: v0.5.1
+  revision: aaac9177a0c286d75c61a5840984c4629aa03a31
+  tag: v0.7.4
   specs:
-    recording_studio_attachable (0.5.1)
-      flat_pack (>= 0.1.135)
+    recording_studio_attachable (0.7.3)
+      flat_pack (>= 0.1.198)
       rails (~> 8.1.0)
       recording_studio (~> 4.2)
 
@@ -108,10 +108,10 @@ GIT
 
 GIT
   remote: https://github.com/bowerbird-app/RecordingStudio_users.git
-  revision: 62401500d19ae43d91c591d8071de7105952abf8
-  tag: v0.11.0
+  revision: 211bdc2456b6dfa36d7a94ae5942e421b023bbb1
+  tag: v0.15.0
   specs:
-    recording_studio_user (0.11.0)
+    recording_studio_user (0.15.0)
       devise (~> 5.0)
       flat_pack (>= 0.1.144)
       omniauth (~> 2.1)
@@ -120,19 +120,19 @@ GIT
       omniauth-instagram-api (~> 0.1)
       omniauth-linkedin-openid (~> 1.0)
       omniauth-microsoft_graph (~> 2.0)
-      omniauth-rails_csrf_protection (~> 1.0)
+      omniauth-rails_csrf_protection (~> 2.0)
       rails (~> 8.1.0)
       recording_studio (~> 4.2)
-      recording_studio_accessible (~> 0.8)
+      recording_studio_accessible (~> 0.11)
       recording_studio_admin (~> 2.0)
-      recording_studio_attachable (~> 0.5.0)
+      recording_studio_attachable (~> 0.7)
 
 GIT
   remote: https://github.com/bowerbird-app/flatpack.git
-  revision: ebc8b3fd386c2e76f1d8d555d0fab37f808b644f
-  tag: v0.1.190
+  revision: 7490c10b4ec59c7df81aa4f6a46d8f9ef83de8bc
+  tag: v0.1.207
   specs:
-    flat_pack (0.1.190)
+    flat_pack (0.1.207)
       pagy (~> 9.0)
       rails (>= 7.1, < 9)
       tailwind_merge (~> 0.13)
@@ -419,7 +419,7 @@ GEM
     omniauth-oauth2 (1.8.0)
       oauth2 (>= 1.4, < 3)
       omniauth (~> 2.0)
-    omniauth-rails_csrf_protection (1.0.2)
+    omniauth-rails_csrf_protection (2.0.1)
       actionpack (>= 4.2)
       omniauth (~> 2.0)
     orm_adapter (0.5.0)
@@ -722,7 +722,7 @@ CHECKSUMS
   ffi (1.17.2-x86_64-darwin) sha256=981f2d4e32ea03712beb26e55e972797c2c5a7b0257955d8667ba58f2da6440e
   ffi (1.17.2-x86_64-linux-gnu) sha256=05d2026fc9dbb7cfd21a5934559f16293815b7ce0314846fee2ac8efbdb823ea
   ffi (1.17.2-x86_64-linux-musl) sha256=97c0eb3981414309285a64dc4d466bd149e981c279a56371ef811395d68cb95c
-  flat_pack (0.1.190)
+  flat_pack (0.1.207)
   fugit (1.12.1) sha256=5898f478ede9b415f0804e42b8f3fd53f814bd85eebffceebdbc34e1107aaf68
   globalid (1.3.0) sha256=05c639ad6eb4594522a0b07983022f04aa7254626ab69445a0e493aa3786ff11
   hashie (5.1.0) sha256=c266471896f323c446ea8207f8ffac985d2718df0a0ba98651a3057096ca3870
@@ -772,7 +772,7 @@ CHECKSUMS
   omniauth-linkedin-openid (1.0.2) sha256=713fab1c1bbc52979d5c3911c39b8e3b820752c669c809ed02790e6e0cc38e16
   omniauth-microsoft_graph (2.2.0) sha256=2796ee45fa707d9d042cd34f26219b2dc78d053478b07c6d5e00f3b60487bd55
   omniauth-oauth2 (1.8.0) sha256=b2f8e9559cc7e2d4efba57607691d6d2b634b879fc5b5b6ccfefa3da85089e78
-  omniauth-rails_csrf_protection (1.0.2) sha256=1170fd672aff092b9b7ebebc1453559f073ed001e3ce62a1df616e32f8dc5fe0
+  omniauth-rails_csrf_protection (2.0.1) sha256=c6e3204d7e3925bb537cb52d50fdfc9f05293f1a9d87c5d4ab4ca3a39ba8c32d
   orm_adapter (0.5.0) sha256=aa5d0be5d540cbb46d3a93e88061f4ece6a25f6e97d6a47122beb84fe595e9b9
   ostruct (0.6.3) sha256=95a2ed4a4bd1d190784e666b47b2d3f078e4a9efda2fccf18f84ddc6538ed912
   pagy (9.4.0) sha256=db3f2e043f684155f18f78be62a81e8d033e39b9f97b1e1a8d12ad38d7bce738
@@ -806,16 +806,16 @@ CHECKSUMS
   rbs (4.0.3) sha256=5a7bf70e2628549d9a1f44eae447b2cfe55968a9c60cfff52693a4bdcc020e14
   rdoc (8.0.0) sha256=03bf8c08a9639658855a0cfd77c0abca8325c227693f7f33f82957811348c469
   recording_studio (4.2.1)
-  recording_studio_accessible (0.9.1)
+  recording_studio_accessible (0.11.0)
   recording_studio_admin (2.0.2)
   recording_studio_api (0.5.6)
-  recording_studio_attachable (0.5.1)
+  recording_studio_attachable (0.7.3)
   recording_studio_embeddable (0.2.1)
   recording_studio_oauth (0.5.2)
   recording_studio_publishable (0.2.0)
   recording_studio_root_switchable (0.5.0)
   recording_studio_site_settings (0.1.0)
-  recording_studio_user (0.11.0)
+  recording_studio_user (0.15.0)
   recording_studio_wordpress_plugin_template (0.4.27)
   redis (5.4.1) sha256=b5e675b57ad22b15c9bcc765d5ac26f60b675408af916d31527af9bd5a81faae
   redis-client (0.30.1) sha256=5151bc5c7bbfe48623732cdae3b900d8a22dc691cc7cdfacfb351ac55116522d
