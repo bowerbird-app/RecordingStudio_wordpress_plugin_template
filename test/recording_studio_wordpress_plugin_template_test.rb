@@ -110,7 +110,7 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_users", tag: "v0.16.0"'
     refute_includes gemfile, "recording_studio/v3.0.0"
     refute_includes gemfile, 'tag: "v0.1.133"'
-    refute_includes gemfile, 'tag: "v0.6.0"'
+    refute_includes gemfile, 'tag: "v0.5.0"'
     refute_includes gemfile, 'tag: "0.3.1"'
   end
 
