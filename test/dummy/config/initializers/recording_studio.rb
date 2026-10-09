@@ -15,6 +15,8 @@ RecordingStudio.configure do |config|
     # Publishable::Publishable includes Attachable).
     "RecordingStudioPublishable::Publishable",
     "RecordingStudioAttachable::Attachment",
+    "RecordingStudioAttachable::Library",
+    "RecordingStudioAttachable::Placement",
     "RecordingStudioSiteSettings::SiteSetting",
     "RecordingStudio::Access",
     "RecordingStudioApi::ApiClient",
