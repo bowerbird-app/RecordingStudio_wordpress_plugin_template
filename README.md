@@ -129,7 +129,7 @@ These versions come from the gemspec, the dummy Gemfile, `@wordpress/create-bloc
 | Admin | dummy GitHub tag `v2.0.7` (boot-only for this host) |
 | Publishable | dummy GitHub tag `v0.4.0` (Embeddable hard dep; not mixed into Page) |
 | Attachable | dummy GitHub tag `v0.13.0` (Publishable boot dep) |
-| Root Switchable | dummy GitHub tag `v0.5.0` |
+| Root Switchable | dummy GitHub tag `v0.6.0` |
 | Users | dummy GitHub tag `v0.16.0` |
 | Oauth | dummy GitHub tag `v0.6.3` (central relay; Allow registration above Use central relay; one public WordPress app; consent is a full page) |
 | FlatPack | dummy GitHub tag `v0.1.213` |
