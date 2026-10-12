@@ -19,6 +19,8 @@ RecordingStudio.configure do |config|
     "RecordingStudioAttachable::Placement",
     "RecordingStudioSiteSettings::SiteSetting",
     "RecordingStudio::Access",
+    "RecordingStudio::AccessConstraint",
+    "RecordingStudio::AccessRule",
     "RecordingStudioApi::ApiClient",
     "RecordingStudioApi::ApiCredential",
     "RecordingStudioApi::ApiAccessToken",

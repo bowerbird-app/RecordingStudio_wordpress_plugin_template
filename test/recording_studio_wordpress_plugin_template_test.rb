@@ -87,7 +87,7 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     gemfile = File.read(File.expand_path("dummy/Gemfile", __dir__))
 
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio", tag: "v4.5.0"'
-    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_accessible", tag: "v0.13.0"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_accessible", tag: "v0.15.0"'
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_root_switchable", tag: "v0.8.0"'
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_metrics", tag: "v0.2.0"'
     assert_includes gemfile, 'github: "bowerbird-app/flatpack", tag: "v0.1.213"'
@@ -271,6 +271,8 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     assert_includes initializer_source, '"RecordingStudioAttachable::Library"'
     assert_includes initializer_source, '"RecordingStudioAttachable::Placement"'
     assert_includes initializer_source, '"RecordingStudio::Access"'
+    assert_includes initializer_source, '"RecordingStudio::AccessConstraint"'
+    assert_includes initializer_source, '"RecordingStudio::AccessRule"'
     assert_includes initializer_source, '"RecordingStudioApi::ApiClient"'
     assert_includes initializer_source, '"RecordingStudioApi::ApiCredential"'
     assert_includes initializer_source, '"RecordingStudioApi::ApiAccessToken"'
@@ -319,6 +321,7 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     assert_includes readme, "4.98.0"
     assert_includes readme, "v4.5.0"
     assert_includes readme, "v0.1.213"
+    assert_includes readme, "v0.15.0"
     assert_includes readme, "v0.13.0"
     assert_includes readme, "dummy GitHub tag `v0.8.0`"
     assert_includes readme, "dummy GitHub tag `v0.2.0`"
