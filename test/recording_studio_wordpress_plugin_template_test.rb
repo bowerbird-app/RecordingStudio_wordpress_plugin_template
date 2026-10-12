@@ -271,6 +271,8 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     assert_includes initializer_source, '"RecordingStudioAttachable::Library"'
     assert_includes initializer_source, '"RecordingStudioAttachable::Placement"'
     assert_includes initializer_source, '"RecordingStudio::Access"'
+    assert_includes initializer_source, '"RecordingStudio::AccessConstraint"'
+    assert_includes initializer_source, '"RecordingStudio::AccessRule"'
     assert_includes initializer_source, '"RecordingStudioApi::ApiClient"'
     assert_includes initializer_source, '"RecordingStudioApi::ApiCredential"'
     assert_includes initializer_source, '"RecordingStudioApi::ApiAccessToken"'
