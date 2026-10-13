@@ -22,10 +22,10 @@ GIT
 
 GIT
   remote: https://github.com/bowerbird-app/RecordingStudio_Oauth.git
-  revision: aa7a008f3dc316d96c721773c43fc386d5ba5729
-  tag: v0.9.0
+  revision: c22d1cc2e023082d47f938d2e5c285206329a092
+  tag: v0.10.0
   specs:
-    recording_studio_oauth (0.9.0)
+    recording_studio_oauth (0.10.0)
       flat_pack (~> 0.1.198)
       rails (~> 8.1.0)
       recording_studio (~> 4.2)
@@ -35,6 +35,7 @@ GIT
       recording_studio_cache (~> 0.5)
       recording_studio_metrics (~> 0.2)
       recording_studio_site_settings (~> 0.1)
+      recording_studio_trashable (~> 0.10)
 
 GIT
   remote: https://github.com/bowerbird-app/RecordingStudio_accessible.git
@@ -47,13 +48,14 @@ GIT
 
 GIT
   remote: https://github.com/bowerbird-app/RecordingStudio_admin.git
-  revision: 3568969c82cd393fce38c2f788785fa42aa188bc
-  tag: v2.2.0
+  revision: d60442993f33ba358edc6a0fb51538c714aa9479
+  tag: v2.3.0
   specs:
-    recording_studio_admin (2.2.0)
+    recording_studio_admin (2.3.0)
       flat_pack (~> 0.1.207)
       rails (~> 8.1.0)
       recording_studio_accessible (~> 0.6)
+      recording_studio_trashable (~> 0.10)
 
 GIT
   remote: https://github.com/bowerbird-app/RecordingStudio_api.git
@@ -140,6 +142,17 @@ GIT
       recording_studio_accessible (~> 0.8)
       recording_studio_admin (~> 2.0)
       recording_studio_attachable (~> 0.5)
+
+GIT
+  remote: https://github.com/bowerbird-app/RecordingStudio_trashable.git
+  revision: 6f590d0b1ed6cd64515ae5ffec280b28bbbca20d
+  tag: v0.10.0
+  specs:
+    recording_studio_trashable (0.10.0)
+      flat_pack (>= 0.1.74)
+      rails (~> 8.1.0)
+      recording_studio (~> 4.2)
+      recording_studio_metrics (~> 0.2)
 
 GIT
   remote: https://github.com/bowerbird-app/RecordingStudio_users.git
@@ -719,6 +732,7 @@ DEPENDENCIES
   recording_studio_publishable!
   recording_studio_root_switchable!
   recording_studio_site_settings!
+  recording_studio_trashable!
   recording_studio_user!
   recording_studio_wordpress_plugin_template!
   rubocop-rails-omakase
@@ -876,17 +890,18 @@ CHECKSUMS
   rdoc (8.0.0) sha256=03bf8c08a9639658855a0cfd77c0abca8325c227693f7f33f82957811348c469
   recording_studio (4.5.0)
   recording_studio_accessible (0.15.0)
-  recording_studio_admin (2.2.0)
+  recording_studio_admin (2.3.0)
   recording_studio_api (0.6.4)
   recording_studio_artifacts (0.4.0)
   recording_studio_attachable (0.15.0)
   recording_studio_cache (0.5.0)
   recording_studio_embeddable (0.6.0)
   recording_studio_metrics (0.2.0)
-  recording_studio_oauth (0.9.0)
+  recording_studio_oauth (0.10.0)
   recording_studio_publishable (0.8.0)
   recording_studio_root_switchable (0.9.0)
   recording_studio_site_settings (0.1.0)
+  recording_studio_trashable (0.10.0)
   recording_studio_user (0.21.0)
   recording_studio_wordpress_plugin_template (0.4.27)
   redis (5.4.1) sha256=b5e675b57ad22b15c9bcc765d5ac26f60b675408af916d31527af9bd5a81faae

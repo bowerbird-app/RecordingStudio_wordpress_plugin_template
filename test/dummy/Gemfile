@@ -11,8 +11,11 @@ gem "recording_studio_accessible", github: "bowerbird-app/RecordingStudio_access
 gem "recording_studio_api", github: "bowerbird-app/RecordingStudio_api", tag: "v0.6.4"
 gem "recording_studio_embeddable", github: "bowerbird-app/RecordingStudio_Embeddable", tag: "v0.6.0"
 gem "recording_studio_artifacts", github: "bowerbird-app/RecordingStudio_artifacts", tag: "v0.4.0"
-gem "recording_studio_admin", github: "bowerbird-app/RecordingStudio_admin", tag: "v2.2.0"
-gem "recording_studio_oauth", github: "bowerbird-app/RecordingStudio_Oauth", tag: "v0.9.0"
+gem "recording_studio_admin", github: "bowerbird-app/RecordingStudio_admin", tag: "v2.3.0"
+# Admin 2.3+ / Oauth 0.10+ load Trashable query helpers only (not the Trashable engine).
+gem "recording_studio_trashable", github: "bowerbird-app/RecordingStudio_trashable", tag: "v0.10.0",
+                                  require: false
+gem "recording_studio_oauth", github: "bowerbird-app/RecordingStudio_Oauth", tag: "v0.10.0"
 gem "recording_studio_site_settings", github: "bowerbird-app/RecordingStudio_site_settings", tag: "v0.1.0"
 # Publishable + Artifacts are Embeddable hard deps. Attachable is required to boot Publishable's model.
 gem "recording_studio_publishable", github: "bowerbird-app/RecordingStudio_publishable", tag: "v0.8.0"
