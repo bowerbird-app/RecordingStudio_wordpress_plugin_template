@@ -135,6 +135,7 @@ These versions come from the gemspec, the dummy Gemfile, `@wordpress/create-bloc
 | Metrics | dummy GitHub tag `v0.2.3` (`require: false`; API 0.7+ / Root Switchable hard dep) |
 | Users | dummy GitHub tag `v0.21.0` |
 | Oauth | dummy GitHub tag `v0.10.1` (central relay; Allow registration above Use central relay; one public WordPress app; consent is a full page) |
+| Site Settings | dummy GitHub tag `v0.2.0` |
 | FlatPack | dummy GitHub tag `v0.1.213` |
 | Devise | latest |
 | `@wordpress/create-block` | 4.98.0 |

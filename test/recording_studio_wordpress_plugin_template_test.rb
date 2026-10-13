@@ -111,8 +111,9 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     assert_includes lockfile, "recording_studio_embeddable (0.6.0)"
     assert_includes lockfile, "recording_studio_artifacts (0.4.0)"
     assert_includes lockfile, "recording_studio_publishable (0.8.0)"
+    assert_includes lockfile, "recording_studio_site_settings (0.2.0)"
 
-    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_site_settings", tag: "v0.1.0"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_site_settings", tag: "v0.2.0"'
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_users", tag: "v0.21.0"'
     refute_includes gemfile, "recording_studio/v3.0.0"
     refute_includes gemfile, 'tag: "v0.1.133"'
@@ -338,6 +339,7 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     assert_includes readme, "dummy GitHub tag `v0.10.0`"
     assert_includes readme, "dummy GitHub tag `v0.10.1`"
     assert_includes readme, "dummy GitHub tag `v0.7.0`"
+    assert_includes readme, "dummy GitHub tag `v0.2.0`"
     assert_includes readme, "Allow registration above Use central relay"
     assert_includes readme, "central relay"
     assert_includes readme, "Ship the plugin"
