@@ -126,7 +126,8 @@ These versions come from the gemspec, the dummy Gemfile, `@wordpress/create-bloc
 | API | dummy GitHub tag `v0.6.4` |
 | Embeddable | dummy GitHub tag `v0.6.0` |
 | Artifacts | dummy GitHub tag `v0.4.0` (Embeddable hard dep; `artifacts_enabled` left off) |
-| Admin | dummy GitHub tag `v2.2.0` (boot-only for this host) |
+| Admin | dummy GitHub tag `v2.3.0` (boot-only for this host) |
+| Trashable | dummy GitHub tag `v0.10.0` (`require: false`; Admin 2.3 query helpers only) |
 | Publishable | dummy GitHub tag `v0.8.0` (Embeddable hard dep; not mixed into Page) |
 | Attachable | dummy GitHub tag `v0.15.0` (Publishable boot dep) |
 | Root Switchable | dummy GitHub tag `v0.9.0` |
