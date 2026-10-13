@@ -135,14 +135,14 @@ GIT
 
 GIT
   remote: https://github.com/bowerbird-app/RecordingStudio_site_settings.git
-  revision: fdc54708838734d7657c376cbebb3c63f23384dd
-  tag: v0.1.0
+  revision: f116e327badc21f3026dcb6b81444ea8fceba962
+  tag: v0.2.0
   specs:
-    recording_studio_site_settings (0.1.0)
+    recording_studio_site_settings (0.2.0)
       flat_pack (>= 0.1.144)
       rails (~> 8.1.0)
       recording_studio (~> 4.2)
-      recording_studio_accessible (~> 0.8)
+      recording_studio_accessible (~> 0.11)
       recording_studio_admin (~> 2.0)
       recording_studio_attachable (~> 0.5)
 
@@ -903,7 +903,7 @@ CHECKSUMS
   recording_studio_oauth (0.10.1)
   recording_studio_publishable (0.8.0)
   recording_studio_root_switchable (0.9.0)
-  recording_studio_site_settings (0.1.0)
+  recording_studio_site_settings (0.2.0)
   recording_studio_trashable (0.10.0)
   recording_studio_user (0.21.0)
   recording_studio_wordpress_plugin_template (0.4.27)
