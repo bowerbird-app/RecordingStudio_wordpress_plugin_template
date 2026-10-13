@@ -99,9 +99,9 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_trashable", tag: "v0.10.0"'
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_publishable", tag: "v0.8.0"'
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_attachable", tag: "v0.15.0"'
-    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_Oauth", tag: "v0.9.0"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_Oauth", tag: "v0.10.0"'
     lockfile = File.read(File.expand_path("dummy/Gemfile.lock", __dir__))
-    assert_includes lockfile, "recording_studio_oauth (0.9.0)"
+    assert_includes lockfile, "recording_studio_oauth (0.10.0)"
     assert_includes lockfile, "recording_studio_api (0.6.4)"
     assert_includes lockfile, "recording_studio_admin (2.3.0)"
     assert_includes lockfile, "recording_studio_trashable (0.10.0)"

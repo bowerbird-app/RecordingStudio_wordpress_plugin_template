@@ -127,14 +127,14 @@ These versions come from the gemspec, the dummy Gemfile, `@wordpress/create-bloc
 | Embeddable | dummy GitHub tag `v0.6.0` |
 | Artifacts | dummy GitHub tag `v0.4.0` (Embeddable hard dep; `artifacts_enabled` left off) |
 | Admin | dummy GitHub tag `v2.3.0` (boot-only for this host) |
-| Trashable | dummy GitHub tag `v0.10.0` (`require: false`; Admin 2.3 query helpers only) |
+| Trashable | dummy GitHub tag `v0.10.0` (`require: false`; Admin 2.3 / Oauth 0.10 query helpers only) |
 | Publishable | dummy GitHub tag `v0.8.0` (Embeddable hard dep; not mixed into Page) |
 | Attachable | dummy GitHub tag `v0.15.0` (Publishable boot dep) |
 | Root Switchable | dummy GitHub tag `v0.9.0` |
 | Cache | dummy GitHub tag `v0.5.0` (Users/Oauth/Root Switchable rate-limit dep from their 0.21/0.9/0.9 releases) |
 | Metrics | dummy GitHub tag `v0.2.0` (Root Switchable hard dep from 0.7) |
 | Users | dummy GitHub tag `v0.21.0` |
-| Oauth | dummy GitHub tag `v0.9.0` (central relay; Allow registration above Use central relay; one public WordPress app; consent is a full page) |
+| Oauth | dummy GitHub tag `v0.10.0` (central relay; Allow registration above Use central relay; one public WordPress app; consent is a full page) |
 | FlatPack | dummy GitHub tag `v0.1.213` |
 | Devise | latest |
 | `@wordpress/create-block` | 4.98.0 |
