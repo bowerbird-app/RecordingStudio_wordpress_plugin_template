@@ -87,7 +87,7 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     gemfile = File.read(File.expand_path("dummy/Gemfile", __dir__))
 
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio", tag: "v4.6.0"'
-    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_accessible", tag: "v0.17.0"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_accessible", tag: "v0.18.0"'
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_root_switchable", tag: "v0.9.0"'
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_cache", tag: "v0.5.0"'
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_metrics", tag: "v0.2.3"'
@@ -102,6 +102,7 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_Oauth", tag: "v0.10.1"'
     lockfile = File.read(File.expand_path("dummy/Gemfile.lock", __dir__))
     assert_includes lockfile, "recording_studio (4.6.0)"
+    assert_includes lockfile, "recording_studio_accessible (0.18.0)"
     assert_includes lockfile, "recording_studio_oauth (0.10.1)"
     assert_includes lockfile, "recording_studio_api (0.7.0)"
     assert_includes lockfile, "recording_studio_admin (2.3.0)"
@@ -330,7 +331,7 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     assert_includes readme, "v4.6.0"
     assert_includes readme, "v0.1.213"
     assert_includes readme, "v0.15.0"
-    assert_includes readme, "v0.17.0"
+    assert_includes readme, "v0.18.0"
     assert_includes readme, "dummy GitHub tag `v0.8.0`"
     assert_includes readme, "dummy GitHub tag `v0.2.3`"
     assert_includes readme, "dummy GitHub tag `v0.9.0`"
