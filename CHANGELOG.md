@@ -10,14 +10,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.4.33] - 2026-11-06
 
 ### Changed
-- Dummy pins FlatPack `v0.1.341`, Oauth `v0.21.3`, Root Switchable `v0.11.7`, and Admin `v2.9.3`.
+- Gemspec Recording Studio floor is `>= 6.3.0, < 7`. Root and dummy pin Recording Studio `v6.5.0`.
+- Dummy pins FlatPack `v0.1.341`, Oauth `v0.21.3`, Root Switchable `v0.11.7`, and Admin `v2.9.3`, plus Accessible `v0.24.2`, API `v0.17.1`, Logs `v0.7.4`, Trashable `v0.12.3`, Cache `v0.6.3`, Metrics `v0.7.3`, Users `v0.27.1`, Embeddable `v0.15.3`, Publishable `v0.13.2`, Attachable `v0.22.1`, Artifacts `v0.4.7`, and Site Settings `v0.5.5`.
 - Dummy no longer copies Oauth authorize or Root Switchable switch views. Those screens come from the gems.
+- Dummy writes use Recording Studio 6.5 fail-closed `authorize_write`. Users 0.27.1 no longer ships an engine auth layout, so the dummy host keeps `layouts/recording_studio_user/auth.html.erb`. Root Switchable uses the dummy `host` layout.
+- Root Gemfile pins FlatPack `v0.1.341` so Bundler can resolve Recording Studio 6.5's git FlatPack dependency.
 - Root and dummy lockfiles keep Rails `8.1.4.1`, rack `>= 3.2.8`, nokogiri `>= 1.19.5`, loofah `>= 2.25.3`, and rails-html-sanitizer `>= 1.7.2`. Dummy also pins net-ssh `7.3.8`.
 - The gem suite keeps minitest 5 (`< 6`) so Minitest `stub` still works.
 - Dev Ruby is `3.3.13`.
 
 ### Upgrade notes
-- From the repo root and `test/dummy`, run `bundle install`. Dummy hosts should pin FlatPack `v0.1.341`, Oauth `v0.21.3`, Root Switchable `v0.11.7`, Admin `v2.9.3`, and `view_component` `>= 4.14`. Do not copy gem views into the host.
+- From the repo root and `test/dummy`, run `bundle install`. Point hosts at Recording Studio `v6.5.0` (`>= 6.3.0, < 7`), FlatPack `v0.1.341`, Oauth `v0.21.3`, Root Switchable `v0.11.7`, Admin `v2.9.3`, API `v0.17.1` (Oauth caps API below `0.18`), and `view_component` `>= 4.14`. Do not copy gem views into the host.
+- Run dummy migrations after the addon bumps (`bin/rails generate recording_studio_*:migrations` as needed, then `bin/rails db:migrate`).
 - Use Ruby `3.3.13` or newer. The plugin ZIP is unchanged.
 
 ## [0.4.28] - 2026-11-06

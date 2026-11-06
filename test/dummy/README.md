@@ -4,8 +4,8 @@ This Rails app is the host for RecordingStudio WordPress widgets. It boots on it
 
 ## What it covers
 
-- Recording Studio Users auth chrome with a seeded admin user (`admin@admin.com` / `Password`). Dummy `users_auth_primary_buttons.css` paints `.fp-button[data-fp-style="primary"]` charcoal on the email step and the password step, including when the Users gem layout omits `flat_pack/application`.
-- `Current.actor` wiring for Recording Studio events
+- Recording Studio Users auth chrome with a seeded admin user (`admin@admin.com` / `Password`). Users 0.27.1 does not ship an engine auth layout, so dummy keeps `layouts/recording_studio_user/auth.html.erb`. Dummy `users_auth_primary_buttons.css` paints `.fp-button[data-fp-style="primary"]` charcoal on the email step and the password step.
+- `Current.actor` wiring plus Recording Studio 6.5 `authorize_write` (writes need an actor)
 - Root workspace plus seeded folder and page recordables
 - Recording Studio host shell with FlatPack sidebar (Home, Recordings tree, API Keys, Pages, Registered Apps), FlatPack kit CSS (`variables`, `application`, `rich_text`), and Tailwind source scanning
 - Recording Studio Admin at `/admin` with Oauth registered apps (`/admin/screens/oauth_clients`) as sidebar **Registered Apps**

@@ -15,11 +15,10 @@ RecordingStudio.configure do |config|
     # Publishable::Publishable includes Attachable).
     "RecordingStudioPublishable::Publishable",
     "RecordingStudioAttachable::Attachment",
-    "RecordingStudioAttachable::Library",
-    "RecordingStudioAttachable::Placement",
     "RecordingStudioSiteSettings::SiteSetting",
     "RecordingStudio::Access",
     "RecordingStudio::AccessConstraint",
+    "RecordingStudio::AccessRequest",
     "RecordingStudio::AccessRule",
     "RecordingStudioApi::ApiClient",
     "RecordingStudioApi::ApiCredential",
@@ -35,6 +34,9 @@ RecordingStudio.configure do |config|
 
   # Actor resolver for events when no actor is explicitly supplied
   config.actor = -> { Current.actor }
+
+  # Recording Studio 6.5 fails closed. Dummy writes still need an actor.
+  config.authorize_write = ->(actor:, **) { actor.present? }
 
   # Emit ActiveSupport::Notifications events
   config.event_notifications_enabled = true

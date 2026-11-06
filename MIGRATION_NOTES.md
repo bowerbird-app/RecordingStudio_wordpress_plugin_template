@@ -18,10 +18,10 @@ bin/rails tailwindcss:build
 
 - Ruby 3.3.13 or newer
 - Rails 8.1.4.1 or newer (lockfiles)
-- Recording Studio 4.x (`~> 4.2` in the gemspec; dummy GitHub tag `v4.7.1`)
-- Accessible dummy tag `v0.18.0` and Root Switchable dummy tag `v0.11.7`
+- Recording Studio 6.x (`>= 6.3.0, < 7` in the gemspec; dummy GitHub tag `v6.5.0`)
+- Accessible dummy tag `v0.24.2` and Root Switchable dummy tag `v0.11.7`
 - FlatPack dummy tag `v0.1.341`
-- Users dummy tag `v0.21.0`
+- Users dummy tag `v0.27.1`
 - Oauth dummy tag `v0.21.3`
 - Admin dummy tag `v2.9.3`
 - Public RubyGems and GitHub access for dependency installation
@@ -30,7 +30,7 @@ From the repo root and `test/dummy`, run `bundle install`. Use Ruby 3.3.13 or ne
 
 ## 0.4.33
 
-Dummy pins FlatPack v0.1.341, Oauth v0.21.3, Root Switchable v0.11.7, and Admin v2.9.3. Delete host copies of the Oauth authorize layout and the Root Switchable switch page so those screens come from the gems. Keep the Rails 8.1.4.1 lockfile security floors. Run `bundle install` in both lockfile directories. The plugin ZIP does not change.
+Raise the gemspec and dummy onto Recording Studio 6.x (`v6.5.0`). Keep FlatPack v0.1.341, Oauth v0.21.3, Root Switchable v0.11.7, and Admin v2.9.3. Pin the rest of the dummy kit to 6.x tags that resolve with those gems (Accessible 0.24.2, API 0.17.1, Logs 0.7.4, Trashable 0.12.3, Cache 0.6.3, Metrics 0.7.3, Users 0.27.1). Delete host copies of the Oauth authorize layout and the Root Switchable switch page so those screens come from the gems. Set dummy `authorize_write` so 6.5 fail-closed writes have an actor. Keep the dummy Users auth layout (Users 0.27.1 no longer ships one). Point Root Switchable at the dummy `host` layout. Keep the Rails 8.1.4.1 lockfile security floors. Run `bundle install` in both lockfile directories, then migrate the dummy. Do not copy Oauth migrations into dummy; the Oauth engine appends its migrate path. The plugin ZIP does not change.
 
 ## 0.4.28
 

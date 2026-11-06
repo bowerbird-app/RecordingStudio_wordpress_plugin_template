@@ -3,30 +3,31 @@ source "https://rubygems.org"
 # Use the recording_studio_wordpress_plugin_template engine
 gem "recording_studio_wordpress_plugin_template", path: "../.."
 
-# RecordingStudio engine
-gem "recording_studio", github: "bowerbird-app/RecordingStudio", tag: "v4.7.1"
-gem "recording_studio_accessible", github: "bowerbird-app/RecordingStudio_accessible", tag: "v0.18.0"
+# RecordingStudio engine (6.3+ matches Admin 2.9.3 and Root Switchable 0.11.7)
+gem "recording_studio", github: "bowerbird-app/RecordingStudio", tag: "v6.5.0"
+gem "recording_studio_accessible", github: "bowerbird-app/RecordingStudio_accessible", tag: "v0.24.2"
 
-# WordPress Plugin Demo named API host
-gem "recording_studio_api", github: "bowerbird-app/RecordingStudio_api", tag: "v0.7.0"
-gem "recording_studio_embeddable", github: "bowerbird-app/RecordingStudio_Embeddable", tag: "v0.6.0"
-gem "recording_studio_artifacts", github: "bowerbird-app/RecordingStudio_artifacts", tag: "v0.4.0"
+# WordPress Plugin Demo named API host. Oauth 0.21.3 needs API < 0.18.
+gem "recording_studio_api", github: "bowerbird-app/RecordingStudio_api", tag: "v0.17.1"
+gem "recording_studio_embeddable", github: "bowerbird-app/RecordingStudio_Embeddable", tag: "v0.15.3"
+gem "recording_studio_artifacts", github: "bowerbird-app/RecordingStudio_artifacts", tag: "v0.4.7"
 gem "recording_studio_admin", github: "bowerbird-app/RecordingStudio_admin", tag: "v2.9.3"
-# Accessible 0.18+ / Admin 2.9+ / Oauth 0.21+ / API 0.7+ load Trashable query
+# Admin 2.9.3 / API 0.17+ need Logs. Accessible/Admin/Oauth load Trashable query
 # helpers only (not the Trashable engine).
-gem "recording_studio_trashable", github: "bowerbird-app/RecordingStudio_trashable", tag: "v0.11.0",
+gem "recording_studio_logs", github: "bowerbird-app/RecordingStudio_logs", tag: "v0.7.4"
+gem "recording_studio_trashable", github: "bowerbird-app/RecordingStudio_trashable", tag: "v0.12.3",
                                   require: false
 gem "recording_studio_oauth", github: "bowerbird-app/RecordingStudio_Oauth", tag: "v0.21.3"
-gem "recording_studio_site_settings", github: "bowerbird-app/RecordingStudio_site_settings", tag: "v0.2.0"
+gem "recording_studio_site_settings", github: "bowerbird-app/RecordingStudio_site_settings", tag: "v0.5.5"
 # Publishable + Artifacts are Embeddable hard deps. Attachable is required to boot Publishable's model.
-gem "recording_studio_publishable", github: "bowerbird-app/RecordingStudio_publishable", tag: "v0.8.0"
-gem "recording_studio_attachable", github: "bowerbird-app/RecordingStudio_attachable", tag: "v0.15.0"
-gem "recording_studio_user", github: "bowerbird-app/RecordingStudio_users", tag: "v0.21.0"
+gem "recording_studio_publishable", github: "bowerbird-app/RecordingStudio_publishable", tag: "v0.13.2"
+gem "recording_studio_attachable", github: "bowerbird-app/RecordingStudio_attachable", tag: "v0.22.1"
+gem "recording_studio_user", github: "bowerbird-app/RecordingStudio_users", tag: "v0.27.1"
 
 # Root switcher for the top nav (0.7+ requires Metrics; 0.9+ and Users/Oauth rate limits need Cache)
-gem "recording_studio_cache", github: "bowerbird-app/RecordingStudio_cache", tag: "v0.5.0"
-# API 0.7+ needs Metrics >= 0.2.2; pin with require: false (dependents require it).
-gem "recording_studio_metrics", github: "bowerbird-app/RecordingStudio_metrics", tag: "v0.2.3",
+gem "recording_studio_cache", github: "bowerbird-app/RecordingStudio_cache", tag: "v0.6.3"
+# API 0.17+ / Admin 2.9+ / Oauth 0.21+ need Metrics >= 0.3; pin with require: false.
+gem "recording_studio_metrics", github: "bowerbird-app/RecordingStudio_metrics", tag: "v0.7.3",
                                 require: false
 gem "recording_studio_root_switchable", github: "bowerbird-app/RecordingStudio_root_switchable", tag: "v0.11.7"
 

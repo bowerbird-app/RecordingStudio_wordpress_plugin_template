@@ -12,9 +12,7 @@ class UsersSignInFlowTest < ActionDispatch::IntegrationTest
   end
 
   test "email and password auth screens load FlatPack primary paint on the Users sheet path" do
-    users_layout = File.read(
-      RecordingStudioUser::Engine.root.join("app/views/layouts/recording_studio_user/auth.html.erb")
-    )
+    users_layout = File.read(Rails.root.join("app/views/layouts/recording_studio_user/auth.html.erb"))
     assert_includes users_layout, 'stylesheet_link_tag "tailwind"'
     assert_includes users_layout, 'stylesheet_link_tag "flat_pack/variables"'
     assert_includes users_layout, 'stylesheet_link_tag "flat_pack/application"'
