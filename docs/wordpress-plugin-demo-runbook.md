@@ -44,7 +44,7 @@ Use these steps to prove the plugin against the Rails dummy host in this repo.
 
 ### What you need
 
-- Ruby 3.3+, Bundler, PostgreSQL 16, Node 22
+- Ruby 3.3.13+, Bundler, PostgreSQL 16, Node 22
 - Docker only if you use `wp-env` (optional). Without Docker you can still build the ZIP and upload it to any WordPress that can reach the dummy host.
 
 ## 1. Boot the Rails dummy host

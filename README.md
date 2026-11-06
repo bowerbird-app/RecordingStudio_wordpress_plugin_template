@@ -121,22 +121,23 @@ These versions come from the gemspec, the dummy Gemfile, `@wordpress/create-bloc
 | PostgreSQL | 16 |
 | Node | 22 (CI) |
 | TailwindCSS | 4 |
-| RecordingStudio | 4.x (`~> 4.2` in the gemspec; dummy GitHub tag `v4.7.0`) |
-| Accessible | dummy GitHub tag `v0.18.0` |
-| API | dummy GitHub tag `v0.7.0` |
-| Embeddable | dummy GitHub tag `v0.6.0` |
-| Artifacts | dummy GitHub tag `v0.4.0` (Embeddable hard dep; `artifacts_enabled` left off) |
-| Admin | dummy GitHub tag `v2.3.0` (boot-only for this host) |
-| Trashable | dummy GitHub tag `v0.11.0` (`require: false`; Accessible 0.18 / Admin 2.3 / Oauth 0.10 / API 0.7 query helpers only) |
-| Publishable | dummy GitHub tag `v0.8.0` (Embeddable hard dep; not mixed into Page) |
-| Attachable | dummy GitHub tag `v0.15.0` (Publishable boot dep) |
-| Root Switchable | dummy GitHub tag `v0.9.0` |
-| Cache | dummy GitHub tag `v0.5.0` (Users/Oauth/Root Switchable rate-limit dep from their 0.21/0.9/0.9 releases) |
-| Metrics | dummy GitHub tag `v0.2.3` (`require: false`; API 0.7+ / Root Switchable hard dep) |
-| Users | dummy GitHub tag `v0.21.0` |
-| Oauth | dummy GitHub tag `v0.10.1` (central relay; Allow registration above Use central relay; one public WordPress app; consent is a full page) |
-| Site Settings | dummy GitHub tag `v0.2.0` |
-| FlatPack | dummy GitHub tag `v0.1.213` |
+| RecordingStudio | 6.x (`>= 6.3.0, < 7` in the gemspec; dummy GitHub tag `v6.5.0`) |
+| Accessible | dummy GitHub tag `v0.24.2` |
+| API | dummy GitHub tag `v0.17.1` |
+| Embeddable | dummy GitHub tag `v0.15.3` |
+| Artifacts | dummy GitHub tag `v0.4.7` (Embeddable hard dep; `artifacts_enabled` left off) |
+| Admin | dummy GitHub tag `v2.9.3` (boot-only for this host) |
+| Logs | dummy GitHub tag `v0.7.4` (Admin 2.9 / API 0.17 hard dep) |
+| Trashable | dummy GitHub tag `v0.12.3` (`require: false`; Accessible / Admin / Oauth / API query helpers only) |
+| Publishable | dummy GitHub tag `v0.13.2` (Embeddable hard dep; not mixed into Page) |
+| Attachable | dummy GitHub tag `v0.22.1` (Publishable boot dep) |
+| Root Switchable | dummy GitHub tag `v0.11.7` |
+| Cache | dummy GitHub tag `v0.6.3` (Users/Oauth/Root Switchable rate-limit dep) |
+| Metrics | dummy GitHub tag `v0.7.3` (`require: false`; API / Admin / Oauth / Root Switchable hard dep) |
+| Users | dummy GitHub tag `v0.27.1` |
+| Oauth | dummy GitHub tag `v0.21.3` (central relay; Allow registration above Use central relay; one public WordPress app; consent is a full page) |
+| Site Settings | dummy GitHub tag `v0.5.5` |
+| FlatPack | dummy GitHub tag `v0.1.341` |
 | Devise | latest |
 | `@wordpress/create-block` | 4.98.0 |
 | `@wordpress/scripts` | 35.0.0 |
@@ -149,7 +150,7 @@ These versions come from the gemspec, the dummy Gemfile, `@wordpress/create-bloc
 | WordPress origin | port 8888 |
 | WordPress tests origin | port 8889 |
 
-The dummy Gemfile keeps `github:` sources so Bundler can fetch those gems. The gemspec still pins `recording_studio` to `~> 4.2` so the addon declares the core dependency even when GitHub is the fetch source.
+The dummy Gemfile keeps `github:` sources so Bundler can fetch those gems. The gemspec pins `recording_studio` to `>= 6.3.0, < 7`. The root Gemfile also pins FlatPack `v0.1.341` because Recording Studio 6.5 is not on RubyGems and depends on that git gem.
 
 ## How packaging is verified
 

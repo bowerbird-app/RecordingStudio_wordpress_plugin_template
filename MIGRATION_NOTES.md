@@ -16,16 +16,25 @@ bin/rails tailwindcss:build
 
 ## Current Requirements
 
-- Ruby 3.3 or newer
-- Rails 8.1 or newer
-- Recording Studio 4.x (`~> 4.2` in the gemspec; dummy GitHub tag `v4.5.0`)
-- Accessible dummy tag `v0.9.1` and Root Switchable dummy tag `v0.5.0`
-- FlatPack dummy tag `v0.1.190`
-- Users dummy tag `v0.11.0`
-- Oauth dummy tag `v0.5.2`
+- Ruby 3.3.13 or newer
+- Rails 8.1.4.1 or newer (lockfiles)
+- Recording Studio 6.x (`>= 6.3.0, < 7` in the gemspec; dummy GitHub tag `v6.5.0`)
+- Accessible dummy tag `v0.24.2` and Root Switchable dummy tag `v0.11.7`
+- FlatPack dummy tag `v0.1.341`
+- Users dummy tag `v0.27.1`
+- Oauth dummy tag `v0.21.3`
+- Admin dummy tag `v2.9.3`
 - Public RubyGems and GitHub access for dependency installation
 
-From the repo root and `test/dummy`, run `bundle lock --update=recording_studio`, then `bundle install`. The plugin ZIP stays on 0.4.27.
+From the repo root and `test/dummy`, run `bundle install`. Use Ruby 3.3.13 or newer. The plugin ZIP is unchanged on 0.4.33.
+
+## 0.4.33
+
+Raise the gemspec and dummy onto Recording Studio 6.x (`v6.5.0`). Keep FlatPack v0.1.341, Oauth v0.21.3, Root Switchable v0.11.7, and Admin v2.9.3. Pin the rest of the dummy kit to 6.x tags that resolve with those gems (Accessible 0.24.2, API 0.17.1, Logs 0.7.4, Trashable 0.12.3, Cache 0.6.3, Metrics 0.7.3, Users 0.27.1). Delete host copies of the Oauth authorize layout and the Root Switchable switch page so those screens come from the gems. Set dummy `authorize_write` so 6.5 fail-closed writes go through Accessible (`:edit` on the root; Access grants via `AccessCreationContext` or `:admin`). Keep the dummy Users auth layout (Users 0.27.1 no longer ships one). Point Root Switchable at the dummy `host` layout. Keep the Rails 8.1.4.1 lockfile security floors. Run `bundle install` in both lockfile directories, then migrate the dummy. Do not copy Oauth migrations into dummy; the Oauth engine appends its migrate path. The plugin ZIP does not change.
+
+## 0.4.28
+
+Root and dummy lockfiles take Rails 8.1.4.1 plus rack 3.2.8, nokogiri 1.19.7, loofah 2.25.3, and rails-html-sanitizer 1.7.2. Dummy net-ssh is 7.3.8. Dummy FlatPack is v0.1.311 so view_component can be 4.14 or newer. Dummy Recording Studio is v4.7.1. Dev Ruby is 3.3.13. Run `bundle install` in both lockfile directories. The plugin ZIP does not change.
 
 ## 0.4.27
 

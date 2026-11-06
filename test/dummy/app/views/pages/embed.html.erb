@@ -10,7 +10,7 @@
         <%= render FlatPack::Badge::Component.new(text: "Host is live", style: :success, size: :sm) %>
       </div>
       <div data-wp-plugin-demo-flatpack-part="card">
-        <%= render FlatPack::Card::Component.new(style: :outlined) do |card| %>
+        <%= render FlatPack::Card::Component.new(border: :default, shadow: :none) do |card| %>
           <% card.header do %>
             <%= render FlatPack::PageTitle::Component.new(
               title: "Connect the block",

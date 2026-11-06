@@ -7,17 +7,35 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     "Site owners do not enter a client id, open Registered Apps, or edit wp-config for normal use."
 
   def test_version_matches_release
-    assert_equal "0.4.27", ::RecordingStudioWordpressPluginTemplate::VERSION
+    assert_equal "0.4.33", ::RecordingStudioWordpressPluginTemplate::VERSION
+  end
+
+  def test_lockfiles_pin_rails_security_stack
+    root = File.expand_path("..", __dir__)
+    root_lock = File.read(File.join(root, "Gemfile.lock"))
+    dummy_lock = File.read(File.join(root, "test/dummy/Gemfile.lock"))
+
+    [root_lock, dummy_lock].each do |lockfile|
+      assert_includes lockfile, "rails (8.1.4.1)"
+      assert_includes lockfile, "rack (3.2.8)"
+      assert_match(/^    nokogiri \(1\.19\.(?:[5-9]|\d{2,})/, lockfile)
+      assert_match(/^    loofah \(2\.25\.(?:[3-9]|\d{2,})/, lockfile)
+      assert_match(/^    rails-html-sanitizer \(1\.7\.(?:[2-9]|\d{2,})/, lockfile)
+    end
+
+    assert_match(/^    net-ssh \(7\.3\.(?:[1-9]|\d{2,})/, dummy_lock)
+    assert_equal "3.3.13\n", File.read(File.join(root, ".ruby-version"))
+    assert_equal "3.3.13\n", File.read(File.join(root, "test/dummy/.ruby-version"))
   end
 
   def test_engine_exists
     assert_kind_of Class, ::RecordingStudioWordpressPluginTemplate::Engine
   end
 
-  def test_gemspec_pins_recording_studio_4_2
+  def test_gemspec_pins_recording_studio_6_3
     gemspec = File.read(File.expand_path("../recording_studio_wordpress_plugin_template.gemspec", __dir__))
 
-    assert_includes gemspec, 'spec.add_dependency "recording_studio", "~> 4.2"'
+    assert_includes gemspec, 'spec.add_dependency "recording_studio", ">= 6.3.0", "< 7"'
   end
 
   def test_gemspec_excludes_cursor_config
@@ -83,44 +101,51 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     assert_includes install_script, "fetch-skills.sh"
   end
 
-  def test_dummy_gemfile_pins_verified_4x_github_tags
+  def test_dummy_gemfile_pins_verified_6x_github_tags
     gemfile = File.read(File.expand_path("dummy/Gemfile", __dir__))
 
-    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio", tag: "v4.7.0"'
-    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_accessible", tag: "v0.18.0"'
-    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_root_switchable", tag: "v0.9.0"'
-    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_cache", tag: "v0.5.0"'
-    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_metrics", tag: "v0.2.3"'
-    assert_includes gemfile, 'github: "bowerbird-app/flatpack", tag: "v0.1.213"'
-    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_api", tag: "v0.7.0"'
-    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_Embeddable", tag: "v0.6.0"'
-    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_artifacts", tag: "v0.4.0"'
-    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_admin", tag: "v2.3.0"'
-    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_trashable", tag: "v0.11.0"'
-    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_publishable", tag: "v0.8.0"'
-    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_attachable", tag: "v0.15.0"'
-    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_Oauth", tag: "v0.10.1"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio", tag: "v6.5.0"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_accessible", tag: "v0.24.2"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_root_switchable", tag: "v0.11.7"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_cache", tag: "v0.6.3"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_metrics", tag: "v0.7.3"'
+    assert_includes gemfile, 'github: "bowerbird-app/flatpack", tag: "v0.1.341"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_api", tag: "v0.17.1"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_Embeddable", tag: "v0.15.3"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_artifacts", tag: "v0.4.7"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_admin", tag: "v2.9.3"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_logs", tag: "v0.7.4"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_trashable", tag: "v0.12.3"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_publishable", tag: "v0.13.2"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_attachable", tag: "v0.22.1"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_Oauth", tag: "v0.21.3"'
     lockfile = File.read(File.expand_path("dummy/Gemfile.lock", __dir__))
-    assert_includes lockfile, "recording_studio (4.7.0)"
-    assert_includes lockfile, "recording_studio_accessible (0.18.0)"
-    assert_includes lockfile, "recording_studio_oauth (0.10.1)"
-    assert_includes lockfile, "recording_studio_api (0.7.0)"
-    assert_includes lockfile, "recording_studio_admin (2.3.0)"
-    assert_includes lockfile, "recording_studio_trashable (0.11.0)"
-    assert_includes lockfile, "recording_studio_metrics (0.2.2)"
-    assert_includes lockfile, "recording_studio_user (0.21.0)"
-    assert_includes lockfile, "recording_studio_cache (0.5.0)"
-    assert_includes lockfile, "recording_studio_embeddable (0.6.0)"
-    assert_includes lockfile, "recording_studio_artifacts (0.4.0)"
-    assert_includes lockfile, "recording_studio_publishable (0.8.0)"
-    assert_includes lockfile, "recording_studio_site_settings (0.2.0)"
+    assert_includes lockfile, "recording_studio (6.5.0)"
+    assert_includes lockfile, "recording_studio_accessible (0.24.2)"
+    assert_includes lockfile, "recording_studio_oauth (0.21.3)"
+    assert_includes lockfile, "recording_studio_api (0.17.1)"
+    assert_includes lockfile, "recording_studio_admin (2.9.3)"
+    assert_includes lockfile, "recording_studio_logs (0.7.4)"
+    assert_includes lockfile, "recording_studio_trashable (0.12.3)"
+    assert_includes lockfile, "recording_studio_metrics (0.7.3)"
+    assert_includes lockfile, "recording_studio_user (0.27.1)"
+    assert_includes lockfile, "recording_studio_cache (0.6.3)"
+    assert_includes lockfile, "recording_studio_embeddable (0.15.3)"
+    assert_includes lockfile, "recording_studio_artifacts (0.4.7)"
+    assert_includes lockfile, "recording_studio_publishable (0.13.2)"
+    assert_includes lockfile, "recording_studio_site_settings (0.5.5)"
+    assert_includes lockfile, "tag: v0.1.341"
+    view_component_version = lockfile[/^    view_component \(([\d.]+)\)/, 1]
+    assert view_component_version, "dummy lockfile should pin view_component"
+    assert Gem::Version.new(view_component_version) >= Gem::Version.new("4.14.0"),
+           "view_component #{view_component_version} must be >= 4.14.0 for GHSA-8qw7-6phv-7q6p"
 
-    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_site_settings", tag: "v0.2.0"'
-    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_users", tag: "v0.21.0"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_site_settings", tag: "v0.5.5"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_users", tag: "v0.27.1"'
     refute_includes gemfile, "recording_studio/v3.0.0"
     refute_includes gemfile, 'tag: "v0.1.133"'
     refute_includes gemfile, 'tag: "v0.16.0"'
-    refute_includes gemfile, 'tag: "v0.6.3"'
+    refute_includes gemfile, 'tag: "v4.7.1"'
     refute_includes gemfile, 'tag: "0.3.1"'
   end
 
@@ -166,7 +191,8 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     host_layout = File.read(File.expand_path("dummy/app/views/layouts/host.html.erb", __dir__))
     sidebar = File.read(File.expand_path("dummy/app/views/layouts/flat_pack/_sidebar.html.erb", __dir__))
 
-    assert_includes controller_source, "include RecordingStudio::UsesDefaultLayout"
+    assert_includes controller_source, "recording_studio_layout"
+    refute_includes controller_source, "UsesDefaultLayout"
     assert_includes controller_source, '"host"'
     assert_includes controller_source, "devise_controller? ? \"application\""
     assert File.exist?(File.expand_path("dummy/app/views/layouts/flat_pack/_sidebar.html.erb", __dir__))
@@ -209,6 +235,20 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     )
     assert_includes initializer, "RecordingStudioUser::Auth::BaseController"
     assert_includes initializer, "users_auth_primary_buttons"
+  end
+
+  def test_dummy_does_not_fork_oauth_or_root_switchable_views
+    home = File.read(File.expand_path("dummy/app/views/home/index.html.erb", __dir__))
+    embed = File.read(File.expand_path("dummy/app/views/pages/embed.html.erb", __dir__))
+
+    refute File.exist?(
+      File.expand_path("dummy/app/views/layouts/recording_studio_oauth/authorization.html.erb", __dir__)
+    )
+    refute File.exist?(
+      File.expand_path("dummy/app/views/recording_studio_root_switchable/root_switches/show.html.erb", __dir__)
+    )
+    refute_includes home, "Card::Component.new(style:"
+    refute_includes embed, "Card::Component.new(style:"
   end
 
   def test_dummy_tailwind_keeps_flatpack_theme_selection_in_flatpack
@@ -277,10 +317,11 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     assert_includes initializer_source, '"RecordingStudioEmbeddable::Embed"'
     assert_includes initializer_source, '"RecordingStudioPublishable::Publishable"'
     assert_includes initializer_source, '"RecordingStudioAttachable::Attachment"'
-    assert_includes initializer_source, '"RecordingStudioAttachable::Library"'
-    assert_includes initializer_source, '"RecordingStudioAttachable::Placement"'
+    refute_includes initializer_source, '"RecordingStudioAttachable::Library"'
+    refute_includes initializer_source, '"RecordingStudioAttachable::Placement"'
     assert_includes initializer_source, '"RecordingStudio::Access"'
     assert_includes initializer_source, '"RecordingStudio::AccessConstraint"'
+    assert_includes initializer_source, '"RecordingStudio::AccessRequest"'
     assert_includes initializer_source, '"RecordingStudio::AccessRule"'
     assert_includes initializer_source, '"RecordingStudioApi::ApiClient"'
     assert_includes initializer_source, '"RecordingStudioApi::ApiCredential"'
@@ -328,20 +369,20 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     assert_includes readme, "bin/check-package-boundaries"
     assert_includes readme, "npm run env start"
     assert_includes readme, "4.98.0"
-    assert_includes readme, "v4.7.0"
-    assert_includes readme, "v0.1.213"
-    assert_includes readme, "v0.15.0"
-    assert_includes readme, "v0.18.0"
-    assert_includes readme, "dummy GitHub tag `v0.8.0`"
-    assert_includes readme, "dummy GitHub tag `v0.2.3`"
-    assert_includes readme, "dummy GitHub tag `v0.9.0`"
-    assert_includes readme, "dummy GitHub tag `v0.21.0`"
-    assert_includes readme, "dummy GitHub tag `v0.5.0`"
-    assert_includes readme, "dummy GitHub tag `v2.3.0`"
-    assert_includes readme, "dummy GitHub tag `v0.11.0`"
-    assert_includes readme, "dummy GitHub tag `v0.10.1`"
-    assert_includes readme, "dummy GitHub tag `v0.7.0`"
-    assert_includes readme, "dummy GitHub tag `v0.2.0`"
+    assert_includes readme, "v6.5.0"
+    assert_includes readme, "v0.1.341"
+    assert_includes readme, "v0.22.1"
+    assert_includes readme, "v0.24.2"
+    assert_includes readme, "dummy GitHub tag `v0.13.2`"
+    assert_includes readme, "dummy GitHub tag `v0.7.3`"
+    assert_includes readme, "dummy GitHub tag `v0.11.7`"
+    assert_includes readme, "dummy GitHub tag `v0.27.1`"
+    assert_includes readme, "dummy GitHub tag `v0.6.3`"
+    assert_includes readme, "dummy GitHub tag `v2.9.3`"
+    assert_includes readme, "dummy GitHub tag `v0.12.3`"
+    assert_includes readme, "dummy GitHub tag `v0.21.3`"
+    assert_includes readme, "dummy GitHub tag `v0.17.1`"
+    assert_includes readme, "dummy GitHub tag `v0.5.5`"
     assert_includes readme, "Allow registration above Use central relay"
     assert_includes readme, "central relay"
     assert_includes readme, "Ship the plugin"

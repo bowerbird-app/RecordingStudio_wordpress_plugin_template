@@ -27,4 +27,24 @@ class UsersProfileSeedTest < ActiveSupport::TestCase
     refute RecordingStudio.capability_enabled?(:accessible, for: "RecordingStudioUser::People")
     refute_includes RecordingStudio.configuration.recordable_types, "User"
   end
+
+  test "record_first_profile! uses Users record_profile! and bootstraps Accessible on the Profile" do
+    actor = User.find_or_create_by!(email: "dummy-first-profile-#{SecureRandom.hex(4)}@example.com") do |record|
+      record.password = "Password"
+      record.password_confirmation = "Password"
+    end
+    people_root = RecordingStudioUser.people_root
+
+    recording = WpPluginDemo::Seed.record_first_profile!(
+      actor,
+      first_name: "Pat",
+      last_name: "Profile",
+      time_zone: "UTC"
+    )
+
+    assert RecordingStudioAccessible.authorized?(actor: actor, recording: recording, role: :admin)
+    refute RecordingStudioAccessible.authorized?(actor: actor, recording: people_root, role: :view)
+    refute_nil RecordingStudio.configuration.authorize_write
+    refute RecordingStudio.configuration.allow_unauthorized_writes
+  end
 end
