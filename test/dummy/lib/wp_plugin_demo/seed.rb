@@ -38,6 +38,20 @@ module WpPluginDemo
 
     module_function
 
+    # People is a shared unowned root, so Accessible will not grant `:edit` there.
+    # Users `record_profile!` writes the first Profile snapshot, then bootstraps
+    # owner access on that Profile recording. Open the write gate only for that call.
+    def record_first_profile!(user, **attrs)
+      previous_authorizer = RecordingStudio.configuration.authorize_write
+      previous_open = RecordingStudio.configuration.allow_unauthorized_writes
+      RecordingStudio.configuration.allow_unauthorized_writes = true
+      RecordingStudio.configuration.authorize_write = nil
+      RecordingStudioUser.record_profile!(user, actor: user, **attrs)
+    ensure
+      RecordingStudio.configuration.authorize_write = previous_authorizer
+      RecordingStudio.configuration.allow_unauthorized_writes = previous_open
+    end
+
     def connect_redirect_uris(host_base_url: "http://localhost:3000")
       hosts = [host_base_url, host_base_url.to_s.sub("localhost", "127.0.0.1")].uniq
       hosts.map { |host| RecordingStudioOauth.central_relay_callback_url(base_url: host) }

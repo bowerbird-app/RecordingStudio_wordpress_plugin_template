@@ -53,11 +53,6 @@ RecordingStudio.configure do |config|
         recording: root_recording,
         role: :admin
       )
-    elsif defined?(RecordingStudioUser::Profile) && recordable.is_a?(RecordingStudioUser::Profile) &&
-        RecordingStudio.respond_to?(:shared_root?) && RecordingStudio.shared_root?(root_recording)
-      # People is a shared unowned root. The first Profile snapshot is written
-      # before Users can bootstrap_owner_access! on that Profile recording.
-      true
     else
       RecordingStudioAccessible.authorized?(
         actor: actor,

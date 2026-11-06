@@ -11,6 +11,7 @@ class AuthorizeWriteTest < ActiveSupport::TestCase
     assert_includes initializer, "AccessCreationContext.allowed?"
     refute_match(/authorize_write\s*=\s*->\(actor:, \*\*\) \{ actor\.present\? \}/, initializer)
     refute_includes initializer, "allow_unauthorized_writes = true"
+    refute_includes initializer, "shared_root?"
   end
 
   test "dummy authorize_write requires Accessible edit on the root" do
@@ -38,7 +39,7 @@ class AuthorizeWriteTest < ActiveSupport::TestCase
     assert authorizer.call(actor: actor, root_recording: root_recording, recordable: folder)
   end
 
-  test "dummy authorize_write allows a Profile snapshot under shared People" do
+  test "dummy authorize_write denies a Profile snapshot without Accessible edit on People" do
     authorizer = RecordingStudio.configuration.authorize_write
     actor = User.find_or_create_by!(email: "dummy-profile-authorizer-#{SecureRandom.hex(4)}@example.com") do |record|
       record.password = "Password"
@@ -48,7 +49,7 @@ class AuthorizeWriteTest < ActiveSupport::TestCase
     profile = RecordingStudioUser::Profile.new(user_id: actor.id, first_name: "Pat", last_name: "Profile")
 
     refute authorizer.call(actor: nil, root_recording: people_root, recordable: profile)
-    assert authorizer.call(actor: actor, root_recording: people_root, recordable: profile)
+    refute authorizer.call(actor: actor, root_recording: people_root, recordable: profile)
   end
 
   test "dummy authorize_write allows Access grants during AccessCreationContext" do

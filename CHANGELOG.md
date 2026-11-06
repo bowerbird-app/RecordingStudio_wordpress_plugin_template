@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Dummy `authorize_write` is Library Accessible shape only: Access grants via `AccessCreationContext` or `:admin`, other writes via `:edit` on the root. First Profile snapshots use Users `record_profile!` (bootstrap on the Profile recording). The host no longer returns `true` for Profile writes under shared People.
+
 ## [0.4.33] - 2026-11-06
 
 ### Changed

@@ -63,12 +63,11 @@ Current.actor = user
 
 begin
   if RecordingStudioUser.profile_for(user).nil?
-    RecordingStudioUser.record_profile!(
+    WpPluginDemo::Seed.record_first_profile!(
       user,
       first_name: "Avery",
       last_name: "Admin",
-      time_zone: "UTC",
-      actor: user
+      time_zone: "UTC"
     )
   end
 
