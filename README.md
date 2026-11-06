@@ -121,7 +121,7 @@ These versions come from the gemspec, the dummy Gemfile, `@wordpress/create-bloc
 | PostgreSQL | 16 |
 | Node | 22 (CI) |
 | TailwindCSS | 4 |
-| RecordingStudio | 4.x (`~> 4.2` in the gemspec; dummy GitHub tag `v4.7.0`) |
+| RecordingStudio | 4.x (`~> 4.2` in the gemspec; dummy GitHub tag `v4.7.1`) |
 | Accessible | dummy GitHub tag `v0.18.0` |
 | API | dummy GitHub tag `v0.7.0` |
 | Embeddable | dummy GitHub tag `v0.6.0` |
@@ -136,7 +136,7 @@ These versions come from the gemspec, the dummy Gemfile, `@wordpress/create-bloc
 | Users | dummy GitHub tag `v0.21.0` |
 | Oauth | dummy GitHub tag `v0.10.1` (central relay; Allow registration above Use central relay; one public WordPress app; consent is a full page) |
 | Site Settings | dummy GitHub tag `v0.2.0` |
-| FlatPack | dummy GitHub tag `v0.1.213` |
+| FlatPack | dummy GitHub tag `v0.1.311` |
 | Devise | latest |
 | `@wordpress/create-block` | 4.98.0 |
 | `@wordpress/scripts` | 35.0.0 |

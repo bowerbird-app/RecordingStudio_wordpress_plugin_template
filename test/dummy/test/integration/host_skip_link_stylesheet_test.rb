@@ -32,7 +32,7 @@ class HostSkipLinkStylesheetTest < ActionDispatch::IntegrationTest
     get "/assets/flat_pack/application-#{digest}.css"
     assert_response :success
     assert_includes response.body, ".fp-skip-link"
-    assert_includes response.body, "translateY(-150%)"
+    assert_includes response.body, "translateY(calc(-100% - 2rem))"
     assert_includes response.body, ".fp-skip-link:focus-visible"
   end
 end

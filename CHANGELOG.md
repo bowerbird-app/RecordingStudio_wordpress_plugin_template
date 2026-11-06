@@ -11,11 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Root and dummy lockfiles pin Rails `8.1.4.1`, rack `>= 3.2.8`, nokogiri `>= 1.19.5`, loofah `>= 2.25.3`, and rails-html-sanitizer `>= 1.7.2`. Dummy also pins net-ssh `7.3.8`.
+- Dummy FlatPack is `v0.1.311` so `view_component` can be `>= 4.14` (GHSA-8qw7-6phv-7q6p). Dummy Recording Studio is `v4.7.1` so page nav matches that FlatPack.
 - The gem suite keeps minitest 5 (`< 6`) so Minitest `stub` still works.
 - Dev Ruby is `3.3.13`.
 
 ### Upgrade notes
-- From the repo root and `test/dummy`, run `bundle install`.
+- From the repo root and `test/dummy`, run `bundle install`. Dummy hosts should pin FlatPack `v0.1.311` (or later), Recording Studio `v4.7.1`, and `view_component` `>= 4.14`. Drop `style:` on `FlatPack::Card`.
 - Use Ruby `3.3.13` or newer. The plugin ZIP is unchanged.
 
 ## [0.4.27] - 2026-09-23

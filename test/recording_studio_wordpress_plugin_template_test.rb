@@ -104,12 +104,12 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
   def test_dummy_gemfile_pins_verified_4x_github_tags
     gemfile = File.read(File.expand_path("dummy/Gemfile", __dir__))
 
-    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio", tag: "v4.7.0"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio", tag: "v4.7.1"'
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_accessible", tag: "v0.18.0"'
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_root_switchable", tag: "v0.9.0"'
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_cache", tag: "v0.5.0"'
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_metrics", tag: "v0.2.3"'
-    assert_includes gemfile, 'github: "bowerbird-app/flatpack", tag: "v0.1.213"'
+    assert_includes gemfile, 'github: "bowerbird-app/flatpack", tag: "v0.1.311"'
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_api", tag: "v0.7.0"'
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_Embeddable", tag: "v0.6.0"'
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_artifacts", tag: "v0.4.0"'
@@ -119,7 +119,7 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_attachable", tag: "v0.15.0"'
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_Oauth", tag: "v0.10.1"'
     lockfile = File.read(File.expand_path("dummy/Gemfile.lock", __dir__))
-    assert_includes lockfile, "recording_studio (4.7.0)"
+    assert_includes lockfile, "recording_studio (4.7.1)"
     assert_includes lockfile, "recording_studio_accessible (0.18.0)"
     assert_includes lockfile, "recording_studio_oauth (0.10.1)"
     assert_includes lockfile, "recording_studio_api (0.7.0)"
@@ -132,6 +132,11 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     assert_includes lockfile, "recording_studio_artifacts (0.4.0)"
     assert_includes lockfile, "recording_studio_publishable (0.8.0)"
     assert_includes lockfile, "recording_studio_site_settings (0.2.0)"
+    assert_includes lockfile, "tag: v0.1.311"
+    view_component_version = lockfile[/^    view_component \(([\d.]+)\)/, 1]
+    assert view_component_version, "dummy lockfile should pin view_component"
+    assert Gem::Version.new(view_component_version) >= Gem::Version.new("4.14.0"),
+           "view_component #{view_component_version} must be >= 4.14.0 for GHSA-8qw7-6phv-7q6p"
 
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_site_settings", tag: "v0.2.0"'
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_users", tag: "v0.21.0"'
@@ -227,6 +232,25 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     )
     assert_includes initializer, "RecordingStudioUser::Auth::BaseController"
     assert_includes initializer, "users_auth_primary_buttons"
+  end
+
+  def test_dummy_flatpack_311_views_drop_removed_card_and_page_nav_keywords
+    home = File.read(File.expand_path("dummy/app/views/home/index.html.erb", __dir__))
+    embed = File.read(File.expand_path("dummy/app/views/pages/embed.html.erb", __dir__))
+    oauth_layout = File.read(
+      File.expand_path("dummy/app/views/layouts/recording_studio_oauth/authorization.html.erb", __dir__)
+    )
+    root_switch = File.read(
+      File.expand_path("dummy/app/views/recording_studio_root_switchable/root_switches/show.html.erb", __dir__)
+    )
+
+    refute_includes home, "Card::Component.new(style:"
+    refute_includes embed, "Card::Component.new(style:"
+    refute_includes root_switch, "Card::Component.new(style:"
+    assert_includes oauth_layout, "page_nav.with_back"
+    refute_includes oauth_layout, "back_icon:"
+    assert_includes root_switch, "page_nav.with_close"
+    refute_includes root_switch, "anchor_label:"
   end
 
   def test_dummy_tailwind_keeps_flatpack_theme_selection_in_flatpack
@@ -346,8 +370,8 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     assert_includes readme, "bin/check-package-boundaries"
     assert_includes readme, "npm run env start"
     assert_includes readme, "4.98.0"
-    assert_includes readme, "v4.7.0"
-    assert_includes readme, "v0.1.213"
+    assert_includes readme, "v4.7.1"
+    assert_includes readme, "v0.1.311"
     assert_includes readme, "v0.15.0"
     assert_includes readme, "v0.18.0"
     assert_includes readme, "dummy GitHub tag `v0.8.0`"
