@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.33] - 2026-11-06
+
+### Changed
+- Dummy pins FlatPack `v0.1.341`, Oauth `v0.21.3`, Root Switchable `v0.11.7`, and Admin `v2.9.3`.
+- Dummy no longer copies Oauth authorize or Root Switchable switch views. Those screens come from the gems.
+- Root and dummy lockfiles keep Rails `8.1.4.1`, rack `>= 3.2.8`, nokogiri `>= 1.19.5`, loofah `>= 2.25.3`, and rails-html-sanitizer `>= 1.7.2`. Dummy also pins net-ssh `7.3.8`.
+- The gem suite keeps minitest 5 (`< 6`) so Minitest `stub` still works.
+- Dev Ruby is `3.3.13`.
+
+### Upgrade notes
+- From the repo root and `test/dummy`, run `bundle install`. Dummy hosts should pin FlatPack `v0.1.341`, Oauth `v0.21.3`, Root Switchable `v0.11.7`, Admin `v2.9.3`, and `view_component` `>= 4.14`. Do not copy gem views into the host.
+- Use Ruby `3.3.13` or newer. The plugin ZIP is unchanged.
+
 ## [0.4.28] - 2026-11-06
 
 ### Changed

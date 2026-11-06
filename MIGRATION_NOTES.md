@@ -19,13 +19,18 @@ bin/rails tailwindcss:build
 - Ruby 3.3.13 or newer
 - Rails 8.1.4.1 or newer (lockfiles)
 - Recording Studio 4.x (`~> 4.2` in the gemspec; dummy GitHub tag `v4.7.1`)
-- Accessible dummy tag `v0.9.1` and Root Switchable dummy tag `v0.5.0`
-- FlatPack dummy tag `v0.1.311`
-- Users dummy tag `v0.11.0`
-- Oauth dummy tag `v0.5.2`
+- Accessible dummy tag `v0.18.0` and Root Switchable dummy tag `v0.11.7`
+- FlatPack dummy tag `v0.1.341`
+- Users dummy tag `v0.21.0`
+- Oauth dummy tag `v0.21.3`
+- Admin dummy tag `v2.9.3`
 - Public RubyGems and GitHub access for dependency installation
 
-From the repo root and `test/dummy`, run `bundle install`. Use Ruby 3.3.13 or newer. The plugin ZIP is unchanged on 0.4.28.
+From the repo root and `test/dummy`, run `bundle install`. Use Ruby 3.3.13 or newer. The plugin ZIP is unchanged on 0.4.33.
+
+## 0.4.33
+
+Dummy pins FlatPack v0.1.341, Oauth v0.21.3, Root Switchable v0.11.7, and Admin v2.9.3. Delete host copies of the Oauth authorize layout and the Root Switchable switch page so those screens come from the gems. Keep the Rails 8.1.4.1 lockfile security floors. Run `bundle install` in both lockfile directories. The plugin ZIP does not change.
 
 ## 0.4.28
 

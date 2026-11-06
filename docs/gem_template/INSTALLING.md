@@ -204,7 +204,7 @@ Child recordings must be created with an explicit `parent_recording`.
 
 When Accessible is bundled, pin the dummy or host Gemfile to `v0.17.0`, run
 `bin/rails generate recording_studio_accessible:migrations`, migrate, and rebuild Tailwind after
-bumping FlatPack (`v0.1.311`). Accessible 0.17+ also needs Trashable query helpers
+bumping FlatPack (`v0.1.341`). Accessible 0.17+ also needs Trashable query helpers
 (`recording_studio_trashable` tag `v0.11.0`, `require: false`).
 
 ---
