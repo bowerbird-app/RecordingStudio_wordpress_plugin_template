@@ -7,7 +7,25 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     "Site owners do not enter a client id, open Registered Apps, or edit wp-config for normal use."
 
   def test_version_matches_release
-    assert_equal "0.4.27", ::RecordingStudioWordpressPluginTemplate::VERSION
+    assert_equal "0.4.28", ::RecordingStudioWordpressPluginTemplate::VERSION
+  end
+
+  def test_lockfiles_pin_rails_security_stack
+    root = File.expand_path("..", __dir__)
+    root_lock = File.read(File.join(root, "Gemfile.lock"))
+    dummy_lock = File.read(File.join(root, "test/dummy/Gemfile.lock"))
+
+    [root_lock, dummy_lock].each do |lockfile|
+      assert_includes lockfile, "rails (8.1.4.1)"
+      assert_includes lockfile, "rack (3.2.8)"
+      assert_match(/^    nokogiri \(1\.19\.(?:[5-9]|\d{2,})/, lockfile)
+      assert_match(/^    loofah \(2\.25\.(?:[3-9]|\d{2,})/, lockfile)
+      assert_match(/^    rails-html-sanitizer \(1\.7\.(?:[2-9]|\d{2,})/, lockfile)
+    end
+
+    assert_match(/^    net-ssh \(7\.3\.(?:[1-9]|\d{2,})/, dummy_lock)
+    assert_equal "3.3.13\n", File.read(File.join(root, ".ruby-version"))
+    assert_equal "3.3.13\n", File.read(File.join(root, "test/dummy/.ruby-version"))
   end
 
   def test_engine_exists
