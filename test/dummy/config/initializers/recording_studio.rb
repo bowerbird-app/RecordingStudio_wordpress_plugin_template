@@ -35,8 +35,37 @@ RecordingStudio.configure do |config|
   # Actor resolver for events when no actor is explicitly supplied
   config.actor = -> { Current.actor }
 
-  # Recording Studio 6.5 fails closed. Dummy writes still need an actor.
-  config.authorize_write = ->(actor:, **) { actor.present? }
+  # Hosts must set authorize_write before Recording Studio core 6.5.0.
+  # Writes fail closed: missing authorize_write raises AuthorizationError;
+  # missing actor raises ActorRequired. `actor.present?` is not a write policy.
+  # Access grant/bootstrap writes go through Accessible's AccessCreationContext
+  # (same path as grant_access / bootstrap_owner_access!), not a logged-in check.
+  config.authorize_write = lambda { |actor:, root_recording:, recordable:, **|
+    next false unless actor.respond_to?(:persisted?) && actor.persisted?
+    next false unless RecordingStudioAccessible.configuration.allowed_access_actor_type?(actor)
+    next false unless root_recording
+
+    if defined?(RecordingStudio::Access) && recordable.is_a?(RecordingStudio::Access)
+      next true if RecordingStudioAccessible::AccessCreationContext.allowed?
+
+      RecordingStudioAccessible.authorized?(
+        actor: actor,
+        recording: root_recording,
+        role: :admin
+      )
+    elsif defined?(RecordingStudioUser::Profile) && recordable.is_a?(RecordingStudioUser::Profile) &&
+        RecordingStudio.respond_to?(:shared_root?) && RecordingStudio.shared_root?(root_recording)
+      # People is a shared unowned root. The first Profile snapshot is written
+      # before Users can bootstrap_owner_access! on that Profile recording.
+      true
+    else
+      RecordingStudioAccessible.authorized?(
+        actor: actor,
+        recording: root_recording,
+        role: :edit
+      )
+    end
+  }
 
   # Emit ActiveSupport::Notifications events
   config.event_notifications_enabled = true
