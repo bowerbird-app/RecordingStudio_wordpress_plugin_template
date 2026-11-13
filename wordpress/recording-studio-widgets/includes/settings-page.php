@@ -204,3 +204,22 @@ function recording_studio_plugin_demo_enqueue_embed_empty_styles(): void {
 		(string) filemtime( $style_path )
 	);
 }
+
+function recording_studio_plugin_demo_enqueue_embed_contrast_in_editor(): void {
+	if ( function_exists( 'is_admin' ) && is_admin() ) {
+		recording_studio_plugin_demo_enqueue_embed_contrast_styles();
+	}
+}
+
+function recording_studio_plugin_demo_enqueue_embed_contrast_styles(): void {
+	$plugin_file   = dirname( __DIR__ ) . '/recording-studio-widget.php';
+	$contrast_path = dirname( __DIR__ ) . '/assets/admin/embed-contrast.css';
+
+	recording_studio_plugin_demo_enqueue_look_tokens();
+	wp_enqueue_style(
+		'recording-studio-plugin-demo-embed-contrast',
+		plugins_url( 'assets/admin/embed-contrast.css', $plugin_file ),
+		array( recording_studio_plugin_demo_look_token_handle() ),
+		(string) filemtime( $contrast_path )
+	);
+}

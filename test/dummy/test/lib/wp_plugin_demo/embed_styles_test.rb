@@ -15,6 +15,17 @@ class WpPluginDemoEmbedStylesTest < ActiveSupport::TestCase
     refute_includes tag, "@import"
     refute_includes tag, "<link"
     refute_includes tag, "<script"
+    refute_match(/@layer\s+(utilities|theme|base|properties)\s*[{;]/, tag)
+    assert_includes tag, "[data-wordpress-plugin-demo-embed] .text-\\[var\\(--tabs-pill-active-text-color\\)\\]"
+    assert_includes tag, "[data-wordpress-plugin-demo-embed],[data-wordpress-plugin-demo-embed][data-theme]"
+    assert_includes tag, "--color-primary-text: #fff"
+    assert_includes tag, "[data-wordpress-plugin-demo-embed] :is(a, button).fp-button[data-fp-style]"
+    assert_includes tag, '[data-wordpress-plugin-demo-embed] [data-wp-plugin-demo-flatpack] > .mb-6:has(+ [data-wp-plugin-demo-flatpack-part="badge"])'
+    refute_includes tag, "[data-wordpress-plugin-demo-embed] [data-wp-plugin-demo-flatpack] .mb-6 {"
+    assert_includes tag, '[data-wordpress-plugin-demo-embed] [data-wp-plugin-demo-flatpack-part="popup"] .fp-modal-overlay-min'
+    assert_includes tag, "!important"
+    assert_includes tag, '[data-wordpress-plugin-demo-embed] [data-wp-plugin-demo-flatpack-part="popup"] [data-controller="flat-pack--modal"]'
+    refute_match(/(^|[{};])\s*:root\s*[,{]/, tag)
   end
 
   test "packed CSS keeps FlatPack family and weights loadable from a WordPress origin" do
@@ -22,6 +33,19 @@ class WpPluginDemoEmbedStylesTest < ActiveSupport::TestCase
     unlayered = strip_at_layers(css)
     document = wordpress_shaped_document(css)
 
+    [
+      WpPluginDemo::EmbedStyles::TYPOGRAPHY_CSS,
+      WpPluginDemo::EmbedStyles::CONTAINMENT_CSS,
+      WpPluginDemo::EmbedStyles::BUTTON_CSS,
+      WpPluginDemo::EmbedStyles::POPUP_CSS
+    ].each do |sheet|
+      refute_includes sheet, "!important"
+    end
+    admin_styles = Rails.root.join("../../wordpress/recording-studio-widgets/assets/admin")
+    Dir.glob(admin_styles.join("*.css").to_s).each do |path|
+      refute_includes File.read(path), "!important", path
+    end
+    assert_includes css, "!important"
     refute_includes css, "@font-face"
     refute_match(/url\(\s*["']?(?!data:|https?:)/i, css)
     assert_includes css, "--font-sans: system-ui"

@@ -5,6 +5,18 @@ declare(strict_types=1);
 use RecordingStudio\Placeholder;
 use RecordingStudio\ProductConfig;
 
+if ( ! function_exists( 'has_block' ) ) {
+	function has_block( $block_name ) {
+		return isset( $GLOBALS['rs_test_has_block'] ) && $GLOBALS['rs_test_has_block'] === $block_name;
+	}
+}
+
+if ( ! function_exists( 'is_admin' ) ) {
+	function is_admin() {
+		return ! empty( $GLOBALS['rs_test_is_admin'] );
+	}
+}
+
 function rs_embed_empty_body( string $html ): string {
 	if ( 1 !== preg_match( '/<p class="rs-embed-empty__body">([^<]*)<\/p>/', $html, $match ) ) {
 		throw new RuntimeException( 'empty card missing body: ' . $html );
@@ -111,9 +123,56 @@ function test_embed_empty_styles_enqueue_for_editor_and_front(): void {
 		throw new RuntimeException( 'empty card stylesheet src mismatch' );
 	}
 
+	$GLOBALS['rs_test_enqueued_styles'] = array();
+	$GLOBALS['rs_test_is_admin']        = false;
+	recording_studio_plugin_demo_enqueue_embed_contrast_in_editor();
+	if ( array() !== $GLOBALS['rs_test_enqueued_styles'] ) {
+		throw new RuntimeException( 'editor contrast hook must stay off the front end' );
+	}
+
+	$GLOBALS['rs_test_enqueued_styles'] = array();
+	recording_studio_plugin_demo_enqueue_embed_contrast_styles();
+	$contrast_handles = array_column( $GLOBALS['rs_test_enqueued_styles'], 'handle' );
+	if ( ! in_array( 'recording-studio-plugin-demo-embed-contrast', $contrast_handles, true ) ) {
+		throw new RuntimeException( 'contrast css must load from the block render' );
+	}
+
+	$GLOBALS['rs_test_enqueued_styles'] = array();
+	$GLOBALS['rs_test_is_admin']        = true;
+	recording_studio_plugin_demo_enqueue_embed_contrast_in_editor();
+	$editor_handles = array_column( $GLOBALS['rs_test_enqueued_styles'], 'handle' );
+	if ( ! in_array( 'recording-studio-plugin-demo-embed-contrast', $editor_handles, true ) ) {
+		throw new RuntimeException( 'contrast css must load in the editor' );
+	}
+
+	$GLOBALS['rs_test_enqueued_styles'] = array();
+	$attributes                         = array();
+	$content                            = '';
+	$block                              = array(
+		'blockName' => 'recording-studio/recording-studio-widget',
+	);
+	ob_start();
+	include dirname( __DIR__, 2 ) . '/src/recording-studio-widget/render.php';
+	ob_end_clean();
+	$render_handles = array_column( $GLOBALS['rs_test_enqueued_styles'], 'handle' );
+	if ( ! in_array( 'recording-studio-plugin-demo-embed-contrast', $render_handles, true ) ) {
+		throw new RuntimeException( 'including render.php must enqueue contrast css' );
+	}
+
+	$contrast = file_get_contents( dirname( __DIR__, 2 ) . '/assets/admin/embed-contrast.css' );
+	if ( false === $contrast || false === strpos( $contrast, '[data-wordpress-plugin-demo-embed] :is(a, button).fp-button[data-fp-style]' ) ) {
+		throw new RuntimeException( 'embed contrast css must outrank theme button color' );
+	}
+	if ( false === strpos( $contrast, '.rs-wordpress-plugin-demo-editor-preview :is(a, button).fp-button[data-fp-style]' ) ) {
+		throw new RuntimeException( 'embed contrast css must cover the editor preview' );
+	}
+
 	$plugin = file_get_contents( dirname( __DIR__, 2 ) . '/recording-studio-widget.php' );
 	if ( false === $plugin || false === strpos( $plugin, "add_action( 'enqueue_block_assets', 'recording_studio_plugin_demo_enqueue_embed_empty_styles' )" ) ) {
 		throw new RuntimeException( 'empty card styles must enqueue on enqueue_block_assets' );
+	}
+	if ( false === strpos( $plugin, "add_action( 'enqueue_block_assets', 'recording_studio_plugin_demo_enqueue_embed_contrast_in_editor' )" ) ) {
+		throw new RuntimeException( 'contrast styles must enqueue in the editor' );
 	}
 
 	$css = file_get_contents( dirname( __DIR__, 2 ) . '/assets/admin/embed-empty.css' );

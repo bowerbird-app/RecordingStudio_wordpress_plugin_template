@@ -1,6 +1,16 @@
 {
-	"core": "WordPress/WordPress",
-	"plugins": ["."],
+	"$schema": "https://schemas.wp.org/trunk/wp-env.json",
+	"core": "https://wordpress.org/wordpress-7.1.4.zip",
+	"phpVersion": "8.3",
+	"plugins": [ "." ],
 	"port": 8888,
-	"testsPort": 8889
+	"testsPort": 8889,
+	"testsEnvironment": false,
+	"config": {
+		"RECORDING_STUDIO_HOST_BASE_URL": "http://host.docker.internal:3000",
+		"RECORDING_STUDIO_CLIENT_ID": "rsoauth_id_wordpress"
+	},
+	"lifecycleScripts": {
+		"afterStart": "bash ../dummy/bin/seed.sh"
+	}
 }

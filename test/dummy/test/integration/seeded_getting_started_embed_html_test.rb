@@ -43,7 +43,10 @@ class SeededGettingStartedEmbedHtmlTest < ActionDispatch::IntegrationTest
     assert_includes html, 'data-wp-plugin-demo-flatpack-assets="1"'
     assert_includes html, 'data-wp-plugin-demo-flatpack-part="badge"'
     assert_includes html, 'data-wp-plugin-demo-flatpack-part="card"'
-    assert_includes html, 'data-wp-plugin-demo-flatpack-part="pill"'
+    assert_includes html, 'data-wp-plugin-demo-flatpack-part="connect"'
+    assert_includes html, 'data-wp-plugin-demo-flatpack-part="page-id"'
+    assert_includes html, "Page id"
+    assert_includes html, "Paste this into the block."
     assert_includes html, 'data-wp-plugin-demo-flatpack-part="popup"'
     assert_includes html, "--badge-success-background-color"
     assert_includes html, "--card-background-color"
@@ -58,6 +61,31 @@ class SeededGettingStartedEmbedHtmlTest < ActionDispatch::IntegrationTest
     assert_includes html, "This is FlatPack"
     refute_includes html, "<link"
     refute_includes html, "<script"
+  end
+
+  test "wordpress dummy session uses the seeded WordPress client and Getting Started page" do
+    session = WpPluginDemo::Seed.issue_wordpress_dummy_session!
+
+    assert_equal "http://host.docker.internal:3000", session.host_base_url
+    assert_equal WpPluginDemo::Seed::CONNECT_CLIENT_ID, session.client_id
+    assert_equal @page_recording_id, session.page_recording_id
+    assert_match(/\Arsoauth_at_/, session.access_token)
+    assert session.refresh_token.present?
+    assert_operator session.expires_at, :>, Time.now.to_i + 60
+
+    get WpPluginDemo::Contract.actions_embed_path(session.page_recording_id),
+        headers: {
+          "Authorization" => "Bearer #{session.access_token}",
+          "Accept" => "application/json"
+        }
+
+    assert_response :ok
+    html = JSON.parse(response.body).fetch("html")
+    assert_includes html, "fp-button"
+    assert_includes html, "Getting Started"
+    assert_includes html, "flex flex-col gap-4"
+    assert_includes html, '[data-wordpress-plugin-demo-embed] [data-wp-plugin-demo-flatpack] > .mb-6:has(+ [data-wp-plugin-demo-flatpack-part="badge"])'
+    refute_includes html, "[data-wordpress-plugin-demo-embed] [data-wp-plugin-demo-flatpack] .mb-6 {"
   end
 
   test "renderer resolves to host pages/embed for Getting Started" do

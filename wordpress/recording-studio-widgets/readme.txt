@@ -2,7 +2,7 @@
 Contributors:      bowerbird
 Tags:              block, widgets, recording studio
 Tested up to:      6.8
-Stable tag:        0.2.0
+Stable tag:        0.4.28
 License:           GPL-2.0-or-later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -44,6 +44,9 @@ Token URL defaults to `{host}/recording_studio_api/apis/wp_plugin_demo/oauth/tok
 No. PHP fetches embed JSON on the server. Visitors only receive the validated BrowserPayload JSON and the SDK script.
 
 == Changelog ==
+
+= 0.4.28 =
+* `embed-contrast.css` loads from the block render, and in the editor. `block.json` still has no `style` or `editorStyle`.
 
 = 0.2.0 =
 * Connect to the wp_plugin_demo named API with OAuth client credentials.

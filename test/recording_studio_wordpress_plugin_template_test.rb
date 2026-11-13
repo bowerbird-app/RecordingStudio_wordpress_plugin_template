@@ -7,7 +7,7 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
     "Site owners do not enter a client id, open Registered Apps, or edit wp-config for normal use."
 
   def test_version_matches_release
-    assert_equal "0.4.27", ::RecordingStudioWordpressPluginTemplate::VERSION
+    assert_equal "0.4.28", ::RecordingStudioWordpressPluginTemplate::VERSION
   end
 
   def test_engine_exists
@@ -456,18 +456,24 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
 
     assert_includes view_source, "FlatPack::Badge::Component"
     assert_includes view_source, "FlatPack::Card::Component"
-    assert_includes view_source, "FlatPack::Button::Pill::Component"
+    assert_includes view_source, "FlatPack::PageTitle::Component"
+    assert_includes view_source, "variant: :h1"
+    assert_includes view_source, "FlatPack::Button::Component"
+    assert_includes view_source, "FlatPack::TextInput::Component"
     assert_includes view_source, "FlatPack::Modal::Component"
     assert_includes view_source, "WpPluginDemo::EmbedStyles.style_tag"
     assert_includes view_source, 'data-wp-plugin-demo-flatpack-part="badge"'
     assert_includes view_source, 'data-wp-plugin-demo-flatpack-part="card"'
-    assert_includes view_source, 'data-wp-plugin-demo-flatpack-part="pill"'
+    assert_includes view_source, 'data-wp-plugin-demo-flatpack-part="connect"'
+    assert_includes view_source, 'data-wp-plugin-demo-flatpack-part="page-id"'
     assert_includes view_source, 'data-wp-plugin-demo-flatpack-part="popup"'
+    assert_includes view_source, 'label: "Page id"'
     refute_includes view_source, "GETTING_STARTED_BODY_HTML"
     assert_includes styles, "flat_pack/variables.css"
     assert_includes styles, "flat_pack/application.css"
     assert_includes styles, "tailwind.css"
     assert_includes styles, "strip_imports"
+    assert_includes styles, "scope_to_embed_root"
     assert_includes styles, "TYPOGRAPHY_CSS"
     assert_includes styles, "font-family: var(--font-sans)"
     assert_includes styles, ".font-medium"

@@ -14,6 +14,7 @@ class PagesController < ApplicationController
     page = @page_recording.recordable
     @page = page
     @parent_recordable = page
+    @parent_recording = @page_recording
     render template: "pages/embed", layout: "embed_preview"
   end
 

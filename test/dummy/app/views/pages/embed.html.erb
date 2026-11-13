@@ -1,11 +1,14 @@
 <% page = @page || @parent_recordable %>
 <% getting_started = page.respond_to?(:title) && page.title.to_s == WpPluginDemo::Seed::GETTING_STARTED_TITLE %>
 <article data-wordpress-plugin-demo-embed="page" data-theme="rounded">
-  <h1><%= ERB::Util.html_escape(page&.title.presence || "Page") %></h1>
   <% if getting_started %>
     <%= WpPluginDemo::EmbedStyles.style_tag %>
     <div data-wp-plugin-demo-flatpack="1" class="flex flex-col gap-4">
-      <p><%= WpPluginDemo::Seed::GETTING_STARTED_LEAD %></p>
+      <%= render FlatPack::PageTitle::Component.new(
+        title: page.title,
+        subtitle: WpPluginDemo::Seed::GETTING_STARTED_LEAD,
+        variant: :h1
+      ) %>
       <div data-wp-plugin-demo-flatpack-part="badge">
         <%= render FlatPack::Badge::Component.new(text: "Host is live", style: :success, size: :sm) %>
       </div>
@@ -15,8 +18,7 @@
             <%= render FlatPack::PageTitle::Component.new(
               title: "Connect the block",
               subtitle: "Settings first. Then paste this page's id.",
-              variant: :h3,
-              class: "mb-0 pb-0"
+              variant: :h3
             ) %>
           <% end %>
           <% card.body do %>
@@ -26,12 +28,19 @@
           <% end %>
         <% end %>
       </div>
-      <div data-wp-plugin-demo-flatpack-part="pill">
-        <%= render FlatPack::Button::Pill::Component.new(
-          items: [
-            { text: "Connect", href: "#getting-started-connect", active: true },
-            { text: "Page id", href: "#getting-started-page-id" }
-          ]
+      <div data-wp-plugin-demo-flatpack-part="connect" id="getting-started-connect">
+        <%= render FlatPack::Button::Component.new(
+          text: "Connect",
+          href: "#getting-started-connect",
+          style: :primary
+        ) %>
+      </div>
+      <div data-wp-plugin-demo-flatpack-part="page-id" id="getting-started-page-id">
+        <%= render FlatPack::TextInput::Component.new(
+          name: "page_id",
+          label: "Page id",
+          value: @parent_recording&.id,
+          help_text: "Paste this into the block."
         ) %>
       </div>
       <div data-wp-plugin-demo-flatpack-part="popup">
@@ -42,13 +51,14 @@
         ) do |modal| %>
           <% modal.body do %>
             <p class="text-sm leading-6">
-              Badge, card, pill, and this popup. Same kit the dummy host uses.
+              Badge, card, Connect, and this popup. Same kit the dummy host uses.
             </p>
           <% end %>
         <% end %>
       </div>
     </div>
   <% else %>
+    <h1><%= ERB::Util.html_escape(page&.title.presence || "Page") %></h1>
     <%= raw WpPluginDemo::Seed.embed_body_html_for(page) %>
   <% end %>
 </article>

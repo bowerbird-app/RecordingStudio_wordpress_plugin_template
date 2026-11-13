@@ -27,7 +27,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: .ruby-version
+          ruby-version: "3.3"
           bundler-cache: true
 
       - name: Prepare RuboCop cache
@@ -179,7 +179,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: .ruby-version
+          ruby-version: "3.3"
           bundler-cache: false
 
       - name: Set up Node
@@ -202,3 +202,80 @@ jobs:
           name: recording-studio-widgets
           path: pkg/recording-studio-widgets.zip
           if-no-files-found: error
+
+  wordpress-dummy:
+    name: WordPress dummy
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: app_development
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+          bundler-cache: false
+
+      - name: Install dummy app dependencies
+        run: bundle install
+        working-directory: test/dummy
+        env:
+          BUNDLE_GITHUB__COM: x-access-token:${{ secrets.BOWERBIRD_ORG_CI_TOKEN }}
+
+      - name: Build dummy app Tailwind assets
+        working-directory: test/dummy
+        run: |
+          bundle exec rails recording_studio_root_switchable:link_tailwind_sources
+          bundle exec rails tailwindcss:build
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: wordpress/recording-studio-widgets/package-lock.json
+
+      - name: Boot the seeded Rails dummy and check the WordPress embed
+        env:
+          DB_HOST: localhost
+          DB_USER: postgres
+          DB_PASSWORD: postgres
+        run: |
+          set -euo pipefail
+          cd test/dummy
+          bundle exec rails db:prepare
+          bundle exec rails db:seed
+          bundle exec rails server -b 0.0.0.0 -p 3000 > "$RUNNER_TEMP/rails-dummy.log" 2>&1 &
+          ready=0
+          for _ in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:3000/up >/dev/null; then
+              ready=1
+              break
+            fi
+            sleep 2
+          done
+          if [[ "$ready" != 1 ]]; then
+            echo "Rails dummy did not listen on port 3000" >&2
+            cat "$RUNNER_TEMP/rails-dummy.log" >&2
+            exit 1
+          fi
+          cd "$GITHUB_WORKSPACE"
+          bin/wordpress-dummy
+          bin/wordpress-dummy-smoke

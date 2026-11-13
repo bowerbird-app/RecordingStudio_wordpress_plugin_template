@@ -7,27 +7,33 @@ module WpPluginDemo
       application: "app/assets/stylesheets/flat_pack/application.css"
     }.freeze
 
+    # Beats the scoped `.hidden`, `.fixed`, and `.opacity-0` utilities by specificity.
+    # Flatpack's modal controller only writes inline opacity and scale while opening
+    # or closing, so the inline sample does not need !important to stay visible.
     CONTAINMENT_CSS = <<~CSS.freeze
-      [data-wp-plugin-demo-flatpack] [data-controller="flat-pack--modal"] {
-        position: relative !important;
-        inset: auto !important;
-        display: block !important;
-        height: auto !important;
-        overflow: visible !important;
-        background: transparent !important;
-        backdrop-filter: none !important;
+      [data-wordpress-plugin-demo-embed] [data-wp-plugin-demo-flatpack-part="popup"] [data-controller="flat-pack--modal"] {
+        position: relative;
+        inset: auto;
+        display: block;
+        height: auto;
+        overflow: visible;
+        background: transparent;
+        backdrop-filter: none;
       }
 
-      [data-wp-plugin-demo-flatpack] [data-controller="flat-pack--modal"] [role="dialog"] {
-        opacity: 1 !important;
-        transform: none !important;
-        max-height: none !important;
+      [data-wordpress-plugin-demo-embed] [data-wp-plugin-demo-flatpack-part="popup"] [data-controller="flat-pack--modal"] [role="dialog"] {
+        opacity: 1;
+        transform: none;
+        scale: 1;
+        max-height: none;
       }
 
-      [data-wp-plugin-demo-flatpack] [data-controller="flat-pack--modal"] .min-h-screen {
-        min-height: 0 !important;
+      [data-wordpress-plugin-demo-embed] [data-wp-plugin-demo-flatpack-part="popup"] [data-controller="flat-pack--modal"] .min-h-screen {
+        min-height: 0;
       }
     CSS
+
+    EMBED_ROOT = "[data-wordpress-plugin-demo-embed]"
 
     TYPOGRAPHY_CSS = <<~CSS.freeze
       [data-wordpress-plugin-demo-embed],
@@ -37,24 +43,71 @@ module WpPluginDemo
         --font-weight-medium: 500;
         --font-weight-semibold: 600;
         --font-weight-bold: 700;
-        font-family: var(--font-sans) !important;
+        --leading-tight: 1.25;
+        --leading-normal: 1.5;
+        font-family: var(--font-sans);
+        line-height: var(--leading-normal);
+        color: var(--surface-content-color);
       }
 
-      [data-wordpress-plugin-demo-embed] :is(h1, h2, h3, h4, h5, h6, p, a, span, button, li, label, div),
-      [data-wp-plugin-demo-flatpack] :is(h1, h2, h3, h4, h5, h6, p, a, span, button, li, label, div) {
-        font-family: var(--font-sans) !important;
+      [data-wordpress-plugin-demo-embed][data-theme] :is(h1, h2, h3, h4, h5, h6) {
+        font-family: var(--font-sans);
+        line-height: var(--leading-tight);
+        margin-block: 0;
       }
 
-      [data-wp-plugin-demo-flatpack] .font-medium {
-        font-weight: var(--font-weight-medium) !important;
+      /* The page title above Host is live carries mb-6. Clear only that margin so the
+         badge sits on the column gap. Other Flatpack mb-6 blocks keep their margin. */
+      [data-wordpress-plugin-demo-embed] [data-wp-plugin-demo-flatpack] > .mb-6:has(+ [data-wp-plugin-demo-flatpack-part="badge"]) {
+        margin-bottom: 0;
       }
 
-      [data-wp-plugin-demo-flatpack] .font-semibold {
-        font-weight: var(--font-weight-semibold) !important;
+      [data-wordpress-plugin-demo-embed] [data-wp-plugin-demo-flatpack] .font-medium {
+        font-weight: var(--font-weight-medium);
       }
 
-      [data-wp-plugin-demo-flatpack] .font-bold {
-        font-weight: var(--font-weight-bold) !important;
+      [data-wordpress-plugin-demo-embed] [data-wp-plugin-demo-flatpack] .font-semibold {
+        font-weight: var(--font-weight-semibold);
+      }
+
+      [data-wordpress-plugin-demo-embed] [data-wp-plugin-demo-flatpack] .font-bold {
+        font-weight: var(--font-weight-bold);
+      }
+    CSS
+
+    # WordPress theme rules such as `.wp-block a` and `.editor-styles-wrapper .wp-block a`
+    # are unlayered and beat Tailwind's `@layer utilities`. These sit on the embed root
+    # so the primary label stays readable on the primary fill.
+    BUTTON_CSS = <<~CSS.freeze
+      [data-wordpress-plugin-demo-embed] :is(a, button).fp-button[data-fp-style] {
+        color: var(--fp-button-text, var(--color-primary-text, #fff));
+        background-color: var(--fp-button-background, var(--color-primary));
+      }
+    CSS
+
+    # The modal's overlay is a full-viewport centered layer. Inside the embed it
+    # should sit at the left of the column, with the dialog only as tall as its text.
+    POPUP_CSS = <<~CSS.freeze
+      [data-wordpress-plugin-demo-embed] [data-wp-plugin-demo-flatpack-part="popup"] .fp-modal-overlay-min {
+        min-height: 0;
+        justify-content: flex-start;
+        padding: 0;
+      }
+
+      [data-wordpress-plugin-demo-embed] [data-wp-plugin-demo-flatpack-part="popup"] [role="dialog"] {
+        height: auto;
+        min-height: 0;
+        max-height: none;
+        margin: 0;
+      }
+
+      [data-wordpress-plugin-demo-embed] [data-wp-plugin-demo-flatpack-part="popup"] .flat-pack-modal__header button {
+        display: none;
+      }
+
+      [data-wordpress-plugin-demo-embed] [data-wp-plugin-demo-flatpack-part="popup"] .flat-pack-modal__body {
+        flex: none;
+        padding-top: var(--card-padding-md, 1rem);
       }
     CSS
 
@@ -65,7 +118,8 @@ module WpPluginDemo
     end
 
     def css
-      [packed_sheets, dummy_tailwind, TYPOGRAPHY_CSS, CONTAINMENT_CSS].join("\n")
+      sheets = scope_to_embed_root([packed_sheets, dummy_tailwind].join("\n"))
+      [sheets, TYPOGRAPHY_CSS, CONTAINMENT_CSS, BUTTON_CSS, POPUP_CSS].join("\n")
     end
 
     def packed_sheets
@@ -89,6 +143,246 @@ module WpPluginDemo
     def strip_imports(css)
       css.gsub(/^@import\s+[^;]+;\s*/m, "")
     end
-    private_class_method :packed_sheets, :dummy_tailwind, :read_engine_sheet, :strip_imports
+
+    def scope_to_embed_root(css)
+      transform_css(css, keyframes: 0)
+    end
+
+    def transform_css(css, keyframes:)
+      out = +""
+      index = 0
+      while index < css.length
+        if css[index, 2] == "/*"
+          close = css.index("*/", index + 2)
+          close = css.length - 2 if close.nil?
+          out << css[index..close + 1]
+          index = close + 2
+          next
+        end
+
+        if css[index] == "@"
+          name, prelude, index = read_at_rule(css, index)
+          kind = name.downcase
+
+          if kind == "layer"
+            if prelude.include?("{")
+              inner_source, index = take_block_body(css, index)
+              out << transform_css(inner_source, keyframes: keyframes)
+            end
+            next
+          end
+
+          if kind == "theme" && prelude.include?("{")
+            _, index = take_block_body(css, index)
+            next
+          end
+
+          if %w[media supports].include?(kind) && prelude.include?("{")
+            inner_source, index = take_block_body(css, index)
+            inner = transform_css(inner_source, keyframes: keyframes)
+            out << "@#{name}#{prelude.sub(/\{\s*\z/, "")}{#{inner}}"
+            next
+          end
+
+          if kind == "keyframes" && prelude.include?("{")
+            inner_source, index = take_block_body(css, index)
+            inner = transform_css(inner_source, keyframes: keyframes + 1)
+            out << "@#{name}#{prelude.sub(/\{\s*\z/, "")}{#{inner}}"
+            next
+          end
+
+          if prelude.include?("{")
+            inner, index = take_block_body(css, index)
+            out << "@#{name}#{prelude.sub(/\{\s*\z/, "")}{#{inner}}"
+            next
+          end
+
+          out << "@#{name}#{prelude}"
+          next
+        end
+
+        if css[index] =~ /\s/
+          out << css[index]
+          index += 1
+          next
+        end
+
+        selector, brace, index = read_selector(css, index)
+        if brace
+          body, index = raw_block(css, index)
+          selector = keyframes.positive? ? selector : rewrite_selector_list(selector)
+          out << "#{selector}{#{body}}"
+        else
+          out << selector
+        end
+      end
+      out
+    end
+
+    # index points at the first character inside a block. The opening brace is already consumed.
+    def take_block_body(css, index)
+      depth = 1
+      cursor = index
+      while cursor < css.length && depth.positive?
+        if css[cursor, 2] == "/*"
+          close = css.index("*/", cursor + 2) || (css.length - 2)
+          cursor = close + 2
+          next
+        end
+        char = css[cursor]
+        if char == '"' || char == "'"
+          cursor = skip_string(css, cursor)
+          next
+        end
+        if char == "{"
+          depth += 1
+        elsif char == "}"
+          depth -= 1
+          return [css[index...cursor], cursor + 1] if depth.zero?
+        end
+        cursor += 1
+      end
+      [css[index..], css.length]
+    end
+
+    def raw_block(css, index)
+      raise ArgumentError, "expected block" unless css[index] == "{"
+
+      depth = 0
+      cursor = index
+      while cursor < css.length
+        if css[cursor, 2] == "/*"
+          close = css.index("*/", cursor + 2) || (css.length - 2)
+          cursor = close + 2
+          next
+        end
+        char = css[cursor]
+        if char == '"' || char == "'"
+          cursor = skip_string(css, cursor)
+          next
+        end
+        if char == "{"
+          depth += 1
+        elsif char == "}"
+          depth -= 1
+          return [css[(index + 1)...cursor], cursor + 1] if depth.zero?
+        end
+        cursor += 1
+      end
+      [css[(index + 1)..], css.length]
+    end
+
+    def read_at_rule(css, index)
+      start = index + 1
+      cursor = start
+      while cursor < css.length
+        if css[cursor, 2] == "/*"
+          close = css.index("*/", cursor + 2) || (css.length - 2)
+          cursor = close + 2
+          next
+        end
+        break if css[cursor] =~ /[\s{(;]/
+
+        cursor += 1
+      end
+      name = css[start...cursor]
+      prelude = +""
+      paren = 0
+      while cursor < css.length
+        if css[cursor, 2] == "/*"
+          close = css.index("*/", cursor + 2) || (css.length - 2)
+          prelude << css[cursor..close + 1]
+          cursor = close + 2
+          next
+        end
+        char = css[cursor]
+        prelude << char
+        cursor += 1
+        paren += 1 if char == "("
+        paren -= 1 if char == ")" && paren.positive?
+        break if paren.zero? && (char == "{" || char == ";")
+      end
+      [name, prelude, cursor]
+    end
+
+    def read_selector(css, index)
+      start = index
+      cursor = index
+      paren = 0
+      while cursor < css.length
+        if css[cursor, 2] == "/*"
+          close = css.index("*/", cursor + 2) || (css.length - 2)
+          cursor = close + 2
+          next
+        end
+        char = css[cursor]
+        if char == '"' || char == "'"
+          cursor = skip_string(css, cursor)
+          next
+        end
+        paren += 1 if char == "("
+        paren -= 1 if char == ")" && paren.positive?
+        if paren.zero? && char == "{"
+          return [css[start...cursor], true, cursor]
+        end
+        cursor += 1
+      end
+      [css[start..], false, css.length]
+    end
+
+    def rewrite_selector_list(list)
+      split_selectors(list).map { |selector| rewrite_selector(selector.strip) }.reject(&:empty?).join(",")
+    end
+
+    def split_selectors(list)
+      parts = []
+      current = +""
+      paren = 0
+      cursor = 0
+      while cursor < list.length
+        char = list[cursor]
+        if char == '"' || char == "'"
+          finish = skip_string(list, cursor)
+          current << list[cursor...finish]
+          cursor = finish
+          next
+        end
+        paren += 1 if char == "("
+        paren -= 1 if char == ")" && paren.positive?
+        if char == "," && paren.zero?
+          parts << current
+          current = +""
+        else
+          current << char
+        end
+        cursor += 1
+      end
+      parts << current
+      parts
+    end
+
+    def rewrite_selector(selector)
+      return selector if selector.empty? || selector.include?(EMBED_ROOT)
+
+      rewritten = selector.gsub(/:root\b|:host\b/, EMBED_ROOT)
+      rewritten = rewritten.sub(/\A\[data-theme(?:="[^"]*"|='[^']*')?\]/, "#{EMBED_ROOT}\\0")
+      return rewritten if rewritten.start_with?(EMBED_ROOT)
+
+      "#{EMBED_ROOT} #{rewritten}"
+    end
+
+    def skip_string(css, index)
+      quote = css[index]
+      cursor = index + 1
+      while cursor < css.length
+        return cursor + 1 if css[cursor] == quote && css[cursor - 1] != "\\"
+
+        cursor += 1
+      end
+      css.length
+    end
+    private_class_method :packed_sheets, :dummy_tailwind, :read_engine_sheet, :strip_imports,
+      :scope_to_embed_root, :transform_css, :take_block_body, :raw_block, :read_at_rule,
+      :read_selector, :rewrite_selector_list, :split_selectors, :rewrite_selector, :skip_string
   end
 end

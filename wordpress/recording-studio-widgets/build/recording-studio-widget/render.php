@@ -15,6 +15,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+recording_studio_plugin_demo_enqueue_embed_contrast_styles();
+
 $attrs = BlockAttributes::from_block_props( $attributes );
 if ( ! $attrs->has_page_recording_id() ) {
 	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped

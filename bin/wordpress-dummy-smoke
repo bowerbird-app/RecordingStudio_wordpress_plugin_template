@@ -1,0 +1,167 @@
+#!/usr/bin/env bash
+# Confirms the running WordPress dummy activated the plugin and rendered the block.
+set -euo pipefail
+
+REPO="$(cd "$(dirname "$0")/.." && pwd)"
+PLUGIN="$REPO/wordpress/recording-studio-widgets"
+cd "$PLUGIN"
+
+wp_cli() {
+	npx wp-env run cli wp -- "$@"
+}
+
+wp_value() {
+	wp_cli "$@" | tr -d '\r' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//'
+}
+
+wp_cli plugin is-active recording-studio-widgets
+
+host_url="$(wp_value config get RECORDING_STUDIO_HOST_BASE_URL)"
+client_id="$(wp_value config get RECORDING_STUDIO_CLIENT_ID)"
+
+if [[ "$host_url" != "http://host.docker.internal:3000" ]]; then
+	echo "RECORDING_STUDIO_HOST_BASE_URL is '$host_url'" >&2
+	exit 1
+fi
+
+if [[ "$client_id" != "rsoauth_id_wordpress" ]]; then
+	echo "RECORDING_STUDIO_CLIENT_ID is '$client_id'" >&2
+	exit 1
+fi
+
+page_url="$(wp_value post list --post_type=page --name=studio-widget --field=url | tr -d '[:space:]')"
+if [[ -z "$page_url" ]]; then
+	echo "Studio widget page is missing" >&2
+	exit 1
+fi
+
+body="$(mktemp)"
+home_body="$(mktemp)"
+connected="$(mktemp)"
+session_raw="$(mktemp)"
+plugin_mount="/var/www/html/wp-content/plugins/recording-studio-widgets"
+clear_php="$PLUGIN/.wordpress-dummy-clear-tokens.php"
+session_json="$PLUGIN/.wordpress-dummy-session.json"
+session_php="$PLUGIN/.wordpress-dummy-session.php"
+saved_content_b64=""
+cleanup() {
+	status=$?
+	if [[ -n "${saved_content_b64}" ]]; then
+		restore_block_page || status=1
+	fi
+	rm -f "$body" "$home_body" "$connected" "$session_raw" "$clear_php" "$session_json" "$session_php"
+	exit "$status"
+}
+trap cleanup EXIT
+cat >"$clear_php" <<'PHP'
+<?php
+delete_option( 'recording_studio_plugin_demo_connect_tokens' );
+PHP
+curl -fsS "$page_url" -o "$body"
+curl -fsS "http://localhost:8888/" -o "$home_body"
+
+if [[ "${WORDPRESS_DUMMY_CHECK_RAILS:-}" == "1" ]]; then
+	npx wp-env run cli curl -fsS -o /dev/null --max-time 15 "$host_url"
+fi
+
+for file in "$body" "$home_body"; do
+	grep -F "wp-block-recording-studio-recording-studio-widget" "$file" >/dev/null
+	grep -F "Connect this site under Settings" "$file" >/dev/null
+	grep -F "WP Template Demo" "$file" >/dev/null
+	if grep -E -q "client_secret|access_token" "$file"; then
+		echo "Rendered page includes a secret field: $file" >&2
+		exit 1
+	fi
+done
+
+if [[ ! -f "$PLUGIN/node_modules/playwright-core/index.js" ]]; then
+	npm ci
+fi
+export PLAYWRIGHT_CORE="$PLUGIN/node_modules/playwright-core/index.js"
+contrast_url="$(wp_value post list --post_type=page --name=button-contrast --field=url | tr -d '[:space:]')"
+studio_id="$(wp_value post list --post_type=page --name=studio-widget --field=ID | tr -d '[:space:]')"
+if [[ -z "$contrast_url" || -z "$studio_id" ]]; then
+	echo "Button contrast page or studio widget page is missing" >&2
+	exit 1
+fi
+saved_show="$(wp_value option get show_on_front | tr -d '[:space:]')"
+saved_front="$(wp_value option get page_on_front | tr -d '[:space:]')"
+restore_block_page() {
+	wp_cli eval "wp_update_post(array('ID'=>(int) ${studio_id}, 'post_content'=>base64_decode('${saved_content_b64}')));" >/dev/null
+	wp_cli option update show_on_front "$saved_show" >/dev/null
+	wp_cli option update page_on_front "$saved_front" >/dev/null
+	wp_cli eval-file "${plugin_mount}/.wordpress-dummy-clear-tokens.php" >/dev/null
+}
+saved_content_b64="$(wp_cli post get "$studio_id" --field=post_content | base64 -w0)"
+
+echo "Reading the seeded Getting Started page from the Rails dummy"
+(
+	cd "$REPO/test/dummy" &&
+		DISABLE_SPRING=1 bundle exec rails runner 'puts WpPluginDemo::Seed.wordpress_dummy_session_json'
+) >"$session_raw"
+page_recording_id="$(
+	node --input-type=module -e '
+		import { readFileSync, writeFileSync } from "node:fs";
+		const raw = readFileSync(process.argv[1], "utf8");
+		const line = raw.split("\n").find((entry) => entry.startsWith("{"));
+		if (!line) {
+			console.error("Rails dummy did not return a WordPress session");
+			process.exit(1);
+		}
+		const session = JSON.parse(line);
+		const pageId = String(session.page_recording_id || "");
+		if (!/^[0-9a-f-]{36}$/i.test(pageId)) {
+			console.error("Getting Started page recording id is missing");
+			process.exit(1);
+		}
+		if (session.host_base_url !== "http://host.docker.internal:3000") {
+			console.error("WordPress session host is " + session.host_base_url);
+			process.exit(1);
+		}
+		if (session.client_id !== "rsoauth_id_wordpress") {
+			console.error("WordPress session client id is " + session.client_id);
+			process.exit(1);
+		}
+		writeFileSync(process.argv[2], JSON.stringify({
+			access_token: session.access_token,
+			refresh_token: session.refresh_token,
+			expires_at: session.expires_at
+		}));
+		process.stdout.write(pageId);
+	' "$session_raw" "$session_json"
+)"
+rm -f "$session_raw"
+cat >"$session_php" <<'PHP'
+<?php
+$stored = json_decode( file_get_contents( __DIR__ . '/.wordpress-dummy-session.json' ), true );
+if ( ! is_array( $stored ) || empty( $stored['access_token'] ) || empty( $stored['refresh_token'] ) ) {
+	fwrite( STDERR, "WordPress session file is missing connect tokens\n" );
+	exit( 1 );
+}
+update_option( 'recording_studio_plugin_demo_connect_tokens', $stored, false );
+$host   = RecordingStudio\CloudHost::host_base_url();
+$client = RecordingStudio\CloudHost::client_id();
+if ( 'http://host.docker.internal:3000' !== $host || 'rsoauth_id_wordpress' !== $client ) {
+	fwrite( STDERR, "filtered host {$host} client {$client}\n" );
+	exit( 1 );
+}
+echo $host . ' ' . $client;
+PHP
+
+echo "Pointing the studio widget at Getting Started ${page_recording_id}"
+npx wp-env run cli curl -fsS -o /dev/null --max-time 20 "${host_url}/up"
+wp_cli eval-file "${plugin_mount}/.wordpress-dummy-session.php"
+rm -f "$session_json" "$session_php"
+wp_cli eval "wp_update_post(array('ID'=>(int) ${studio_id}, 'post_content'=>'<!-- wp:recording-studio/recording-studio-widget {\"pageRecordingId\":\"${page_recording_id}\"} /-->'));" >/dev/null
+
+curl -fsS --max-time 90 "$page_url" -o "$connected"
+if ! grep -F -q "fp-button" "$connected"; then
+	echo "Studio widget page has no .fp-button: $page_url" >&2
+	cat "$connected" >&2
+	exit 1
+fi
+
+echo "button-contrast fixture: $contrast_url"
+node "$REPO/bin/wordpress-dummy-contrast.mjs" --fixture "$contrast_url" --embed "$page_url"
+
+echo "WordPress dummy smoke passed: $page_url"

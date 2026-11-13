@@ -20,10 +20,13 @@ The ZIP is the installable plugin folder `recording-studio-widgets/`. Allowed pa
 - `readme.txt`
 - `includes/`
 - `build/`
+- `assets/admin/`
 
 The ZIP must include the baked SDK under `build/sdk/` (`recording-studio-plugin-sdk.js` and `.css`). Those files are copied from `assets/sdk/` by `npm run build`. The same build copies `assets/brand/product-logo-red.jpg` to `build/brand/product-logo-red.jpg`. That file is the block icon.
 
-The ZIP does not include `src/`, `assets/`, `tests/`, `node_modules/`, `vendor/`, `package.json`, `.wp-env.json`, Ruby files, or repo metadata.
+`assets/admin/` is in the ZIP because PHP enqueues those stylesheets from that path (`embed-empty.css`, `embed-contrast.css`, `settings.css`, `rs-tokens.css`). `assets/sdk/` and `assets/brand/` stay out; `npm run build` copies them under `build/`. The check fails when a quoted `plugins_url`, `filemtime`, `wp_enqueue_*`, `wp_register_*`, or `block.json` `file:` path is missing from the archive. Paths built from variables are not detected.
+
+The ZIP does not include `src/`, `assets/sdk/`, `assets/brand/`, `tests/`, `node_modules/`, `vendor/`, `package.json`, `.wp-env.json`, Ruby files, or repo metadata.
 
 ## Commands
 

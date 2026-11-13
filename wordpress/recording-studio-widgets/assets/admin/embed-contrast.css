@@ -1,0 +1,26 @@
+/*
+ * Theme rules such as `.wp-block a` and `.editor-styles-wrapper .wp-block a`
+ * are unlayered. They paint the primary label the same charcoal as the fill.
+ * These selectors outrank those rules on the embed, the front-end widget, and
+ * the editor preview. The host embed also ships scoped Flatpack CSS.
+ */
+[data-rs-widget] :is(a, button).fp-button[data-fp-style],
+.rs-wordpress-plugin-demo-editor-preview :is(a, button).fp-button[data-fp-style],
+[data-wordpress-plugin-demo-embed] :is(a, button).fp-button[data-fp-style] {
+	color: var(--fp-button-text, var(--color-primary-text, #fff));
+	background-color: var(--fp-button-background, var(--color-primary, rgb(51, 51, 51)));
+}
+
+[data-rs-widget],
+.rs-wordpress-plugin-demo-editor-preview,
+[data-wordpress-plugin-demo-embed] {
+	font-family: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+	line-height: 1.5;
+	color: var(--surface-content-color, CanvasText);
+}
+
+[data-rs-widget] [data-wp-plugin-demo-flatpack-part="card"] .mb-6,
+.rs-wordpress-plugin-demo-editor-preview [data-wp-plugin-demo-flatpack-part="card"] .mb-6,
+[data-wordpress-plugin-demo-embed] [data-wp-plugin-demo-flatpack-part="card"] .mb-6 {
+	margin-bottom: 0;
+}
