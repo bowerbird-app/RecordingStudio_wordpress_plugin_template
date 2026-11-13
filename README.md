@@ -96,7 +96,15 @@ Sign-in is email first, then password. The form is not prefilled.
 
 ## Start WordPress with wp-env
 
-`wp-env` needs Docker. From `wordpress/recording-studio-widgets/`:
+The WordPress dummy is a local site with this plugin installed, the same role `test/dummy/` plays for Rails. `@wordpress/env` (`wp-env`) is the command. The plugin already depends on it, and `wordpress/recording-studio-widgets/.wp-env.json` mounts that directory as an active plugin.
+
+`wp-env` needs Docker. From the repository root:
+
+```bash
+bin/wordpress-dummy
+```
+
+The same start from `wordpress/recording-studio-widgets/` is:
 
 ```bash
 npm install
@@ -104,11 +112,53 @@ npm run build
 npm run env start
 ```
 
-Open http://localhost:8888. The tests site uses port 8889.
+`npm run build` matters when `build/` is missing. This repository commits the built block, so a fresh clone can start without it.
+
+Open http://localhost:8888. Stop WordPress with `npm run env stop` from `wordpress/recording-studio-widgets/`.
 
 If Docker is not available, skip `npm run env start`. You can still build the plugin, lint PHP, and check the ZIP.
 
-Stop WordPress with `npm run env stop`.
+CI job `wordpress-dummy` runs `bin/wordpress-dummy` and `bin/wordpress-dummy-smoke`. The smoke checks that the plugin is active and that the sample page renders the block.
+
+### Dev login
+
+This login exists only on the local dummy.
+
+| Field | Value |
+| --- | --- |
+| Admin | http://localhost:8888/wp-admin |
+| Username | `admin` |
+| Password | `password` |
+| Email | `dev-admin@example.test` |
+
+`wp-env` creates `admin` / `password`. `wordpress/dummy/bin/seed.sh` sets the email to `dev-admin@example.test` on every start.
+
+### Sample page
+
+The seed publishes **Studio widget** at http://localhost:8888/studio-widget/ and sets that page as the site front. The page holds one **WP Template Demo** block. Its page recording id is the stand-in `11111111-1111-4111-8111-111111111111`, so the front end can render before a real studio page is chosen. Before Connect, the block says “Connect this site under Settings → WP Template Demo.”
+
+### Reach the Rails dummy from Docker
+
+WordPress runs in a container. `.wp-env.json` sets the plugin constants the code already reads:
+
+- `RECORDING_STUDIO_HOST_BASE_URL` = `http://host.docker.internal:3000`
+- `RECORDING_STUDIO_CLIENT_ID` = `rsoauth_id_wordpress`
+
+`wp-env` maps `host.docker.internal` to the host gateway, so PHP in WordPress can call the Rails dummy on port 3000. The dummy development config allows that Host header. Login uses that same host URL in the browser. On Docker Desktop the hostname resolves on the host. On Linux, add this to `/etc/hosts` before you click Login:
+
+```
+127.0.0.1 host.docker.internal
+```
+
+The Registered App redirect has to be `http://host.docker.internal:3000/recording_studio_oauth/callback` so it matches the host URL WordPress sends. These constants are for this local dummy. A shipped ZIP keeps the baked `CloudHost` values.
+
+### Connect, then view the block
+
+1. Start the Rails dummy (the section above) so it listens on port 3000.
+2. Start WordPress with `bin/wordpress-dummy`.
+3. Connect. Sign in to the Rails dummy at http://localhost:3000/users/sign_in (`admin@admin.com` / `Password`). Open **Registered Apps**. Create a public app named **WordPress** with client id `rsoauth_id_wordpress`, redirect `http://host.docker.internal:3000/recording_studio_oauth/callback`, **Use central relay** on, and both return patterns `https://*/wp-admin/admin-post.php?action=recording_studio_oauth_callback` and `http://*/wp-admin/admin-post.php?action=recording_studio_oauth_callback`. In WordPress, open **Settings → WP Template Demo** and click **Login**. Approve the dummy workspace.
+4. Insert the block. Edit **Studio widget**. The block is already on the page. On another page, add the **WP Template Demo** block, then pick **Getting Started** in the block settings.
+5. View the front end at http://localhost:8888/studio-widget/ . After **Getting Started** is selected, the page shows the host embed.
 
 ## Supported versions
 
@@ -142,12 +192,12 @@ These versions come from the gemspec, the dummy Gemfile, `@wordpress/create-bloc
 | `@wordpress/scripts` | 35.0.0 |
 | `@wordpress/env` | 11.15.0 |
 | WordPress core (plugin header) | 6.8 or newer |
-| WordPress core (`wp-env` `core`) | `WordPress/WordPress` (current trunk clone) |
+| WordPress core (`wp-env` `core`) | 7.1.4 zip (`https://wordpress.org/wordpress-7.1.4.zip`) |
 | PHP (plugin header) | 7.4 or newer |
 | PHP (CI) | 8.3 |
 | Dummy origin | port 3000 |
 | WordPress origin | port 8888 |
-| WordPress tests origin | port 8889 |
+| WordPress tests origin | `testsPort` 8889, tests environment off |
 
 The dummy Gemfile keeps `github:` sources so Bundler can fetch those gems. The gemspec still pins `recording_studio` to `~> 4.2` so the addon declares the core dependency even when GitHub is the fetch source.
 

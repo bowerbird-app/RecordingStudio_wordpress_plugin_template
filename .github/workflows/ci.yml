@@ -202,3 +202,25 @@ jobs:
           name: recording-studio-widgets
           path: pkg/recording-studio-widgets.zip
           if-no-files-found: error
+
+  wordpress-dummy:
+    name: WordPress dummy
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: wordpress/recording-studio-widgets/package-lock.json
+
+      - name: Start the WordPress dummy
+        run: bin/wordpress-dummy
+
+      - name: Check the plugin and the sample page
+        run: bin/wordpress-dummy-smoke

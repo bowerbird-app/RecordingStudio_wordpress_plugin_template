@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+# Confirms the running WordPress dummy activated the plugin and rendered the block.
+set -euo pipefail
+
+REPO="$(cd "$(dirname "$0")/.." && pwd)"
+PLUGIN="$REPO/wordpress/recording-studio-widgets"
+cd "$PLUGIN"
+
+wp_cli() {
+	npx wp-env run cli wp -- "$@"
+}
+
+wp_value() {
+	wp_cli "$@" | tr -d '\r' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//'
+}
+
+wp_cli plugin is-active recording-studio-widgets
+
+host_url="$(wp_value config get RECORDING_STUDIO_HOST_BASE_URL)"
+client_id="$(wp_value config get RECORDING_STUDIO_CLIENT_ID)"
+
+if [[ "$host_url" != "http://host.docker.internal:3000" ]]; then
+	echo "RECORDING_STUDIO_HOST_BASE_URL is '$host_url'" >&2
+	exit 1
+fi
+
+if [[ "$client_id" != "rsoauth_id_wordpress" ]]; then
+	echo "RECORDING_STUDIO_CLIENT_ID is '$client_id'" >&2
+	exit 1
+fi
+
+page_url="$(wp_value post list --post_type=page --name=studio-widget --field=url | tr -d '[:space:]')"
+if [[ -z "$page_url" ]]; then
+	echo "Studio widget page is missing" >&2
+	exit 1
+fi
+
+body="$(mktemp)"
+trap 'rm -f "$body"' EXIT
+curl -fsS "$page_url" -o "$body"
+curl -fsS "http://localhost:8888/" -o "$body.home"
+
+for file in "$body" "$body.home"; do
+	grep -F "wp-block-recording-studio-recording-studio-widget" "$file" >/dev/null
+	grep -F "Connect this site under Settings" "$file" >/dev/null
+	grep -F "WP Template Demo" "$file" >/dev/null
+	if grep -E -q "client_secret|access_token" "$file"; then
+		echo "Rendered page includes a secret field: $file" >&2
+		exit 1
+	fi
+done
+
+echo "WordPress dummy smoke passed: $page_url"

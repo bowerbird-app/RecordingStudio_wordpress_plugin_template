@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# One command for the local WordPress dummy (wp-env).
+set -euo pipefail
+
+REPO="$(cd "$(dirname "$0")/.." && pwd)"
+PLUGIN="$REPO/wordpress/recording-studio-widgets"
+cd "$PLUGIN"
+
+if [[ ! -x node_modules/.bin/wp-env ]]; then
+	npm ci
+fi
+
+if [[ ! -f build/blocks-manifest.php ]]; then
+	npm run build
+fi
+
+if ! npx wp-env start; then
+	echo "wp-env start failed; retrying once" >&2
+	npx wp-env start
+fi

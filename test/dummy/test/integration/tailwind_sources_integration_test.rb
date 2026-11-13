@@ -6,6 +6,7 @@ class TailwindSourcesIntegrationTest < ActionDispatch::IntegrationTest
   test "development config allows trycloudflare preview hosts" do
     development_rb = Rails.root.join("config/environments/development.rb").read
     assert_includes development_rb, 'config.hosts << ".trycloudflare.com"'
+    assert_includes development_rb, 'config.hosts << "host.docker.internal"'
   end
 
   test "sign in page links a non-empty built Tailwind stylesheet" do
