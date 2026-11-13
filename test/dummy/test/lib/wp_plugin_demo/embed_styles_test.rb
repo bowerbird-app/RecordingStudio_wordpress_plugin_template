@@ -22,8 +22,8 @@ class WpPluginDemoEmbedStylesTest < ActiveSupport::TestCase
     assert_includes tag, "[data-wordpress-plugin-demo-embed] :is(a, button).fp-button[data-fp-style]"
     assert_includes tag, '[data-wordpress-plugin-demo-embed] [data-wp-plugin-demo-flatpack-part="card"] .mb-6'
     assert_includes tag, '[data-wordpress-plugin-demo-embed] [data-wp-plugin-demo-flatpack-part="popup"] .fp-modal-overlay-min'
-    refute_match(/font-family:\s*var\(--font-sans\)\s*!important/, tag)
-    refute_match(/margin-block:\s*0\s*!important/, tag)
+    refute_includes tag, "!important"
+    assert_includes tag, '[data-wordpress-plugin-demo-embed] [data-wp-plugin-demo-flatpack-part="popup"] [data-controller="flat-pack--modal"]'
     refute_match(/(^|[{};])\s*:root\s*[,{]/, tag)
   end
 
@@ -32,6 +32,11 @@ class WpPluginDemoEmbedStylesTest < ActiveSupport::TestCase
     unlayered = strip_at_layers(css)
     document = wordpress_shaped_document(css)
 
+    refute_includes css, "!important"
+    admin_styles = Rails.root.join("../../wordpress/recording-studio-widgets/assets/admin")
+    Dir.glob(admin_styles.join("*.css").to_s).each do |path|
+      refute_includes File.read(path), "!important", path
+    end
     refute_includes css, "@font-face"
     refute_match(/url\(\s*["']?(?!data:|https?:)/i, css)
     assert_includes css, "--font-sans: system-ui"

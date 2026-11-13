@@ -7,25 +7,29 @@ module WpPluginDemo
       application: "app/assets/stylesheets/flat_pack/application.css"
     }.freeze
 
+    # Beats the scoped `.hidden`, `.fixed`, and `.opacity-0` utilities by specificity.
+    # Flatpack's modal controller only writes inline opacity and scale while opening
+    # or closing, so the inline sample does not need !important to stay visible.
     CONTAINMENT_CSS = <<~CSS.freeze
-      [data-wp-plugin-demo-flatpack] [data-controller="flat-pack--modal"] {
-        position: relative !important;
-        inset: auto !important;
-        display: block !important;
-        height: auto !important;
-        overflow: visible !important;
-        background: transparent !important;
-        backdrop-filter: none !important;
+      [data-wordpress-plugin-demo-embed] [data-wp-plugin-demo-flatpack-part="popup"] [data-controller="flat-pack--modal"] {
+        position: relative;
+        inset: auto;
+        display: block;
+        height: auto;
+        overflow: visible;
+        background: transparent;
+        backdrop-filter: none;
       }
 
-      [data-wp-plugin-demo-flatpack] [data-controller="flat-pack--modal"] [role="dialog"] {
-        opacity: 1 !important;
-        transform: none !important;
-        max-height: none !important;
+      [data-wordpress-plugin-demo-embed] [data-wp-plugin-demo-flatpack-part="popup"] [data-controller="flat-pack--modal"] [role="dialog"] {
+        opacity: 1;
+        transform: none;
+        scale: 1;
+        max-height: none;
       }
 
-      [data-wp-plugin-demo-flatpack] [data-controller="flat-pack--modal"] .min-h-screen {
-        min-height: 0 !important;
+      [data-wordpress-plugin-demo-embed] [data-wp-plugin-demo-flatpack-part="popup"] [data-controller="flat-pack--modal"] .min-h-screen {
+        min-height: 0;
       }
     CSS
 
@@ -95,8 +99,13 @@ module WpPluginDemo
         margin: 0;
       }
 
+      [data-wordpress-plugin-demo-embed] [data-wp-plugin-demo-flatpack-part="popup"] .flat-pack-modal__header button {
+        display: none;
+      }
+
       [data-wordpress-plugin-demo-embed] [data-wp-plugin-demo-flatpack-part="popup"] .flat-pack-modal__body {
         flex: none;
+        padding-top: var(--card-padding-md, 1rem);
       }
     CSS
 
@@ -108,7 +117,9 @@ module WpPluginDemo
 
     def css
       sheets = scope_to_embed_root([packed_sheets, dummy_tailwind].join("\n"))
-      [sheets, TYPOGRAPHY_CSS, CONTAINMENT_CSS, BUTTON_CSS, POPUP_CSS].join("\n")
+      # Flatpack's own sheets use !important to beat Tailwind. The embed root scope
+      # does that job, so the payload that WordPress receives has none.
+      [sheets, TYPOGRAPHY_CSS, CONTAINMENT_CSS, BUTTON_CSS, POPUP_CSS].join("\n").gsub("!important", "")
     end
 
     def packed_sheets
