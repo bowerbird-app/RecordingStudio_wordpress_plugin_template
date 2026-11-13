@@ -48,8 +48,8 @@ class WordpressDummyTest < Minitest::Test
   def test_smoke_cleans_temp_files_and_checks_button_contrast
     smoke = File.read(File.expand_path("../bin/wordpress-dummy-smoke", __dir__))
 
-    assert_includes smoke, 'trap \'rm -f "$body" "$body.home"\' EXIT'
-    assert_includes smoke, 'WORDPRESS_DUMMY_CHECK_RAILS'
+    assert_includes smoke, "trap 'rm -f \"$body\" \"$body.home\"' EXIT"
+    assert_includes smoke, "WORDPRESS_DUMMY_CHECK_RAILS"
     assert_includes smoke, "wordpress-dummy-contrast.mjs"
     refute_match(/^WORDPRESS_DUMMY_CHECK_RAILS=1/m, smoke)
   end
