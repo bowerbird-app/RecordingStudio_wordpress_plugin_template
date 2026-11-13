@@ -36,6 +36,17 @@ module WpPluginDemo
       :page_recording_id
     )
 
+    # Tokens are minted at runtime for the seeded public WordPress client.
+    # Nothing here is a secret checked into the repo.
+    WordpressDummySession = Data.define(
+      :host_base_url,
+      :client_id,
+      :page_recording_id,
+      :access_token,
+      :refresh_token,
+      :expires_at
+    )
+
     module_function
 
     def connect_redirect_uris(host_base_url: "http://localhost:3000")
@@ -144,6 +155,56 @@ module WpPluginDemo
         return_to: example_return_to,
         page_recording_id: page_recording.id
       )
+    end
+
+    def issue_wordpress_dummy_session!(host_base_url: "http://host.docker.internal:3000")
+      page_recording = ensure_studio_embed!
+      client = ensure_connect_client!
+      user = User.find_by!(email: ADMIN_EMAIL)
+      workspace = Workspace.find_by!(name: STUDIO_WORKSPACE_NAME)
+      root_recording = RecordingStudio.root_recording_for(workspace)
+      access_recording = RecordingStudioAccessible.access_recordings_for_actor(
+        recording: root_recording,
+        actor: user
+      ).first
+      raise "seeded admin has no access to #{STUDIO_WORKSPACE_NAME}" if access_recording.nil?
+
+      verifier = "V#{SecureRandom.urlsafe_base64(32)}".ljust(43, "a")
+      redirect_uri = RecordingStudioOauth.central_relay_callback_url(base_url: "http://localhost:3000")
+      approved = RecordingStudioOauth::Services::CreateOauthAuthorization.call(
+        oauth_client: client,
+        manager_actor: user,
+        access_recording: access_recording,
+        role: "view",
+        redirect_uri: redirect_uri,
+        code_challenge: RecordingStudioOauth::Pkce.s256_challenge(verifier),
+        code_challenge_method: "S256"
+      )
+      raise approved.error unless approved.success?
+
+      issued = RecordingStudioOauth::Services::IssueDelegatedAccessToken.call(
+        grant_type: "authorization_code",
+        client_id: client.client_id,
+        api: Contract::API_KEY,
+        code: approved.value.fetch(:code),
+        redirect_uri: redirect_uri,
+        code_verifier: verifier
+      )
+      raise issued.error unless issued.success?
+
+      tokens = issued.value
+      WordpressDummySession.new(
+        host_base_url: host_base_url.to_s.strip.chomp("/"),
+        client_id: client.client_id,
+        page_recording_id: page_recording.id,
+        access_token: tokens.fetch(:access_token),
+        refresh_token: tokens.fetch(:refresh_token),
+        expires_at: Time.current.to_i + tokens.fetch(:expires_in).to_i
+      )
+    end
+
+    def wordpress_dummy_session_json(host_base_url: "http://host.docker.internal:3000")
+      issue_wordpress_dummy_session!(host_base_url: host_base_url).to_h.to_json
     end
 
     def print_connect_client!(host_base_url: "http://localhost:3000")

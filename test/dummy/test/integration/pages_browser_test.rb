@@ -57,6 +57,12 @@ class PagesBrowserTest < ActionDispatch::IntegrationTest
     assert_select "[data-wp-plugin-demo-flatpack-part='popup'] [data-controller='flat-pack--modal']", count: 1
     assert_select "style[data-wp-plugin-demo-flatpack-assets='1']", count: 1
     assert_includes response.body, "Host is live"
+    assert_match(
+      /data-wp-plugin-demo-flatpack="1"[^>]*class="[^"]*flex flex-col gap-4[^"]*"[\s\S]*class="mb-6"[\s\S]*data-wp-plugin-demo-flatpack-part="badge"/,
+      response.body
+    )
+    assert_includes response.body, '[data-wordpress-plugin-demo-embed] [data-wp-plugin-demo-flatpack] > .mb-6:has(+ [data-wp-plugin-demo-flatpack-part="badge"])'
+    refute_includes response.body, "[data-wordpress-plugin-demo-embed] [data-wp-plugin-demo-flatpack] .mb-6 {"
     assert_includes response.body, "--badge-success-background-color"
     assert_select "body[data-dummy-host-layout='true']", count: 0
     refute_match(%r{href="[^"]*flat_pack/application}, response.body)

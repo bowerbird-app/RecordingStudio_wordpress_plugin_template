@@ -20,7 +20,8 @@ class WpPluginDemoEmbedStylesTest < ActiveSupport::TestCase
     assert_includes tag, "[data-wordpress-plugin-demo-embed],[data-wordpress-plugin-demo-embed][data-theme]"
     assert_includes tag, "--color-primary-text: #fff"
     assert_includes tag, "[data-wordpress-plugin-demo-embed] :is(a, button).fp-button[data-fp-style]"
-    assert_includes tag, '[data-wordpress-plugin-demo-embed] [data-wp-plugin-demo-flatpack] .mb-6'
+    assert_includes tag, '[data-wordpress-plugin-demo-embed] [data-wp-plugin-demo-flatpack] > .mb-6:has(+ [data-wp-plugin-demo-flatpack-part="badge"])'
+    refute_includes tag, "[data-wordpress-plugin-demo-embed] [data-wp-plugin-demo-flatpack] .mb-6 {"
     assert_includes tag, '[data-wordpress-plugin-demo-embed] [data-wp-plugin-demo-flatpack-part="popup"] .fp-modal-overlay-min'
     assert_includes tag, "!important"
     assert_includes tag, '[data-wordpress-plugin-demo-embed] [data-wp-plugin-demo-flatpack-part="popup"] [data-controller="flat-pack--modal"]'

@@ -44,19 +44,30 @@ class WordpressDummyTest < Minitest::Test
     assert_includes workflow, "wordpress-dummy:"
     assert_includes workflow, "bin/wordpress-dummy"
     assert_includes workflow, "bin/wordpress-dummy-smoke"
+    assert_includes workflow, "bundle exec rails db:seed"
+    assert_includes workflow, "bundle exec rails server -b 0.0.0.0 -p 3000"
     refute_includes workflow, "WORDPRESS_DUMMY_CHECK_RAILS"
   end
 
   def test_smoke_cleans_temp_files_and_checks_button_contrast
     smoke = File.read(File.expand_path("../bin/wordpress-dummy-smoke", __dir__))
 
-    assert_includes smoke, "trap 'rm -f \"$body\" \"$body.home\"' EXIT"
+    assert_includes smoke, "trap cleanup EXIT"
     assert_includes smoke, "WORDPRESS_DUMMY_CHECK_RAILS"
     assert_includes smoke, "wordpress-dummy-contrast.mjs"
-    assert_includes smoke, "button-contrast"
+    assert_includes smoke, "wordpress_dummy_session_json"
+    assert_includes smoke, "recording_studio_plugin_demo_connect_tokens"
+    assert_includes smoke, "button-contrast fixture"
+    assert_includes smoke, "--fixture"
+    assert_includes smoke, "--embed"
     assert_includes smoke, "restore_block_page"
+    assert_includes smoke, "no .fp-button"
     assert_includes smoke, '"$page_url"'
-    assert_includes File.read(File.expand_path("../bin/wordpress-dummy-contrast.mjs", __dir__)), "4.5"
+    refute_includes smoke, "|| true"
+    refute_includes smoke, "data-rs-widget"
+    contrast = File.read(File.expand_path("../bin/wordpress-dummy-contrast.mjs", __dir__))
+    assert_includes contrast, "4.5"
+    assert_includes contrast, "button-contrast fixture"
     package = JSON.parse(File.read(plugin_path("package.json")))
     assert_match(/\A\d+\.\d+\.\d+\z/, package.dig("devDependencies", "playwright-core").to_s)
     refute_match(/^WORDPRESS_DUMMY_CHECK_RAILS=1/m, smoke)

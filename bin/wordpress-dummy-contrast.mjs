@@ -173,9 +173,34 @@ try {
 </html>`, { waitUntil: "domcontentloaded" });
   assertContrast("transparent fill over the page", await colors(page, "a.fp-button"));
 
-  for (const url of process.argv.slice(2)) {
-    await page.goto(url, { waitUntil: "domcontentloaded", timeout: 20000 });
-    assertContrast(url, await colors(page, "a.fp-button[data-fp-style], button.fp-button[data-fp-style]"));
+  const args = process.argv.slice(2);
+  const targets = [];
+  for (let index = 0; index < args.length; index += 1) {
+    const flag = args[index];
+    const url = args[index + 1];
+    if (!url || url.startsWith("--")) {
+      throw new Error(`${flag} needs a page URL`);
+    }
+    if (flag === "--fixture") {
+      targets.push({ label: "button-contrast fixture", url });
+    } else if (flag === "--embed") {
+      targets.push({ label: "studio widget embed", url });
+    } else {
+      throw new Error(`Unknown contrast argument ${flag}`);
+    }
+    index += 1;
+  }
+  if (targets.length === 0) {
+    throw new Error("Pass --fixture and --embed page URLs");
+  }
+
+  for (const target of targets) {
+    await page.goto(target.url, { waitUntil: "domcontentloaded", timeout: 20000 });
+    const selector = "a.fp-button[data-fp-style], button.fp-button[data-fp-style]";
+    if ((await page.locator(selector).count()) === 0) {
+      throw new Error(`${target.label} has no .fp-button\n${await page.content()}`);
+    }
+    assertContrast(target.label, await colors(page, selector));
   }
 } finally {
   await browser.close();

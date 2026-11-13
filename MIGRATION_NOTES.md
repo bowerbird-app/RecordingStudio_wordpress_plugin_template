@@ -29,7 +29,9 @@ From the repo root and `test/dummy`, run `bundle lock --update=recording_studio`
 
 ## 0.4.28
 
-Plugin header, readme stable tag, and block version are 0.4.28. `embed-contrast.css` loads from the block render callback, and in the editor. `block.json` still has no `style` or `editorStyle`. Rebuild with `bin/build-plugin-zip`, reinstall the ZIP, and refresh WordPress.
+Gem, plugin header, readme stable tag, and block version are 0.4.28. `embed-contrast.css` loads from the block render callback, and in the editor. `block.json` still has no `style` or `editorStyle`. Rebuild with `bin/build-plugin-zip`, reinstall the ZIP, and refresh WordPress.
+
+`bin/wordpress-dummy` is the local WordPress site. The contrast check renders the seeded Getting Started embed from the Rails dummy on port 3000. The embed clears bottom margin only on the page title directly above the Host is live badge. The column `gap-4` is the gap under that title.
 
 ## 0.4.27
 

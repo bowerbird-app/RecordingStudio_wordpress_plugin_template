@@ -118,7 +118,7 @@ Open http://localhost:8888. Stop WordPress with `npm run env stop` from `wordpre
 
 If Docker is not available, skip `npm run env start`. You can still build the plugin, lint PHP, and check the ZIP.
 
-CI job `wordpress-dummy` runs `bin/wordpress-dummy` and `bin/wordpress-dummy-smoke`. The smoke checks that the plugin is active and that the sample page renders the block.
+CI job `wordpress-dummy` boots the seeded Rails dummy on port 3000, starts WordPress with `bin/wordpress-dummy`, then runs `bin/wordpress-dummy-smoke`. The smoke checks that the plugin is active, that the sample page renders the block, and that the connected Getting Started embed meets the contrast check.
 
 ### Dev login
 
@@ -160,7 +160,7 @@ To confirm the container can reach Rails, start the Rails dummy, then:
 WORDPRESS_DUMMY_CHECK_RAILS=1 bin/wordpress-dummy-smoke
 ```
 
-The check curls `$RECORDING_STUDIO_HOST_BASE_URL` from the WordPress `cli` container. It stays off unless that variable is `1`, including in CI.
+The check curls `$RECORDING_STUDIO_HOST_BASE_URL` from the WordPress `cli` container. It stays off unless that variable is `1`. The contrast check always needs the Rails dummy: the smoke reads the seeded Getting Started page id, stores a session for the seeded WordPress client in the plugin's connect option, and measures the rendered embed. The button-contrast page stays a separate fixture.
 
 The Registered App redirect has to be `http://host.docker.internal:3000/recording_studio_oauth/callback` so it matches the host URL WordPress sends. These constants are for this local dummy. A shipped ZIP keeps the baked `CloudHost` values.
 

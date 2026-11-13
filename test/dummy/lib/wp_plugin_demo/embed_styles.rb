@@ -56,7 +56,9 @@ module WpPluginDemo
         margin-block: 0;
       }
 
-      [data-wordpress-plugin-demo-embed] [data-wp-plugin-demo-flatpack] .mb-6 {
+      /* The page title above Host is live carries mb-6. Clear only that margin so the
+         badge sits on the column gap. Other Flatpack mb-6 blocks keep their margin. */
+      [data-wordpress-plugin-demo-embed] [data-wp-plugin-demo-flatpack] > .mb-6:has(+ [data-wp-plugin-demo-flatpack-part="badge"]) {
         margin-bottom: 0;
       }
 

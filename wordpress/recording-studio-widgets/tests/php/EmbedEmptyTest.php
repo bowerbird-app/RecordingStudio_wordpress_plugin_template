@@ -145,9 +145,18 @@ function test_embed_empty_styles_enqueue_for_editor_and_front(): void {
 		throw new RuntimeException( 'contrast css must load in the editor' );
 	}
 
-	$render = file_get_contents( dirname( __DIR__, 2 ) . '/src/recording-studio-widget/render.php' );
-	if ( false === $render || false === strpos( $render, 'recording_studio_plugin_demo_enqueue_embed_contrast_styles();' ) ) {
-		throw new RuntimeException( 'block render must enqueue contrast css' );
+	$GLOBALS['rs_test_enqueued_styles'] = array();
+	$attributes                         = array();
+	$content                            = '';
+	$block                              = array(
+		'blockName' => 'recording-studio/recording-studio-widget',
+	);
+	ob_start();
+	include dirname( __DIR__, 2 ) . '/src/recording-studio-widget/render.php';
+	ob_end_clean();
+	$render_handles = array_column( $GLOBALS['rs_test_enqueued_styles'], 'handle' );
+	if ( ! in_array( 'recording-studio-plugin-demo-embed-contrast', $render_handles, true ) ) {
+		throw new RuntimeException( 'including render.php must enqueue contrast css' );
 	}
 
 	$contrast = file_get_contents( dirname( __DIR__, 2 ) . '/assets/admin/embed-contrast.css' );

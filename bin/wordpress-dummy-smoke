@@ -36,15 +36,26 @@ if [[ -z "$page_url" ]]; then
 fi
 
 body="$(mktemp)"
-trap 'rm -f "$body" "$body.home"' EXIT
+home_body="$(mktemp)"
+connected="$(mktemp)"
+saved_content_b64=""
+cleanup() {
+	status=$?
+	if [[ -n "${saved_content_b64}" ]]; then
+		restore_block_page || status=1
+	fi
+	rm -f "$body" "$home_body" "$connected"
+	exit "$status"
+}
+trap cleanup EXIT
 curl -fsS "$page_url" -o "$body"
-curl -fsS "http://localhost:8888/" -o "$body.home"
+curl -fsS "http://localhost:8888/" -o "$home_body"
 
 if [[ "${WORDPRESS_DUMMY_CHECK_RAILS:-}" == "1" ]]; then
 	npx wp-env run cli curl -fsS -o /dev/null --max-time 15 "$host_url"
 fi
 
-for file in "$body" "$body.home"; do
+for file in "$body" "$home_body"; do
 	grep -F "wp-block-recording-studio-recording-studio-widget" "$file" >/dev/null
 	grep -F "Connect this site under Settings" "$file" >/dev/null
 	grep -F "WP Template Demo" "$file" >/dev/null
@@ -68,18 +79,64 @@ saved_show="$(wp_value option get show_on_front | tr -d '[:space:]')"
 saved_front="$(wp_value option get page_on_front | tr -d '[:space:]')"
 saved_content_b64="$(wp_cli post get "$studio_id" --field=post_content | base64 -w0)"
 restore_block_page() {
-	wp_cli eval "wp_update_post(array('ID'=>(int) ${studio_id}, 'post_content'=>base64_decode('${saved_content_b64}')));" >/dev/null || true
-	wp_cli option update show_on_front "$saved_show" >/dev/null || true
-	wp_cli option update page_on_front "$saved_front" >/dev/null || true
+	wp_cli eval "wp_update_post(array('ID'=>(int) ${studio_id}, 'post_content'=>base64_decode('${saved_content_b64}')));" >/dev/null
+	wp_cli option update show_on_front "$saved_show" >/dev/null
+	wp_cli option update page_on_front "$saved_front" >/dev/null
 }
-trap 'restore_block_page; rm -f "$body" "$body.home"' EXIT
-if ! grep -F -q "fp-button" "$body"; then
-	connected='<!-- wp:recording-studio/recording-studio-widget {"pageRecordingId":"11111111-1111-4111-8111-111111111111"} /--><!-- wp:html --><div class="wp-block" data-rs-widget><article data-wordpress-plugin-demo-embed="page" data-theme="rounded"><a class="fp-button" data-fp-style="primary" href="#getting-started-connect" style="--fp-button-text:#fff;--fp-button-background:rgb(51, 51, 51)">Connect</a></article></div><!-- /wp:html -->'
-	wp_cli post update "$studio_id" --post_content="$connected" >/dev/null
-	wp_cli option update show_on_front page >/dev/null
-	wp_cli option update page_on_front "$studio_id" >/dev/null
+
+echo "Reading the seeded Getting Started page from the Rails dummy"
+session_json="$(
+	cd "$REPO/test/dummy" &&
+		DISABLE_SPRING=1 bundle exec rails runner 'puts WpPluginDemo::Seed.wordpress_dummy_session_json' |
+		awk '/^\{/'
+)"
+if [[ -z "$session_json" ]]; then
+	echo "Rails dummy did not return a WordPress session" >&2
+	exit 1
 fi
-node "$REPO/bin/wordpress-dummy-contrast.mjs" "$contrast_url" "$page_url" "http://localhost:8888/"
-restore_block_page
+
+session_lines="$(
+	SESSION_JSON="$session_json" node --input-type=module -e '
+		const session = JSON.parse(process.env.SESSION_JSON);
+		const pageId = String(session.page_recording_id || "");
+		if (!/^[0-9a-f-]{36}$/i.test(pageId)) {
+			console.error("Getting Started page recording id is missing");
+			process.exit(1);
+		}
+		if (session.host_base_url !== "http://host.docker.internal:3000") {
+			console.error("WordPress session host is " + session.host_base_url);
+			process.exit(1);
+		}
+		if (session.client_id !== "rsoauth_id_wordpress") {
+			console.error("WordPress session client id is " + session.client_id);
+			process.exit(1);
+		}
+		const payload = Buffer.from(JSON.stringify({
+			access_token: session.access_token,
+			refresh_token: session.refresh_token,
+			expires_at: session.expires_at
+		})).toString("base64");
+		process.stdout.write(pageId + "\n" + payload);
+	'
+)"
+page_recording_id="${session_lines%%$'\n'*}"
+payload_b64="${session_lines#*$'\n'}"
+unset session_json session_lines
+
+echo "Pointing the studio widget at Getting Started ${page_recording_id}"
+npx wp-env run cli curl -fsS -o /dev/null --max-time 20 "${host_url}/up"
+wp_cli eval "update_option('recording_studio_plugin_demo_connect_tokens', json_decode(base64_decode('${payload_b64}'), true), false); \$host = RecordingStudio\\CloudHost::host_base_url(); \$client = RecordingStudio\\CloudHost::client_id(); if (\$host !== 'http://host.docker.internal:3000' || \$client !== 'rsoauth_id_wordpress') { fwrite(STDERR, \"filtered host \$host client \$client\\n\"); exit(1); } echo \$host . ' ' . \$client;"
+wp_cli eval "wp_update_post(array('ID'=>(int) ${studio_id}, 'post_content'=>'<!-- wp:recording-studio/recording-studio-widget {\"pageRecordingId\":\"${page_recording_id}\"} /-->'));" >/dev/null
+unset payload_b64
+
+curl -fsS --max-time 90 "$page_url" -o "$connected"
+if ! grep -F -q "fp-button" "$connected"; then
+	echo "Studio widget page has no .fp-button: $page_url" >&2
+	cat "$connected" >&2
+	exit 1
+fi
+
+echo "button-contrast fixture: $contrast_url"
+node "$REPO/bin/wordpress-dummy-contrast.mjs" --fixture "$contrast_url" --embed "$page_url"
 
 echo "WordPress dummy smoke passed: $page_url"

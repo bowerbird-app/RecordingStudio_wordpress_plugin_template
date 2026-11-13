@@ -63,6 +63,31 @@ class SeededGettingStartedEmbedHtmlTest < ActionDispatch::IntegrationTest
     refute_includes html, "<script"
   end
 
+  test "wordpress dummy session uses the seeded WordPress client and Getting Started page" do
+    session = WpPluginDemo::Seed.issue_wordpress_dummy_session!
+
+    assert_equal "http://host.docker.internal:3000", session.host_base_url
+    assert_equal WpPluginDemo::Seed::CONNECT_CLIENT_ID, session.client_id
+    assert_equal @page_recording_id, session.page_recording_id
+    assert_match(/\Arsoauth_at_/, session.access_token)
+    assert session.refresh_token.present?
+    assert_operator session.expires_at, :>, Time.now.to_i + 60
+
+    get WpPluginDemo::Contract.actions_embed_path(session.page_recording_id),
+        headers: {
+          "Authorization" => "Bearer #{session.access_token}",
+          "Accept" => "application/json"
+        }
+
+    assert_response :ok
+    html = JSON.parse(response.body).fetch("html")
+    assert_includes html, "fp-button"
+    assert_includes html, "Getting Started"
+    assert_includes html, "flex flex-col gap-4"
+    assert_includes html, '[data-wordpress-plugin-demo-embed] [data-wp-plugin-demo-flatpack] > .mb-6:has(+ [data-wp-plugin-demo-flatpack-part="badge"])'
+    refute_includes html, "[data-wordpress-plugin-demo-embed] [data-wp-plugin-demo-flatpack] .mb-6 {"
+  end
+
   test "renderer resolves to host pages/embed for Getting Started" do
     page = Page.find_by!(title: "Getting Started")
     recording = RecordingStudio::Recording.find_by!(recordable: page, trashed_at: nil)

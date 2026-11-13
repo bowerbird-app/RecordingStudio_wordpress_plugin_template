@@ -5,23 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.4.28] - 2026-11-13
 
 ### Added
-- Local WordPress dummy via `bin/wordpress-dummy` (`wp-env`). Dev-only.
+- Local WordPress dummy via `bin/wordpress-dummy` (`wp-env`). Dev-only. The `wordpress-dummy` CI job boots the seeded Rails dummy on port 3000, connects the block with the seeded WordPress OAuth client, and checks primary-button contrast on the rendered Getting Started embed.
 
 ### Changed
 - The Getting Started embed scopes Flatpack CSS to `[data-wordpress-plugin-demo-embed]`, so a WordPress theme rule cannot paint the primary button label the same color as its fill. Packed Flatpack sheets stay unchanged. The plugin's own embed rules do not use `!important`.
-- Root and dummy host pins `recording_studio` to GitHub tag `v4.2.2`.
+- The embed clears bottom margin only on the page title that sits directly above the Host is live badge. Other Flatpack `mb-6` spacing stays. The column's `gap-4` is the gap under that title.
+- Plugin 0.4.28 ships `assets/admin/` in the ZIP. `embed-contrast.css` loads from the block render callback, and on `enqueue_block_assets` in the editor. `block.json` still has no `style` or `editorStyle`.
+- Gem version is 0.4.28. The gemspec stays `recording_studio ~> 4.2`. The root lock stays on GitHub tag `v4.6.0`, and the dummy lock stays on `v4.7.0`.
 
 ### Upgrade notes
 - Rebuild with `bin/build-plugin-zip` from the repository root, reinstall the ZIP, and refresh WordPress. The new stylesheet is `assets/admin/embed-contrast.css`.
-- From the repo root and `test/dummy`, run `bundle lock --update=recording_studio`, then `bundle install`.
-
-## [0.4.28] - 2026-11-13
-
-### Changed
-- Plugin 0.4.28 ships `assets/admin/` in the ZIP. `embed-contrast.css` loads from the block render callback, and on `enqueue_block_assets` in the editor. `block.json` still has no `style` or `editorStyle`.
 
 ## [0.4.27] - 2026-09-23
 
@@ -477,7 +473,7 @@ New addons copied from this template are born on Recording Studio 4.x.
 - Comprehensive README and documentation
 - Basic test suite with Minitest
 
-[Unreleased]: https://github.com/bowerbird-app/RecordingStudio_wordpress_plugin_template/compare/v0.4.0...HEAD
+[0.4.28]: https://github.com/bowerbird-app/RecordingStudio_wordpress_plugin_template/compare/v0.4.0...HEAD
 [0.4.0]: https://github.com/bowerbird-app/RecordingStudio_wordpress_plugin_template/releases/tag/v0.4.0
 [0.3.1]: https://github.com/bowerbird-app/RecordingStudio_wordpress_plugin_template/releases/tag/v0.3.1
 [0.3.0]: https://github.com/bowerbird-app/RecordingStudio_wordpress_plugin_template/releases/tag/v0.3.0
