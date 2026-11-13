@@ -203,8 +203,26 @@ function recording_studio_plugin_demo_enqueue_embed_empty_styles(): void {
 		array( recording_studio_plugin_demo_look_token_handle() ),
 		(string) filemtime( $style_path )
 	);
+}
 
+function recording_studio_plugin_demo_contrast_styles_needed(): bool {
+	$block = 'recording-studio/recording-studio-widget';
+	if ( function_exists( 'has_block' ) && has_block( $block ) ) {
+		return true;
+	}
+
+	return function_exists( 'is_admin' ) && is_admin();
+}
+
+function recording_studio_plugin_demo_enqueue_embed_contrast_styles(): void {
+	if ( ! recording_studio_plugin_demo_contrast_styles_needed() ) {
+		return;
+	}
+
+	$plugin_file   = dirname( __DIR__ ) . '/recording-studio-widget.php';
 	$contrast_path = dirname( __DIR__ ) . '/assets/admin/embed-contrast.css';
+
+	recording_studio_plugin_demo_enqueue_look_tokens();
 	wp_enqueue_style(
 		'recording-studio-plugin-demo-embed-contrast',
 		plugins_url( 'assets/admin/embed-contrast.css', $plugin_file ),

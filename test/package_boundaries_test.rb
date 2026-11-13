@@ -25,6 +25,10 @@ class PackageBoundariesTest < Minitest::Test
     assert PackageBoundaries.zip_path_allowed?("build/sdk/recording-studio-plugin-sdk.js")
     assert PackageBoundaries.zip_path_allowed?("build/sdk/recording-studio-plugin-sdk.css")
     assert PackageBoundaries.zip_path_allowed?("build/brand/product-logo-red.jpg")
+    assert PackageBoundaries.zip_path_allowed?("assets/admin/embed-contrast.css")
+    assert PackageBoundaries.zip_path_allowed?("assets/admin/embed-empty.css")
+    assert PackageBoundaries.zip_path_allowed?("assets/admin/settings.css")
+    assert PackageBoundaries.zip_path_allowed?("assets/admin/rs-tokens.css")
     refute PackageBoundaries.zip_path_allowed?("assets/brand/product-logo-red.jpg")
     refute PackageBoundaries.zip_path_allowed?("src/recording-studio-widget/edit.js")
     refute PackageBoundaries.zip_path_allowed?("assets/sdk/recording-studio-plugin-sdk.js")
@@ -107,6 +111,30 @@ class PackageBoundariesTest < Minitest::Test
       assert entries.key?("recording-studio-widgets/#{relative}"),
              "ZIP entries missing required SDK file #{relative}"
     end
+  end
+
+  def test_wordpress_zip_entries_include_enqueued_stylesheets
+    entries = PackageBoundaries.wordpress_zip_entries
+    required = PackageBoundaries.enqueued_plugin_files
+
+    refute_empty required
+    required.each do |relative|
+      assert entries.key?("recording-studio-widgets/#{relative}"),
+             "ZIP entries missing enqueued file #{relative}"
+    end
+    assert_includes required, "assets/admin/embed-contrast.css"
+    assert_includes required, "assets/admin/embed-empty.css"
+    assert_includes required, "assets/admin/settings.css"
+    assert_includes required, "assets/admin/rs-tokens.css"
+    assert_includes required, "build/sdk/recording-studio-plugin-sdk.css"
+    assert_includes required, "build/recording-studio-widget/index.js"
+  end
+
+  def test_zip_entries_reject_missing_enqueued_files
+    error = assert_raises(RuntimeError) do
+      PackageBoundaries.assert_zip_entries_include_enqueued_files!({})
+    end
+    assert_match(/omits enqueued files/, error.message)
   end
 
   def test_zip_entries_reject_missing_sdk

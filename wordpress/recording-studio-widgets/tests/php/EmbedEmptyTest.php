@@ -5,6 +5,18 @@ declare(strict_types=1);
 use RecordingStudio\Placeholder;
 use RecordingStudio\ProductConfig;
 
+if ( ! function_exists( 'has_block' ) ) {
+	function has_block( $block_name ) {
+		return isset( $GLOBALS['rs_test_has_block'] ) && $GLOBALS['rs_test_has_block'] === $block_name;
+	}
+}
+
+if ( ! function_exists( 'is_admin' ) ) {
+	function is_admin() {
+		return ! empty( $GLOBALS['rs_test_is_admin'] );
+	}
+}
+
 function rs_embed_empty_body( string $html ): string {
 	if ( 1 !== preg_match( '/<p class="rs-embed-empty__body">([^<]*)<\/p>/', $html, $match ) ) {
 		throw new RuntimeException( 'empty card missing body: ' . $html );
@@ -98,8 +110,8 @@ function test_embed_empty_styles_enqueue_for_editor_and_front(): void {
 	$GLOBALS['rs_test_enqueued_styles'] = array();
 	recording_studio_plugin_demo_enqueue_embed_empty_styles();
 	$enqueued = $GLOBALS['rs_test_enqueued_styles'];
-	if ( 3 !== count( $enqueued ) ) {
-		throw new RuntimeException( 'expected look tokens, the empty card stylesheet, and the embed contrast stylesheet' );
+	if ( 2 !== count( $enqueued ) ) {
+		throw new RuntimeException( 'expected look tokens and the empty card stylesheet' );
 	}
 	if ( 'recording-studio-plugin-demo-tokens' !== $enqueued[0]['handle'] ) {
 		throw new RuntimeException( 'empty card must load look tokens first' );
@@ -110,12 +122,32 @@ function test_embed_empty_styles_enqueue_for_editor_and_front(): void {
 	if ( false === strpos( (string) $enqueued[1]['src'], 'assets/admin/embed-empty.css' ) ) {
 		throw new RuntimeException( 'empty card stylesheet src mismatch' );
 	}
-	if ( 'recording-studio-plugin-demo-embed-contrast' !== $enqueued[2]['handle'] ) {
-		throw new RuntimeException( 'unexpected embed contrast handle ' . (string) $enqueued[2]['handle'] );
+
+	$GLOBALS['rs_test_enqueued_styles'] = array();
+	$GLOBALS['rs_test_has_block']       = '';
+	$GLOBALS['rs_test_is_admin']        = false;
+	recording_studio_plugin_demo_enqueue_embed_contrast_styles();
+	if ( array() !== $GLOBALS['rs_test_enqueued_styles'] ) {
+		throw new RuntimeException( 'contrast css must not load on a front page without the block' );
 	}
-	if ( false === strpos( (string) $enqueued[2]['src'], 'assets/admin/embed-contrast.css' ) ) {
-		throw new RuntimeException( 'embed contrast stylesheet src mismatch' );
+
+	$GLOBALS['rs_test_has_block'] = 'recording-studio/recording-studio-widget';
+	recording_studio_plugin_demo_enqueue_embed_contrast_styles();
+	$contrast_enqueued = $GLOBALS['rs_test_enqueued_styles'];
+	$contrast_handles  = array_column( $contrast_enqueued, 'handle' );
+	if ( ! in_array( 'recording-studio-plugin-demo-embed-contrast', $contrast_handles, true ) ) {
+		throw new RuntimeException( 'contrast css must load when the block is on the page' );
 	}
+
+	$GLOBALS['rs_test_enqueued_styles'] = array();
+	$GLOBALS['rs_test_has_block']       = '';
+	$GLOBALS['rs_test_is_admin']        = true;
+	recording_studio_plugin_demo_enqueue_embed_contrast_styles();
+	$editor_handles = array_column( $GLOBALS['rs_test_enqueued_styles'], 'handle' );
+	if ( ! in_array( 'recording-studio-plugin-demo-embed-contrast', $editor_handles, true ) ) {
+		throw new RuntimeException( 'contrast css must load in the editor' );
+	}
+
 	$contrast = file_get_contents( dirname( __DIR__, 2 ) . '/assets/admin/embed-contrast.css' );
 	if ( false === $contrast || false === strpos( $contrast, '[data-wordpress-plugin-demo-embed] :is(a, button).fp-button[data-fp-style]' ) ) {
 		throw new RuntimeException( 'embed contrast css must outrank theme button color' );
@@ -127,6 +159,9 @@ function test_embed_empty_styles_enqueue_for_editor_and_front(): void {
 	$plugin = file_get_contents( dirname( __DIR__, 2 ) . '/recording-studio-widget.php' );
 	if ( false === $plugin || false === strpos( $plugin, "add_action( 'enqueue_block_assets', 'recording_studio_plugin_demo_enqueue_embed_empty_styles' )" ) ) {
 		throw new RuntimeException( 'empty card styles must enqueue on enqueue_block_assets' );
+	}
+	if ( false === strpos( $plugin, "add_action( 'enqueue_block_assets', 'recording_studio_plugin_demo_enqueue_embed_contrast_styles' )" ) ) {
+		throw new RuntimeException( 'contrast styles must enqueue on enqueue_block_assets' );
 	}
 
 	$css = file_get_contents( dirname( __DIR__, 2 ) . '/assets/admin/embed-empty.css' );

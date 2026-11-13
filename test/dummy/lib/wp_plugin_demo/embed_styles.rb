@@ -41,38 +41,31 @@ module WpPluginDemo
         --font-weight-bold: 700;
         --leading-tight: 1.25;
         --leading-normal: 1.5;
-        font-family: var(--font-sans) !important;
-        line-height: var(--leading-normal) !important;
+        font-family: var(--font-sans);
+        line-height: var(--leading-normal);
+        color: var(--surface-content-color);
       }
 
-      [data-wordpress-plugin-demo-embed] :is(h1, h2, h3, h4, h5, h6, p, a, span, button, li, label, div),
-      [data-wp-plugin-demo-flatpack] :is(h1, h2, h3, h4, h5, h6, p, a, span, button, li, label, div) {
-        font-family: var(--font-sans) !important;
-      }
-
-      [data-wordpress-plugin-demo-embed] :is(h1, h2, h3, h4, h5, h6) {
-        line-height: var(--leading-tight) !important;
-        margin-block: 0 !important;
-      }
-
-      [data-wordpress-plugin-demo-embed] [data-wp-plugin-demo-flatpack-part="card"] :is(h1, h2, h3, h4, h5, h6, p) {
-        margin-block: 0 !important;
+      [data-wordpress-plugin-demo-embed][data-theme] :is(h1, h2, h3, h4, h5, h6) {
+        font-family: var(--font-sans);
+        line-height: var(--leading-tight);
+        margin-block: 0;
       }
 
       [data-wordpress-plugin-demo-embed] [data-wp-plugin-demo-flatpack-part="card"] .mb-6 {
         margin-bottom: 0;
       }
 
-      [data-wp-plugin-demo-flatpack] .font-medium {
-        font-weight: var(--font-weight-medium) !important;
+      [data-wordpress-plugin-demo-embed] [data-wp-plugin-demo-flatpack] .font-medium {
+        font-weight: var(--font-weight-medium);
       }
 
-      [data-wp-plugin-demo-flatpack] .font-semibold {
-        font-weight: var(--font-weight-semibold) !important;
+      [data-wordpress-plugin-demo-embed] [data-wp-plugin-demo-flatpack] .font-semibold {
+        font-weight: var(--font-weight-semibold);
       }
 
-      [data-wp-plugin-demo-flatpack] .font-bold {
-        font-weight: var(--font-weight-bold) !important;
+      [data-wordpress-plugin-demo-embed] [data-wp-plugin-demo-flatpack] .font-bold {
+        font-weight: var(--font-weight-bold);
       }
     CSS
 
@@ -86,6 +79,27 @@ module WpPluginDemo
       }
     CSS
 
+    # The modal's overlay is a full-viewport centered layer. Inside the embed it
+    # should sit at the left of the column, with the dialog only as tall as its text.
+    POPUP_CSS = <<~CSS.freeze
+      [data-wordpress-plugin-demo-embed] [data-wp-plugin-demo-flatpack-part="popup"] .fp-modal-overlay-min {
+        min-height: 0;
+        justify-content: flex-start;
+        padding: 0;
+      }
+
+      [data-wordpress-plugin-demo-embed] [data-wp-plugin-demo-flatpack-part="popup"] [role="dialog"] {
+        height: auto;
+        min-height: 0;
+        max-height: none;
+        margin: 0;
+      }
+
+      [data-wordpress-plugin-demo-embed] [data-wp-plugin-demo-flatpack-part="popup"] .flat-pack-modal__body {
+        flex: none;
+      }
+    CSS
+
     module_function
 
     def style_tag
@@ -94,7 +108,7 @@ module WpPluginDemo
 
     def css
       sheets = scope_to_embed_root([packed_sheets, dummy_tailwind].join("\n"))
-      [sheets, TYPOGRAPHY_CSS, CONTAINMENT_CSS, BUTTON_CSS].join("\n")
+      [sheets, TYPOGRAPHY_CSS, CONTAINMENT_CSS, BUTTON_CSS, POPUP_CSS].join("\n")
     end
 
     def packed_sheets

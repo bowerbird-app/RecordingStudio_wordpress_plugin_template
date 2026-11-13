@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - The Getting Started embed scopes Flatpack CSS to `[data-wordpress-plugin-demo-embed]`, so a WordPress theme rule cannot paint the primary button label the same color as its fill.
-- `assets/admin/embed-contrast.css` loads on `enqueue_block_assets` for the editor and the front end. The block still has no `style` or `editorStyle`.
+- `assets/admin/` ships in the plugin ZIP. `embed-contrast.css` loads on `enqueue_block_assets` when the block is on the page, and in the editor. The block still has no `style` or `editorStyle`.
 - Root and dummy host pins `recording_studio` to GitHub tag `v4.2.2`.
 
 ### Upgrade notes

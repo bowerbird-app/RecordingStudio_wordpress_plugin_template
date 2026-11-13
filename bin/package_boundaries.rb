@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "json"
 require "fileutils"
 require "open3"
 require "pathname"
@@ -17,7 +18,7 @@ module PackageBoundaries
   GEM_FORBIDDEN_EXTENSIONS = %w[.php .js .scss .jsx .ts .tsx].freeze
 
   ZIP_ROOT_FILES = %w[recording-studio-widget.php readme.txt].freeze
-  ZIP_PREFIXES = %w[includes/ build/].freeze
+  ZIP_PREFIXES = %w[includes/ build/ assets/admin/].freeze
   ZIP_FORBIDDEN_EXTENSIONS = %w[.rb .gemspec .erb].freeze
   ZIP_FORBIDDEN_BASENAMES = %w[
     Gemfile
@@ -123,6 +124,7 @@ module PackageBoundaries
     entries = wordpress_zip_entries
     raise "WordPress ZIP allowlist is empty" if entries.empty?
     assert_zip_entries_include_sdk!(entries)
+    assert_zip_entries_include_enqueued_files!(entries)
 
     FileUtils.mkdir_p(File.dirname(destination))
     write_zip(entries, destination)
@@ -149,6 +151,49 @@ module PackageBoundaries
     return if missing.empty?
 
     raise "WordPress plugin SDK missing after build: #{missing.join(', ')}. Run npm run build in #{PLUGIN_DIR}."
+  end
+
+  def enqueued_plugin_files
+    files = []
+
+    Dir.glob(File.join(PLUGIN_DIR, "**", "*.php")).each do |path|
+      relative = Pathname.new(path).relative_path_from(PLUGIN_DIR).to_s
+      next if relative.start_with?("tests/", "vendor/", "node_modules/")
+
+      files.concat(asset_paths_in_php(File.read(path)))
+    end
+
+    block_json = File.join(PLUGIN_DIR, "build", "recording-studio-widget", "block.json")
+    files.concat(asset_paths_in_block_json(block_json)) if File.file?(block_json)
+    files.uniq
+  end
+
+  def asset_paths_in_php(source)
+    paths = []
+    source.scan(%r{['"]/?((?:assets|build)/[^'"]+\.(?:css|js|php|jpg|jpeg|png|svg|webp))['"]}) do |match|
+      paths << match[0]
+    end
+    paths
+  end
+
+  def asset_paths_in_block_json(path)
+    metadata = JSON.parse(File.read(path))
+    block_dir = Pathname.new(path).dirname.relative_path_from(PLUGIN_DIR).to_s
+    paths = []
+    %w[style editorStyle viewStyle script editorScript viewScript render].each do |key|
+      value = metadata[key]
+      next unless value.is_a?(String) && value.start_with?("file:./")
+
+      paths << File.join(block_dir, value.delete_prefix("file:./"))
+    end
+    paths
+  end
+
+  def assert_zip_entries_include_enqueued_files!(entries)
+    missing = enqueued_plugin_files.reject { |relative| entries.key?("#{PLUGIN_SLUG}/#{relative}") }
+    return if missing.empty?
+
+    raise "WordPress ZIP omits enqueued files: #{missing.join(', ')}"
   end
 
   def assert_zip_entries_include_sdk!(entries)

@@ -16,13 +16,7 @@
 [data-wordpress-plugin-demo-embed] {
 	font-family: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 	line-height: 1.5;
-}
-
-[data-rs-widget] :is(h1, h2, h3, h4, h5, h6),
-.rs-wordpress-plugin-demo-editor-preview :is(h1, h2, h3, h4, h5, h6),
-[data-wordpress-plugin-demo-embed] :is(h1, h2, h3, h4, h5, h6) {
-	line-height: 1.25;
-	margin-block: 0;
+	color: var(--surface-content-color, CanvasText);
 }
 
 [data-rs-widget] [data-wp-plugin-demo-flatpack-part="card"] .mb-6,

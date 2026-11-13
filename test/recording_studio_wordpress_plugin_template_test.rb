@@ -456,6 +456,8 @@ class RecordingStudioWordpressPluginTemplateTest < Minitest::Test
 
     assert_includes view_source, "FlatPack::Badge::Component"
     assert_includes view_source, "FlatPack::Card::Component"
+    assert_includes view_source, "FlatPack::PageTitle::Component"
+    assert_includes view_source, "variant: :h1"
     assert_includes view_source, "FlatPack::Button::Component"
     assert_includes view_source, "FlatPack::TextInput::Component"
     assert_includes view_source, "FlatPack::Modal::Component"

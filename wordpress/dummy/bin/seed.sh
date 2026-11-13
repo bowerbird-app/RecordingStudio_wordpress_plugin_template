@@ -48,6 +48,25 @@ fi
 wp_cli option update show_on_front page
 wp_cli option update page_on_front "$POST_ID"
 
+CONTRAST_MARKUP='<!-- wp:recording-studio/recording-studio-widget {"pageRecordingId":"11111111-1111-4111-8111-111111111111"} /--><!-- wp:html --><div class="wp-block" data-rs-widget><article data-wordpress-plugin-demo-embed="page" data-theme="rounded"><a class="fp-button" data-fp-style="primary" href="#getting-started-connect" style="--fp-button-text:#fff;--fp-button-background:rgb(51, 51, 51)">Connect</a></article></div><!-- /wp:html -->'
+
+CONTRAST_ID="$(wp_value post list --post_type=page --name=button-contrast --field=ID | tr -d '[:space:]')"
+if [[ -z "$CONTRAST_ID" ]]; then
+	wp_cli post create \
+		--post_type=page \
+		--post_status=publish \
+		--post_title="Button contrast" \
+		--post_name=button-contrast \
+		--post_content="$CONTRAST_MARKUP" \
+		--porcelain >/dev/null
+else
+	wp_cli post update "$CONTRAST_ID" \
+		--post_status=publish \
+		--post_title="Button contrast" \
+		--post_name=button-contrast \
+		--post_content="$CONTRAST_MARKUP"
+fi
+
 echo "WordPress dummy ready: http://localhost:8888/studio-widget/"
 echo "Dev admin: admin / password (dev-admin@example.test)"
 echo "Stand-in page recording id: ${SAMPLE_PAGE_RECORDING_ID}"

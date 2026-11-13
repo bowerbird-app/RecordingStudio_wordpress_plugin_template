@@ -54,14 +54,15 @@ for file in "$body" "$body.home"; do
 	fi
 done
 
-playwright_dir="${TMPDIR:-/tmp}/wordpress-dummy-playwright-core"
-if [[ ! -f "$playwright_dir/node_modules/playwright-core/index.js" ]]; then
-	mkdir -p "$playwright_dir"
-	npm install --prefix "$playwright_dir" --silent playwright-core
+if [[ ! -f "$PLUGIN/node_modules/playwright-core/index.js" ]]; then
+	npm ci
 fi
-export PLAYWRIGHT_CORE="$playwright_dir/node_modules/playwright-core/index.js"
-node "$REPO/bin/wordpress-dummy-contrast.mjs" \
-	"$page_url" \
-	"http://localhost:8888/"
+export PLAYWRIGHT_CORE="$PLUGIN/node_modules/playwright-core/index.js"
+contrast_url="$(wp_value post list --post_type=page --name=button-contrast --field=url | tr -d '[:space:]')"
+if [[ -z "$contrast_url" ]]; then
+	echo "Button contrast page is missing" >&2
+	exit 1
+fi
+node "$REPO/bin/wordpress-dummy-contrast.mjs" "$contrast_url"
 
 echo "WordPress dummy smoke passed: $page_url"

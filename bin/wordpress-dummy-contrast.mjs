@@ -58,21 +58,64 @@ function chromeExecutable() {
   return null;
 }
 
+const MINIMUM_CONTRAST = 4.5;
+
 async function colors(page, selector) {
+  const count = await page.locator(selector).count();
+  if (count === 0) {
+    throw new Error(`${selector}: button missing`);
+  }
   return page.$eval(selector, (el) => {
     const style = getComputedStyle(el);
-    return { color: style.color, background: style.backgroundColor };
+    const toRgba = (color) => {
+      const canvas = document.createElement("canvas");
+      canvas.width = 1;
+      canvas.height = 1;
+      const context = canvas.getContext("2d", { willReadFrequently: true });
+      context.clearRect(0, 0, 1, 1);
+      context.fillStyle = color;
+      context.fillRect(0, 0, 1, 1);
+      const [red, green, blue, alpha] = context.getImageData(0, 0, 1, 1).data;
+      return { red, green, blue, alpha: alpha / 255 };
+    };
+    return {
+      foreground: toRgba(style.color),
+      background: toRgba(style.backgroundColor),
+      color: style.color,
+      backgroundColor: style.backgroundColor,
+    };
   });
 }
 
-function assertContrast(label, style) {
-  if (!style) {
-    throw new Error(`${label}: button missing`);
+function channel(value) {
+  const share = value / 255;
+  return share <= 0.04045 ? share / 12.92 : ((share + 0.055) / 1.055) ** 2.4;
+}
+
+function luminance(color) {
+  return (0.2126 * channel(color.red)) + (0.7152 * channel(color.green)) + (0.0722 * channel(color.blue));
+}
+
+function contrastRatio(sample) {
+  const alpha = sample.foreground.alpha;
+  const blended = {
+    red: (sample.foreground.red * alpha) + (sample.background.red * (1 - alpha)),
+    green: (sample.foreground.green * alpha) + (sample.background.green * (1 - alpha)),
+    blue: (sample.foreground.blue * alpha) + (sample.background.blue * (1 - alpha)),
+  };
+  const lighter = Math.max(luminance(blended), luminance(sample.background));
+  const darker = Math.min(luminance(blended), luminance(sample.background));
+  return (lighter + 0.05) / (darker + 0.05);
+}
+
+function assertContrast(label, sample) {
+  const ratio = contrastRatio(sample);
+  if (ratio < MINIMUM_CONTRAST) {
+    throw new Error(
+      `${label}: contrast ${ratio.toFixed(2)} is below ${MINIMUM_CONTRAST}:1 (${sample.color} on ${sample.backgroundColor})`
+    );
   }
-  if (style.color === style.background) {
-    throw new Error(`${label}: label ${style.color} matches fill ${style.background}`);
-  }
-  console.log(`${label}: label ${style.color} on ${style.background}`);
+  console.log(`${label}: contrast ${ratio.toFixed(2)}:1 (${sample.color} on ${sample.backgroundColor})`);
 }
 
 const executablePath = chromeExecutable();
@@ -97,11 +140,6 @@ try {
 
   for (const url of process.argv.slice(2)) {
     await page.goto(url, { waitUntil: "domcontentloaded", timeout: 20000 });
-    const found = await page.locator("a.fp-button[data-fp-style], button.fp-button[data-fp-style]").count();
-    if (found === 0) {
-      console.log(`${url}: no Flatpack button on the page, skipped`);
-      continue;
-    }
     assertContrast(url, await colors(page, "a.fp-button[data-fp-style], button.fp-button[data-fp-style]"));
   }
 } finally {

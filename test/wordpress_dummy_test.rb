@@ -29,6 +29,8 @@ class WordpressDummyTest < Minitest::Test
     assert_includes seed, "recording-studio/recording-studio-widget"
     assert_includes seed, STAND_IN_PAGE_RECORDING_ID
     assert_includes seed, "show_on_front"
+    assert_includes seed, "button-contrast"
+    assert_includes seed, "fp-button"
   end
 
   def test_development_allows_the_docker_host
@@ -51,6 +53,10 @@ class WordpressDummyTest < Minitest::Test
     assert_includes smoke, "trap 'rm -f \"$body\" \"$body.home\"' EXIT"
     assert_includes smoke, "WORDPRESS_DUMMY_CHECK_RAILS"
     assert_includes smoke, "wordpress-dummy-contrast.mjs"
+    assert_includes smoke, "button-contrast"
+    assert_includes File.read(File.expand_path("../bin/wordpress-dummy-contrast.mjs", __dir__)), "4.5"
+    package = JSON.parse(File.read(plugin_path("package.json")))
+    assert_match(/\A\d+\.\d+\.\d+\z/, package.dig("devDependencies", "playwright-core").to_s)
     refute_match(/^WORDPRESS_DUMMY_CHECK_RAILS=1/m, smoke)
   end
 

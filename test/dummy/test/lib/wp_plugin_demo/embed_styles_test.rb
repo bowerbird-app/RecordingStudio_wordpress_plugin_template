@@ -21,6 +21,9 @@ class WpPluginDemoEmbedStylesTest < ActiveSupport::TestCase
     assert_includes tag, "--color-primary-text: #fff"
     assert_includes tag, "[data-wordpress-plugin-demo-embed] :is(a, button).fp-button[data-fp-style]"
     assert_includes tag, '[data-wordpress-plugin-demo-embed] [data-wp-plugin-demo-flatpack-part="card"] .mb-6'
+    assert_includes tag, '[data-wordpress-plugin-demo-embed] [data-wp-plugin-demo-flatpack-part="popup"] .fp-modal-overlay-min'
+    refute_match(/font-family:\s*var\(--font-sans\)\s*!important/, tag)
+    refute_match(/margin-block:\s*0\s*!important/, tag)
     refute_match(/(^|[{};])\s*:root\s*[,{]/, tag)
   end
 
