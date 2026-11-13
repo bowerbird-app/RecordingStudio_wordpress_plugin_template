@@ -54,6 +54,8 @@ class WordpressDummyTest < Minitest::Test
     assert_includes smoke, "WORDPRESS_DUMMY_CHECK_RAILS"
     assert_includes smoke, "wordpress-dummy-contrast.mjs"
     assert_includes smoke, "button-contrast"
+    assert_includes smoke, "restore_block_page"
+    assert_includes smoke, '"$page_url"'
     assert_includes File.read(File.expand_path("../bin/wordpress-dummy-contrast.mjs", __dir__)), "4.5"
     package = JSON.parse(File.read(plugin_path("package.json")))
     assert_match(/\A\d+\.\d+\.\d+\z/, package.dig("devDependencies", "playwright-core").to_s)

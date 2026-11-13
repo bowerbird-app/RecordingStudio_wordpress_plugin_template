@@ -130,6 +130,20 @@ class PackageBoundariesTest < Minitest::Test
     assert_includes required, "build/recording-studio-widget/index.js"
   end
 
+  def test_register_calls_with_quoted_paths_count_as_enqueued_files
+    source = <<~PHP
+      wp_register_style( 'demo', plugins_url( 'assets/admin/settings.css', __FILE__ ) );
+      wp_register_script( 'sdk', plugins_url( 'build/sdk/recording-studio-plugin-sdk.js', __FILE__ ) );
+      wp_enqueue_style( 'missing', $directory . $filename );
+    PHP
+
+    paths = PackageBoundaries.asset_paths_in_php(source)
+
+    assert_includes paths, "assets/admin/settings.css"
+    assert_includes paths, "build/sdk/recording-studio-plugin-sdk.js"
+    assert_equal 2, paths.length
+  end
+
   def test_zip_entries_reject_missing_enqueued_files
     error = assert_raises(RuntimeError) do
       PackageBoundaries.assert_zip_entries_include_enqueued_files!({})

@@ -168,6 +168,8 @@ module PackageBoundaries
     files.uniq
   end
 
+  # Quoted literal paths only. wp_enqueue_* and wp_register_* are both included.
+  # A path built from variables is not detected.
   def asset_paths_in_php(source)
     paths = []
     source.scan(%r{['"]/?((?:assets|build)/[^'"]+\.(?:css|js|php|jpg|jpeg|png|svg|webp))['"]}) do |match|

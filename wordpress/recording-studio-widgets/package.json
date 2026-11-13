@@ -1,6 +1,6 @@
 {
 	"name": "recording-studio-widget",
-	"version": "0.2.0",
+	"version": "0.4.28",
 	"description": "WordPress Plugin Demo dynamic block with host embed SSR.",
 	"author": "Bowerbird",
 	"license": "GPL-2.0-or-later",

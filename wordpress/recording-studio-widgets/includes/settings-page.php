@@ -205,20 +205,13 @@ function recording_studio_plugin_demo_enqueue_embed_empty_styles(): void {
 	);
 }
 
-function recording_studio_plugin_demo_contrast_styles_needed(): bool {
-	$block = 'recording-studio/recording-studio-widget';
-	if ( function_exists( 'has_block' ) && has_block( $block ) ) {
-		return true;
+function recording_studio_plugin_demo_enqueue_embed_contrast_in_editor(): void {
+	if ( function_exists( 'is_admin' ) && is_admin() ) {
+		recording_studio_plugin_demo_enqueue_embed_contrast_styles();
 	}
-
-	return function_exists( 'is_admin' ) && is_admin();
 }
 
 function recording_studio_plugin_demo_enqueue_embed_contrast_styles(): void {
-	if ( ! recording_studio_plugin_demo_contrast_styles_needed() ) {
-		return;
-	}
-
 	$plugin_file   = dirname( __DIR__ ) . '/recording-studio-widget.php';
 	$contrast_path = dirname( __DIR__ ) . '/assets/admin/embed-contrast.css';
 

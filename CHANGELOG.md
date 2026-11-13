@@ -11,14 +11,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Local WordPress dummy via `bin/wordpress-dummy` (`wp-env`). Dev-only.
 
 ### Changed
-- The Getting Started embed scopes Flatpack CSS to `[data-wordpress-plugin-demo-embed]`, so a WordPress theme rule cannot paint the primary button label the same color as its fill. That stylesheet ships with no `!important`.
-- `assets/admin/` ships in the plugin ZIP. `embed-contrast.css` loads on `enqueue_block_assets` when the block is on the page, and in the editor. The block still has no `style` or `editorStyle`.
+- The Getting Started embed scopes Flatpack CSS to `[data-wordpress-plugin-demo-embed]`, so a WordPress theme rule cannot paint the primary button label the same color as its fill. Packed Flatpack sheets stay unchanged. The plugin's own embed rules do not use `!important`.
 - Root and dummy host pins `recording_studio` to GitHub tag `v4.2.2`.
 
 ### Upgrade notes
 - Rebuild with `bin/build-plugin-zip` from the repository root, reinstall the ZIP, and refresh WordPress. The new stylesheet is `assets/admin/embed-contrast.css`.
 - From the repo root and `test/dummy`, run `bundle lock --update=recording_studio`, then `bundle install`.
-- The plugin ZIP stays on 0.4.27.
+
+## [0.4.28] - 2026-11-13
+
+### Changed
+- Plugin 0.4.28 ships `assets/admin/` in the ZIP. `embed-contrast.css` loads from the block render callback, and on `enqueue_block_assets` in the editor. `block.json` still has no `style` or `editorStyle`.
 
 ## [0.4.27] - 2026-09-23
 

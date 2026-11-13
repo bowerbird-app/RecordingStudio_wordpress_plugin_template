@@ -59,10 +59,27 @@ if [[ ! -f "$PLUGIN/node_modules/playwright-core/index.js" ]]; then
 fi
 export PLAYWRIGHT_CORE="$PLUGIN/node_modules/playwright-core/index.js"
 contrast_url="$(wp_value post list --post_type=page --name=button-contrast --field=url | tr -d '[:space:]')"
-if [[ -z "$contrast_url" ]]; then
-	echo "Button contrast page is missing" >&2
+studio_id="$(wp_value post list --post_type=page --name=studio-widget --field=ID | tr -d '[:space:]')"
+if [[ -z "$contrast_url" || -z "$studio_id" ]]; then
+	echo "Button contrast page or studio widget page is missing" >&2
 	exit 1
 fi
-node "$REPO/bin/wordpress-dummy-contrast.mjs" "$contrast_url"
+saved_show="$(wp_value option get show_on_front | tr -d '[:space:]')"
+saved_front="$(wp_value option get page_on_front | tr -d '[:space:]')"
+saved_content_b64="$(wp_cli post get "$studio_id" --field=post_content | base64 -w0)"
+restore_block_page() {
+	wp_cli eval "wp_update_post(array('ID'=>(int) ${studio_id}, 'post_content'=>base64_decode('${saved_content_b64}')));" >/dev/null || true
+	wp_cli option update show_on_front "$saved_show" >/dev/null || true
+	wp_cli option update page_on_front "$saved_front" >/dev/null || true
+}
+trap 'restore_block_page; rm -f "$body" "$body.home"' EXIT
+if ! grep -F -q "fp-button" "$body"; then
+	connected='<!-- wp:recording-studio/recording-studio-widget {"pageRecordingId":"11111111-1111-4111-8111-111111111111"} /--><!-- wp:html --><div class="wp-block" data-rs-widget><article data-wordpress-plugin-demo-embed="page" data-theme="rounded"><a class="fp-button" data-fp-style="primary" href="#getting-started-connect" style="--fp-button-text:#fff;--fp-button-background:rgb(51, 51, 51)">Connect</a></article></div><!-- /wp:html -->'
+	wp_cli post update "$studio_id" --post_content="$connected" >/dev/null
+	wp_cli option update show_on_front page >/dev/null
+	wp_cli option update page_on_front "$studio_id" >/dev/null
+fi
+node "$REPO/bin/wordpress-dummy-contrast.mjs" "$contrast_url" "$page_url" "http://localhost:8888/"
+restore_block_page
 
 echo "WordPress dummy smoke passed: $page_url"

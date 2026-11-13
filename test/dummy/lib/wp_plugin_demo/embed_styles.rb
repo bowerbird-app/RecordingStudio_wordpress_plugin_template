@@ -56,7 +56,7 @@ module WpPluginDemo
         margin-block: 0;
       }
 
-      [data-wordpress-plugin-demo-embed] [data-wp-plugin-demo-flatpack-part="card"] .mb-6 {
+      [data-wordpress-plugin-demo-embed] [data-wp-plugin-demo-flatpack] .mb-6 {
         margin-bottom: 0;
       }
 
@@ -117,9 +117,7 @@ module WpPluginDemo
 
     def css
       sheets = scope_to_embed_root([packed_sheets, dummy_tailwind].join("\n"))
-      # Flatpack's own sheets use !important to beat Tailwind. The embed root scope
-      # does that job, so the payload that WordPress receives has none.
-      [sheets, TYPOGRAPHY_CSS, CONTAINMENT_CSS, BUTTON_CSS, POPUP_CSS].join("\n").gsub("!important", "")
+      [sheets, TYPOGRAPHY_CSS, CONTAINMENT_CSS, BUTTON_CSS, POPUP_CSS].join("\n")
     end
 
     def packed_sheets

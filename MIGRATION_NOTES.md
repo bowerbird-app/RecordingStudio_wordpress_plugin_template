@@ -25,7 +25,11 @@ bin/rails tailwindcss:build
 - Oauth dummy tag `v0.5.2`
 - Public RubyGems and GitHub access for dependency installation
 
-From the repo root and `test/dummy`, run `bundle lock --update=recording_studio`, then `bundle install`. The plugin ZIP stays on 0.4.27.
+From the repo root and `test/dummy`, run `bundle lock --update=recording_studio`, then `bundle install`.
+
+## 0.4.28
+
+Plugin header, readme stable tag, and block version are 0.4.28. `embed-contrast.css` loads from the block render callback, and in the editor. `block.json` still has no `style` or `editorStyle`. Rebuild with `bin/build-plugin-zip`, reinstall the ZIP, and refresh WordPress.
 
 ## 0.4.27
 
@@ -99,7 +103,7 @@ Token exchange `redirect_uri` is that same callback URL. Connect start is `GET {
 
 The Getting Started embed is a FlatPack demo for the WordPress block. `pages/embed` renders `FlatPack::Badge::Component`, `FlatPack::Card::Component`, `FlatPack::Button::Pill::Component`, and `FlatPack::Modal::Component` (used as the popup). FlatPack has no `Popup` class on `v0.1.190`.
 
-Embeddable `HtmlSanitizer` removes `link` and `script` from BrowserPayload HTML. The dummy packs `flat_pack/variables`, `flat_pack/application` (imports stripped), and the dummy Tailwind build into a `<style data-wp-plugin-demo-flatpack-assets="1">` tag. Unlayered rules on `[data-wordpress-plugin-demo-embed]` pin `--font-sans` to FlatPack `system-ui` and restate `.font-medium`, `.font-semibold`, and `.font-bold` so a WordPress theme cannot replace family or weight. FlatPack `v0.1.190` has no `@font-face` files, so the payload does not load remote fonts. A containment rule scoped to `[data-wordpress-plugin-demo-embed]` keeps the modal in the block instead of covering the WordPress page. The packed stylesheet strips `!important`. Dummy Pages `/pages/:id/embed_preview` uses the same fragment, so you can eyeball it without WordPress.
+Embeddable `HtmlSanitizer` removes `link` and `script` from BrowserPayload HTML. The dummy packs `flat_pack/variables`, `flat_pack/application` (imports stripped), and the dummy Tailwind build into a `<style data-wp-plugin-demo-flatpack-assets="1">` tag. Unlayered rules on `[data-wordpress-plugin-demo-embed]` pin `--font-sans` to FlatPack `system-ui` and restate `.font-medium`, `.font-semibold`, and `.font-bold` so a WordPress theme cannot replace family or weight. FlatPack `v0.1.190` has no `@font-face` files, so the payload does not load remote fonts. A containment rule scoped to `[data-wordpress-plugin-demo-embed]` keeps the modal in the block instead of covering the WordPress page. Packed Flatpack sheets keep their own `!important`. The plugin's added rules do not use it. Dummy Pages `/pages/:id/embed_preview` uses the same fragment, so you can eyeball it without WordPress.
 
 1. From `test/dummy`, point FlatPack at GitHub tag `v0.1.190`.
 2. Run `bundle update flat_pack`.

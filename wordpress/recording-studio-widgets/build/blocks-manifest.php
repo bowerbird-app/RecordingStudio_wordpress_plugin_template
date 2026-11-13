@@ -5,7 +5,7 @@ return array(
 		'$schema' => 'https://schemas.wp.org/trunk/block.json',
 		'apiVersion' => 3,
 		'name' => 'recording-studio/recording-studio-widget',
-		'version' => '0.2.0',
+		'version' => '0.4.28',
 		'title' => 'WP Template Demo',
 		'category' => 'widgets',
 		'description' => 'Shows a page from your studio.',

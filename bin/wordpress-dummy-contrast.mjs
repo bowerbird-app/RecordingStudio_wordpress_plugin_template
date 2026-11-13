@@ -66,21 +66,48 @@ async function colors(page, selector) {
     throw new Error(`${selector}: button missing`);
   }
   return page.$eval(selector, (el) => {
-    const style = getComputedStyle(el);
     const toRgba = (color) => {
       const canvas = document.createElement("canvas");
       canvas.width = 1;
       canvas.height = 1;
       const context = canvas.getContext("2d", { willReadFrequently: true });
       context.clearRect(0, 0, 1, 1);
+      context.fillStyle = "#fff";
+      context.fillRect(0, 0, 1, 1);
+      context.clearRect(0, 0, 1, 1);
       context.fillStyle = color;
       context.fillRect(0, 0, 1, 1);
       const [red, green, blue, alpha] = context.getImageData(0, 0, 1, 1).data;
       return { red, green, blue, alpha: alpha / 255 };
     };
+    const over = (base, color) => {
+      const alpha = color.alpha;
+      return {
+        red: (color.red * alpha) + (base.red * (1 - alpha)),
+        green: (color.green * alpha) + (base.green * (1 - alpha)),
+        blue: (color.blue * alpha) + (base.blue * (1 - alpha)),
+        alpha: alpha + (base.alpha * (1 - alpha)),
+      };
+    };
+    const layers = [];
+    let node = el;
+    while (node) {
+      const layer = toRgba(getComputedStyle(node).backgroundColor);
+      layers.push(layer);
+      if (layer.alpha >= 1) break;
+      node = node.parentElement;
+    }
+    let background = { red: 255, green: 255, blue: 255, alpha: 1 };
+    for (let index = layers.length - 1; index >= 0; index -= 1) {
+      background = over(background, layers[index]);
+    }
+    if (background.alpha < 1) {
+      throw new Error("button background is still transparent");
+    }
+    const style = getComputedStyle(el);
     return {
       foreground: toRgba(style.color),
-      background: toRgba(style.backgroundColor),
+      background,
       color: style.color,
       backgroundColor: style.backgroundColor,
     };
@@ -137,6 +164,14 @@ try {
     "editor fixture",
     await colors(page, ".editor-styles-wrapper a.fp-button[data-fp-style]")
   );
+
+  await page.setContent(`<!DOCTYPE html>
+<html>
+  <body style="background:#fff">
+    <a class="fp-button" data-fp-style="primary" style="color:rgb(51, 51, 51);background-color:transparent">Connect</a>
+  </body>
+</html>`, { waitUntil: "domcontentloaded" });
+  assertContrast("transparent fill over the page", await colors(page, "a.fp-button"));
 
   for (const url of process.argv.slice(2)) {
     await page.goto(url, { waitUntil: "domcontentloaded", timeout: 20000 });

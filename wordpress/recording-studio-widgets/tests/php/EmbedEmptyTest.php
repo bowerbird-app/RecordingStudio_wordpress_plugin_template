@@ -124,28 +124,30 @@ function test_embed_empty_styles_enqueue_for_editor_and_front(): void {
 	}
 
 	$GLOBALS['rs_test_enqueued_styles'] = array();
-	$GLOBALS['rs_test_has_block']       = '';
 	$GLOBALS['rs_test_is_admin']        = false;
-	recording_studio_plugin_demo_enqueue_embed_contrast_styles();
+	recording_studio_plugin_demo_enqueue_embed_contrast_in_editor();
 	if ( array() !== $GLOBALS['rs_test_enqueued_styles'] ) {
-		throw new RuntimeException( 'contrast css must not load on a front page without the block' );
-	}
-
-	$GLOBALS['rs_test_has_block'] = 'recording-studio/recording-studio-widget';
-	recording_studio_plugin_demo_enqueue_embed_contrast_styles();
-	$contrast_enqueued = $GLOBALS['rs_test_enqueued_styles'];
-	$contrast_handles  = array_column( $contrast_enqueued, 'handle' );
-	if ( ! in_array( 'recording-studio-plugin-demo-embed-contrast', $contrast_handles, true ) ) {
-		throw new RuntimeException( 'contrast css must load when the block is on the page' );
+		throw new RuntimeException( 'editor contrast hook must stay off the front end' );
 	}
 
 	$GLOBALS['rs_test_enqueued_styles'] = array();
-	$GLOBALS['rs_test_has_block']       = '';
-	$GLOBALS['rs_test_is_admin']        = true;
 	recording_studio_plugin_demo_enqueue_embed_contrast_styles();
+	$contrast_handles = array_column( $GLOBALS['rs_test_enqueued_styles'], 'handle' );
+	if ( ! in_array( 'recording-studio-plugin-demo-embed-contrast', $contrast_handles, true ) ) {
+		throw new RuntimeException( 'contrast css must load from the block render' );
+	}
+
+	$GLOBALS['rs_test_enqueued_styles'] = array();
+	$GLOBALS['rs_test_is_admin']        = true;
+	recording_studio_plugin_demo_enqueue_embed_contrast_in_editor();
 	$editor_handles = array_column( $GLOBALS['rs_test_enqueued_styles'], 'handle' );
 	if ( ! in_array( 'recording-studio-plugin-demo-embed-contrast', $editor_handles, true ) ) {
 		throw new RuntimeException( 'contrast css must load in the editor' );
+	}
+
+	$render = file_get_contents( dirname( __DIR__, 2 ) . '/src/recording-studio-widget/render.php' );
+	if ( false === $render || false === strpos( $render, 'recording_studio_plugin_demo_enqueue_embed_contrast_styles();' ) ) {
+		throw new RuntimeException( 'block render must enqueue contrast css' );
 	}
 
 	$contrast = file_get_contents( dirname( __DIR__, 2 ) . '/assets/admin/embed-contrast.css' );
@@ -160,8 +162,8 @@ function test_embed_empty_styles_enqueue_for_editor_and_front(): void {
 	if ( false === $plugin || false === strpos( $plugin, "add_action( 'enqueue_block_assets', 'recording_studio_plugin_demo_enqueue_embed_empty_styles' )" ) ) {
 		throw new RuntimeException( 'empty card styles must enqueue on enqueue_block_assets' );
 	}
-	if ( false === strpos( $plugin, "add_action( 'enqueue_block_assets', 'recording_studio_plugin_demo_enqueue_embed_contrast_styles' )" ) ) {
-		throw new RuntimeException( 'contrast styles must enqueue on enqueue_block_assets' );
+	if ( false === strpos( $plugin, "add_action( 'enqueue_block_assets', 'recording_studio_plugin_demo_enqueue_embed_contrast_in_editor' )" ) ) {
+		throw new RuntimeException( 'contrast styles must enqueue in the editor' );
 	}
 
 	$css = file_get_contents( dirname( __DIR__, 2 ) . '/assets/admin/embed-empty.css' );
