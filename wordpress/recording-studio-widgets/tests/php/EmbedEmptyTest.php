@@ -98,8 +98,8 @@ function test_embed_empty_styles_enqueue_for_editor_and_front(): void {
 	$GLOBALS['rs_test_enqueued_styles'] = array();
 	recording_studio_plugin_demo_enqueue_embed_empty_styles();
 	$enqueued = $GLOBALS['rs_test_enqueued_styles'];
-	if ( 2 !== count( $enqueued ) ) {
-		throw new RuntimeException( 'expected look tokens and the empty card stylesheet' );
+	if ( 3 !== count( $enqueued ) ) {
+		throw new RuntimeException( 'expected look tokens, the empty card stylesheet, and the embed contrast stylesheet' );
 	}
 	if ( 'recording-studio-plugin-demo-tokens' !== $enqueued[0]['handle'] ) {
 		throw new RuntimeException( 'empty card must load look tokens first' );
@@ -109,6 +109,19 @@ function test_embed_empty_styles_enqueue_for_editor_and_front(): void {
 	}
 	if ( false === strpos( (string) $enqueued[1]['src'], 'assets/admin/embed-empty.css' ) ) {
 		throw new RuntimeException( 'empty card stylesheet src mismatch' );
+	}
+	if ( 'recording-studio-plugin-demo-embed-contrast' !== $enqueued[2]['handle'] ) {
+		throw new RuntimeException( 'unexpected embed contrast handle ' . (string) $enqueued[2]['handle'] );
+	}
+	if ( false === strpos( (string) $enqueued[2]['src'], 'assets/admin/embed-contrast.css' ) ) {
+		throw new RuntimeException( 'embed contrast stylesheet src mismatch' );
+	}
+	$contrast = file_get_contents( dirname( __DIR__, 2 ) . '/assets/admin/embed-contrast.css' );
+	if ( false === $contrast || false === strpos( $contrast, '[data-wordpress-plugin-demo-embed] :is(a, button).fp-button[data-fp-style]' ) ) {
+		throw new RuntimeException( 'embed contrast css must outrank theme button color' );
+	}
+	if ( false === strpos( $contrast, '.rs-wordpress-plugin-demo-editor-preview :is(a, button).fp-button[data-fp-style]' ) ) {
+		throw new RuntimeException( 'embed contrast css must cover the editor preview' );
 	}
 
 	$plugin = file_get_contents( dirname( __DIR__, 2 ) . '/recording-studio-widget.php' );

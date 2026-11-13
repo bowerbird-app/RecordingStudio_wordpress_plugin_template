@@ -15,8 +15,7 @@
             <%= render FlatPack::PageTitle::Component.new(
               title: "Connect the block",
               subtitle: "Settings first. Then paste this page's id.",
-              variant: :h3,
-              class: "mb-0 pb-0"
+              variant: :h3
             ) %>
           <% end %>
           <% card.body do %>
@@ -26,12 +25,19 @@
           <% end %>
         <% end %>
       </div>
-      <div data-wp-plugin-demo-flatpack-part="pill">
-        <%= render FlatPack::Button::Pill::Component.new(
-          items: [
-            { text: "Connect", href: "#getting-started-connect", active: true },
-            { text: "Page id", href: "#getting-started-page-id" }
-          ]
+      <div data-wp-plugin-demo-flatpack-part="connect" id="getting-started-connect">
+        <%= render FlatPack::Button::Component.new(
+          text: "Connect",
+          href: "#getting-started-connect",
+          style: :primary
+        ) %>
+      </div>
+      <div data-wp-plugin-demo-flatpack-part="page-id" id="getting-started-page-id">
+        <%= render FlatPack::TextInput::Component.new(
+          name: "page_id",
+          label: "Page id",
+          value: @parent_recording&.id,
+          help_text: "Paste this into the block."
         ) %>
       </div>
       <div data-wp-plugin-demo-flatpack-part="popup">
@@ -42,7 +48,7 @@
         ) do |modal| %>
           <% modal.body do %>
             <p class="text-sm leading-6">
-              Badge, card, pill, and this popup. Same kit the dummy host uses.
+              Badge, card, Connect, and this popup. Same kit the dummy host uses.
             </p>
           <% end %>
         <% end %>

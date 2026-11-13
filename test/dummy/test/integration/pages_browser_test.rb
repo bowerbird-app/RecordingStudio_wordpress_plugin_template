@@ -51,7 +51,9 @@ class PagesBrowserTest < ActionDispatch::IntegrationTest
     assert_select "[data-wp-plugin-demo-flatpack='1']", count: 1
     assert_select "[data-wp-plugin-demo-flatpack-part='badge']", count: 1
     assert_select "[data-wp-plugin-demo-flatpack-part='card']", count: 1
-    assert_select "[data-wp-plugin-demo-flatpack-part='pill']", count: 1
+    assert_select "[data-wp-plugin-demo-flatpack-part='connect'] a.fp-button", text: "Connect", count: 1
+    assert_select "[data-wp-plugin-demo-flatpack-part='page-id'] label", text: "Page id", count: 1
+    assert_select "input[name='page_id'][value='#{@page_recording.id}']", count: 1
     assert_select "[data-wp-plugin-demo-flatpack-part='popup'] [data-controller='flat-pack--modal']", count: 1
     assert_select "style[data-wp-plugin-demo-flatpack-assets='1']", count: 1
     assert_includes response.body, "Host is live"

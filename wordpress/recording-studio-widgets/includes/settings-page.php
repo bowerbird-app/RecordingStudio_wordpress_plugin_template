@@ -203,4 +203,12 @@ function recording_studio_plugin_demo_enqueue_embed_empty_styles(): void {
 		array( recording_studio_plugin_demo_look_token_handle() ),
 		(string) filemtime( $style_path )
 	);
+
+	$contrast_path = dirname( __DIR__ ) . '/assets/admin/embed-contrast.css';
+	wp_enqueue_style(
+		'recording-studio-plugin-demo-embed-contrast',
+		plugins_url( 'assets/admin/embed-contrast.css', $plugin_file ),
+		array( recording_studio_plugin_demo_look_token_handle() ),
+		(string) filemtime( $contrast_path )
+	);
 }

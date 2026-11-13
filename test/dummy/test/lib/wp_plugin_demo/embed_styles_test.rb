@@ -15,6 +15,13 @@ class WpPluginDemoEmbedStylesTest < ActiveSupport::TestCase
     refute_includes tag, "@import"
     refute_includes tag, "<link"
     refute_includes tag, "<script"
+    refute_match(/@layer\s+(utilities|theme|base|properties)\s*[{;]/, tag)
+    assert_includes tag, "[data-wordpress-plugin-demo-embed] .text-\\[var\\(--tabs-pill-active-text-color\\)\\]"
+    assert_includes tag, "[data-wordpress-plugin-demo-embed],[data-wordpress-plugin-demo-embed][data-theme]"
+    assert_includes tag, "--color-primary-text: #fff"
+    assert_includes tag, "[data-wordpress-plugin-demo-embed] :is(a, button).fp-button[data-fp-style]"
+    assert_includes tag, '[data-wordpress-plugin-demo-embed] [data-wp-plugin-demo-flatpack-part="card"] .mb-6'
+    refute_match(/(^|[{};])\s*:root\s*[,{]/, tag)
   end
 
   test "packed CSS keeps FlatPack family and weights loadable from a WordPress origin" do

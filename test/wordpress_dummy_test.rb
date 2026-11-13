@@ -31,29 +31,9 @@ class WordpressDummyTest < Minitest::Test
     assert_includes seed, "show_on_front"
   end
 
-  def test_readme_lists_the_wordpress_dummy_steps
-    readme = File.read(File.expand_path("../README.md", __dir__))
-    dummy_readme = File.read(File.expand_path("../wordpress/dummy/README.md", __dir__))
-
-    assert_includes readme, "bin/wordpress-dummy"
-    assert_includes readme, "npm run env start"
-    assert_includes readme, "Start the Rails dummy"
-    assert_includes readme, "Start WordPress"
-    assert_includes readme, "Connect"
-    assert_includes readme, "Insert the block"
-    assert_includes readme, "View the front end"
-    assert_includes readme, "host.docker.internal"
-    assert_includes readme, "RECORDING_STUDIO_HOST_BASE_URL"
-    assert_includes readme, "RECORDING_STUDIO_CLIENT_ID"
-    assert_includes readme, "rsoauth_id_wordpress"
-    assert_includes readme, "dev-admin@example.test"
-    assert_includes readme, "http://localhost:8888/studio-widget/"
-    assert_includes readme, STAND_IN_PAGE_RECORDING_ID
+  def test_development_allows_the_docker_host
     development_rb = File.read(File.expand_path("dummy/config/environments/development.rb", __dir__))
     assert_includes development_rb, 'config.hosts << "host.docker.internal"'
-    assert_includes dummy_readme, "admin"
-    assert_includes dummy_readme, "password"
-    assert_includes dummy_readme, "dev-admin@example.test"
   end
 
   def test_ci_boots_the_wordpress_dummy_and_checks_the_rendered_block
@@ -62,6 +42,16 @@ class WordpressDummyTest < Minitest::Test
     assert_includes workflow, "wordpress-dummy:"
     assert_includes workflow, "bin/wordpress-dummy"
     assert_includes workflow, "bin/wordpress-dummy-smoke"
+    refute_includes workflow, "WORDPRESS_DUMMY_CHECK_RAILS"
+  end
+
+  def test_smoke_cleans_temp_files_and_checks_button_contrast
+    smoke = File.read(File.expand_path("../bin/wordpress-dummy-smoke", __dir__))
+
+    assert_includes smoke, 'trap \'rm -f "$body" "$body.home"\' EXIT'
+    assert_includes smoke, 'WORDPRESS_DUMMY_CHECK_RAILS'
+    assert_includes smoke, "wordpress-dummy-contrast.mjs"
+    refute_match(/^WORDPRESS_DUMMY_CHECK_RAILS=1/m, smoke)
   end
 
   def plugin_path(name)

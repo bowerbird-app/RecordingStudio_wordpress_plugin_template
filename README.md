@@ -144,11 +144,23 @@ WordPress runs in a container. `.wp-env.json` sets the plugin constants the code
 - `RECORDING_STUDIO_HOST_BASE_URL` = `http://host.docker.internal:3000`
 - `RECORDING_STUDIO_CLIENT_ID` = `rsoauth_id_wordpress`
 
-`wp-env` maps `host.docker.internal` to the host gateway, so PHP in WordPress can call the Rails dummy on port 3000. The dummy development config allows that Host header. Login uses that same host URL in the browser. On Docker Desktop the hostname resolves on the host. On Linux, add this to `/etc/hosts` before you click Login:
+`wp-env` 11.15.0 writes `extra_hosts: ["host.docker.internal:host-gateway"]` onto the `wordpress` and `cli` services, so PHP in WordPress can call the Rails dummy on port 3000. The dummy development config allows that Host header. A hand-written Compose file needs the same `extra_hosts` entry. A plain `docker run` needs `--add-host=host.docker.internal:host-gateway`.
+
+Login uses that same host URL in the browser. On Docker Desktop the hostname resolves on the host. On Linux, add this to `/etc/hosts` before you click Login:
 
 ```
 127.0.0.1 host.docker.internal
 ```
+
+That hosts line is for the browser. The container mapping above is separate.
+
+To confirm the container can reach Rails, start the Rails dummy, then:
+
+```bash
+WORDPRESS_DUMMY_CHECK_RAILS=1 bin/wordpress-dummy-smoke
+```
+
+The check curls `$RECORDING_STUDIO_HOST_BASE_URL` from the WordPress `cli` container. It stays off unless that variable is `1`, including in CI.
 
 The Registered App redirect has to be `http://host.docker.internal:3000/recording_studio_oauth/callback` so it matches the host URL WordPress sends. These constants are for this local dummy. A shipped ZIP keeps the baked `CloudHost` values.
 

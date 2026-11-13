@@ -36,9 +36,13 @@ if [[ -z "$page_url" ]]; then
 fi
 
 body="$(mktemp)"
-trap 'rm -f "$body"' EXIT
+trap 'rm -f "$body" "$body.home"' EXIT
 curl -fsS "$page_url" -o "$body"
 curl -fsS "http://localhost:8888/" -o "$body.home"
+
+if [[ "${WORDPRESS_DUMMY_CHECK_RAILS:-}" == "1" ]]; then
+	npx wp-env run cli curl -fsS -o /dev/null --max-time 15 "$host_url"
+fi
 
 for file in "$body" "$body.home"; do
 	grep -F "wp-block-recording-studio-recording-studio-widget" "$file" >/dev/null
@@ -49,5 +53,15 @@ for file in "$body" "$body.home"; do
 		exit 1
 	fi
 done
+
+playwright_dir="${TMPDIR:-/tmp}/wordpress-dummy-playwright-core"
+if [[ ! -f "$playwright_dir/node_modules/playwright-core/index.js" ]]; then
+	mkdir -p "$playwright_dir"
+	npm install --prefix "$playwright_dir" --silent playwright-core
+fi
+export PLAYWRIGHT_CORE="$playwright_dir/node_modules/playwright-core/index.js"
+node "$REPO/bin/wordpress-dummy-contrast.mjs" \
+	"$page_url" \
+	"http://localhost:8888/"
 
 echo "WordPress dummy smoke passed: $page_url"

@@ -43,7 +43,10 @@ class SeededGettingStartedEmbedHtmlTest < ActionDispatch::IntegrationTest
     assert_includes html, 'data-wp-plugin-demo-flatpack-assets="1"'
     assert_includes html, 'data-wp-plugin-demo-flatpack-part="badge"'
     assert_includes html, 'data-wp-plugin-demo-flatpack-part="card"'
-    assert_includes html, 'data-wp-plugin-demo-flatpack-part="pill"'
+    assert_includes html, 'data-wp-plugin-demo-flatpack-part="connect"'
+    assert_includes html, 'data-wp-plugin-demo-flatpack-part="page-id"'
+    assert_includes html, "Page id"
+    assert_includes html, "Paste this into the block."
     assert_includes html, 'data-wp-plugin-demo-flatpack-part="popup"'
     assert_includes html, "--badge-success-background-color"
     assert_includes html, "--card-background-color"
