@@ -57,3 +57,8 @@ pkg/
 
 # Rename script state
 .rename_state.yml
+
+# WordPress dummy smoke writes the seeded session here, then deletes it.
+wordpress/recording-studio-widgets/.wordpress-dummy-session.json
+wordpress/recording-studio-widgets/.wordpress-dummy-session.php
+wordpress/recording-studio-widgets/.wordpress-dummy-clear-tokens.php

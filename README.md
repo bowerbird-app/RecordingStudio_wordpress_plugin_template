@@ -160,7 +160,7 @@ To confirm the container can reach Rails, start the Rails dummy, then:
 WORDPRESS_DUMMY_CHECK_RAILS=1 bin/wordpress-dummy-smoke
 ```
 
-The check curls `$RECORDING_STUDIO_HOST_BASE_URL` from the WordPress `cli` container. It stays off unless that variable is `1`. The contrast check always needs the Rails dummy: the smoke reads the seeded Getting Started page id, stores a session for the seeded WordPress client in the plugin's connect option, and measures the rendered embed. The button-contrast page stays a separate fixture.
+The check curls `$RECORDING_STUDIO_HOST_BASE_URL` from the WordPress `cli` container. It stays off unless that variable is `1`. The contrast check always needs the Rails dummy: the smoke reads the seeded Getting Started page id, writes the seeded WordPress session to a file, and loads it with `wp eval-file` so the tokens never appear on a command line. When the run ends it deletes `recording_studio_plugin_demo_connect_tokens`, so the next local run starts disconnected. The button-contrast page stays a separate fixture.
 
 The Registered App redirect has to be `http://host.docker.internal:3000/recording_studio_oauth/callback` so it matches the host URL WordPress sends. These constants are for this local dummy. A shipped ZIP keeps the baked `CloudHost` values.
 

@@ -50,6 +50,7 @@ class PagesBrowserTest < ActionDispatch::IntegrationTest
     assert_select "article[data-wordpress-plugin-demo-embed='page']", count: 1
     assert_select "[data-wp-plugin-demo-flatpack='1']", count: 1
     assert_select "[data-wp-plugin-demo-flatpack-part='badge']", count: 1
+    assert_select "[data-wp-plugin-demo-flatpack] > .mb-6 + [data-wp-plugin-demo-flatpack-part='badge']"
     assert_select "[data-wp-plugin-demo-flatpack-part='card']", count: 1
     assert_select "[data-wp-plugin-demo-flatpack-part='connect'] a.fp-button", text: "Connect", count: 1
     assert_select "[data-wp-plugin-demo-flatpack-part='page-id'] label", text: "Page id", count: 1
